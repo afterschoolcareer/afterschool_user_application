@@ -17,7 +17,7 @@ class _SignupDetailsState extends State<SignupDetails> {
   bool isSelected = false;
   void onCompleteSignup() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Homepage()));
+        context, MaterialPageRoute(builder: (context) => HomeScreen()));
   }
   @override
   Widget build(BuildContext context) {

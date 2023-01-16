@@ -24,8 +24,7 @@ class _LoginPageState extends State<LoginPage> {
         await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', true);
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Homepage()));
-    //Get.to(const homepage());
+        context, MaterialPageRoute(builder: (context) => HomeScreen()));
   }
 
   void onSignupTapped() {

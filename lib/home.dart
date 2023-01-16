@@ -1,6 +1,22 @@
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Homescreen/header_drawer.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Homepage(),
+    );
+  }
+}
+
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -10,27 +26,94 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  void logout() async{
+
+  void logout() async {
     final sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setBool('number',false);
+    sharedPreferences.setBool('number', false);
   }
+
+  /* items to navigate through bottom navigation bar */
+  int _selectedIndex = 0;
+  static final List<Widget> _bottomOptions = <Widget>[
+    const Text("Homepage xx"),
+    const Text("Enrollmentyy"),
+    const Text("Compare Screen"),
+    const Text("Shortlisted")
+  ];
+
+  /* when a bottom navigation item is tapped */
+  void onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  /* to launch a drawer on button tap */
+  final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
+
+  Widget MyDrawerList() {
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      body: Center(
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
+    var width = size.width;
+    return Scaffold(
+      key: _scaffoldDrawer,
+      drawer: Drawer(
+      backgroundColor: Colors.black,
+      child: SingleChildScrollView(
         child: Column(
           children: [
-          const Text(
-            "this is the homepage"
-          ),
-            MaterialButton(
-                onPressed: logout,
-              child: const Text("Logout"),
-            )
-        ],
+            const MyHeaderDrawer(),
+            MyDrawerList(),
+          ],
         ),
-
-      )
+      ),
+    ),
+      body: Container(
+        padding: const EdgeInsets.only(top : 20),
+        height: height/10,
+        color: const Color(0xff6633ff),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            IconButton(
+                onPressed: () => _scaffoldDrawer.currentState?.openDrawer(),
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.black,
+                )),
+            _bottomOptions[_selectedIndex]
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: onItemTapped,
+        elevation: 10,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        selectedItemColor: const Color(0xff6633ff),
+        unselectedItemColor: Colors.black,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
+              activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
+              label: "Home"),
+          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_book_formula_database_regular),
+              activeIcon: Icon(FluentSystemIcons.ic_fluent_book_formula_database_filled),
+              label: "Enrollments"),
+          BottomNavigationBarItem(icon: Icon(Icons.compare_rounded),
+              activeIcon: Icon(Icons.compare_rounded),
+              label: "Compare"),
+          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
+              activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
+              label: "Shortlist"),
+        ],
+      ),
     );
   }
 }
