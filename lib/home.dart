@@ -1,3 +1,7 @@
+import 'package:afterschool/Homescreen/enrollment_screen.dart';
+import 'package:afterschool/Homescreen/main_screen.dart';
+import 'package:afterschool/Homescreen/shortlist_screen.dart';
+import 'package:afterschool/Homescreen/smart_compare_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +39,10 @@ class _HomepageState extends State<Homepage> {
   /* items to navigate through bottom navigation bar */
   int _selectedIndex = 0;
   static final List<Widget> _bottomOptions = <Widget>[
-    const Text("Homepage xx"),
-    const Text("Enrollmentyy"),
-    const Text("Compare Screen"),
-    const Text("Shortlisted")
+    const MainScreen(),
+    const EnrollmentScreen(),
+    const SmartCompareScreen(),
+    const ShortlistScreen()
   ];
 
   /* when a bottom navigation item is tapped */
@@ -62,33 +66,32 @@ class _HomepageState extends State<Homepage> {
     var width = size.width;
     return Scaffold(
       key: _scaffoldDrawer,
-      drawer: Drawer(
-      backgroundColor: Colors.black,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const MyHeaderDrawer(),
-            MyDrawerList(),
-          ],
-        ),
-      ),
-    ),
-      body: Container(
-        padding: const EdgeInsets.only(top : 20),
-        height: height/10,
-        color: const Color(0xff6633ff),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: Builder(
+          builder: (BuildContext) {
+            return IconButton(
                 onPressed: () => _scaffoldDrawer.currentState?.openDrawer(),
                 icon: const Icon(
                   Icons.menu,
                   color: Colors.black,
-                )),
-            _bottomOptions[_selectedIndex]
-          ],
+                ));
+          },
         ),
+      ),
+      drawer: Drawer(
+        backgroundColor: Colors.black,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const MyHeaderDrawer(),
+              MyDrawerList(),
+            ],
+          ),
+        ),
+      ),
+      body: Center(
+        child: _bottomOptions[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
