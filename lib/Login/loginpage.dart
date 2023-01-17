@@ -24,12 +24,12 @@ class _LoginPageState extends State<LoginPage> {
         await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', true);
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   void onSignupTapped() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => SignupDetails()));
+        context, MaterialPageRoute(builder: (context) => const SignupDetails()));
   }
 
   @override

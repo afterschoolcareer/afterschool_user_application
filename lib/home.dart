@@ -21,7 +21,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
 
@@ -30,7 +29,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-
   void logout() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', false);
@@ -55,6 +53,9 @@ class _HomepageState extends State<Homepage> {
   /* to launch a drawer on button tap */
   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
 
+  var course_choices = ['IIT-JEE','NEET','Others'];
+  var currentSelected = 'IIT-JEE';
+
   Widget MyDrawerList() {
     return Container();
   }
@@ -67,6 +68,7 @@ class _HomepageState extends State<Homepage> {
     return Scaffold(
       key: _scaffoldDrawer,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.white,
         leading: Builder(
           builder: (BuildContext) {
@@ -78,6 +80,64 @@ class _HomepageState extends State<Homepage> {
                 ));
           },
         ),
+        actions: [
+          Row(
+            children: [
+              Container(
+                width: width/2,
+                height: 60,
+                child: Transform.scale(
+                  scale: 0.7,
+                  child: DropdownButtonFormField<String>(
+                    icon: const Icon(
+                      Icons.arrow_drop_down_circle,
+                      color: Color(0xff6633ff),
+                    ),
+                    dropdownColor: Colors.white,
+                    items: course_choices.map((String choice) {
+                      return DropdownMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList(),
+                    value: currentSelected,
+                    onChanged: (selectedValueNew) {
+                      setState(() => currentSelected = selectedValueNew as String);
+                    },
+                    decoration: const InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Color(0xff6633ff)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(30.0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Color(0xff6633ff)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(30.0)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 70),
+              InkWell(
+                onTap: () => print("Profile icon tapped"),
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      image: const DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage("images/smicon22.png"))),
+                ),
+              ),
+              const SizedBox(width: 20)
+            ],
+          )
+        ],
       ),
       drawer: Drawer(
         backgroundColor: Colors.black,
@@ -103,16 +163,22 @@ class _HomepageState extends State<Homepage> {
         unselectedItemColor: Colors.black,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
+          BottomNavigationBarItem(
+              icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
               activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
               label: "Home"),
-          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_book_formula_database_regular),
-              activeIcon: Icon(FluentSystemIcons.ic_fluent_book_formula_database_filled),
+          BottomNavigationBarItem(
+              icon: Icon(
+                  FluentSystemIcons.ic_fluent_book_formula_database_regular),
+              activeIcon: Icon(
+                  FluentSystemIcons.ic_fluent_book_formula_database_filled),
               label: "Enrollments"),
-          BottomNavigationBarItem(icon: Icon(Icons.compare_rounded),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.compare_rounded),
               activeIcon: Icon(Icons.compare_rounded),
               label: "Compare"),
-          BottomNavigationBarItem(icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
+          BottomNavigationBarItem(
+              icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
               activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
               label: "Shortlist"),
         ],
