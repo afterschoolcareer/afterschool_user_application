@@ -84,10 +84,10 @@ class _HomepageState extends State<Homepage> {
           Row(
             children: [
               Container(
+                padding: const EdgeInsets.all(5),
                 width: width/2,
-                height: 60,
                 child: Transform.scale(
-                  scale: 0.7,
+                  scale: 0.8,
                   child: DropdownButtonFormField<String>(
                     icon: const Icon(
                       Icons.arrow_drop_down_circle,
@@ -101,10 +101,15 @@ class _HomepageState extends State<Homepage> {
                       );
                     }).toList(),
                     value: currentSelected,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black
+                    ),
                     onChanged: (selectedValueNew) {
                       setState(() => currentSelected = selectedValueNew as String);
                     },
                     decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 20, right: 20),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
                         BorderSide(color: Color(0xff6633ff)),
@@ -121,7 +126,7 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              const SizedBox(width: 70),
+              const SizedBox(width: 50),
               InkWell(
                 onTap: () => print("Profile icon tapped"),
                 child: Container(
@@ -134,7 +139,7 @@ class _HomepageState extends State<Homepage> {
                           image: AssetImage("images/smicon22.png"))),
                 ),
               ),
-              const SizedBox(width: 20)
+              const SizedBox(width: 25)
             ],
           )
         ],
