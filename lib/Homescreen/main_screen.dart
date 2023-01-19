@@ -3,6 +3,8 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Models/advertisement_list.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -12,6 +14,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   TextEditingController searchBarController = TextEditingController();
+  int pageIndex = 0;
+
   /* when the search button is clicked */
   void onSearchQuery() {
     String searchQuery = searchBarController.text;
@@ -31,14 +35,15 @@ class _MainScreenState extends State<MainScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
+                  padding: const EdgeInsets.only(top: 30, left: 10, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
 
                       /* Search Bar */
                       SizedBox(
-                        width: width/1.7,
+                        width: width/1.3,
+                        height: 35,
                         child: TextFormField(
                           controller: searchBarController,
                           decoration: const InputDecoration(
@@ -67,9 +72,10 @@ class _MainScreenState extends State<MainScreen> {
                       InkWell(
                         onTap: () => onSearchQuery,
                         child: Container(
-                          padding: const EdgeInsets.all(10.0),
+                          height: 35,
+                          padding: const EdgeInsets.all(5.0),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30.0),
+                             shape: BoxShape.circle,
                             border: Border.all(
                               color: const Color(0xff6633ff)
                             )
@@ -83,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 35),
+                const SizedBox(height: 25),
                 RichText(
                   textAlign: TextAlign.center,
                   text: const TextSpan(
@@ -94,32 +100,45 @@ class _MainScreenState extends State<MainScreen> {
                     )
                   ),
                 ),
-                const SizedBox(height: 30),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.zero,
+                const SizedBox(height: 20),
+
+                /* Institute Card container */
+                SizedBox(
+                  height: 260,
+                  child: PageView.builder(
+                    onPageChanged: (int index) {
+                      setState(() {
+                        pageIndex = index;
+                      });
+                    },
+                    itemCount: advertisementList.length,
+                    itemBuilder: (context, index) {
+                      var scale = pageIndex == index ? 1.0 : 0.8;
+                      return Transform.scale(
+                          scale: 0.85,
+                          child: InstituteCard(
+                              advertisementList[index].logo_url,
+                              advertisementList[index].name,
+                              advertisementList[index].location,
+                              advertisementList[index].fees,
+                              advertisementList[index].selection_rate,
+                              advertisementList[index].top_rank,
+                              advertisementList[index].in_top_100,
+                              advertisementList[index].rating
+                          ),
+                        );
+                    },
+                  )
+                ),
+
+                /* Indicator container */
+                Container(
+                  padding: EdgeInsets.all(10),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Transform.scale(
-                        scale: 0.90,
-                        child: const InstituteCard(),
-                      ),
-                      Transform.scale(
-                        scale: 0.90,
-                        child: const InstituteCard(),
-                      ),
-                      Transform.scale(
-                        scale: 0.90,
-                        child: const InstituteCard(),
-                      ),
-                      Transform.scale(
-                        scale: 0.90,
-                        child: const InstituteCard(),
-                      ),
-                      Transform.scale(
-                        scale: 0.90,
-                        child: const InstituteCard(),
-                      ),
+                      ...List.generate(advertisementList.length, (index) => 
+                      Indicator(isActive : pageIndex == index ? true : false))
                     ],
                   ),
                 )
@@ -131,5 +150,25 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+class Indicator extends StatelessWidget {
+  final bool isActive;
+  const Indicator({Key? key, required this.isActive}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      width: isActive? 22.0 : 8.0,
+      height: 8.0,
+      decoration: BoxDecoration(
+          color: isActive? const Color(0xff6633ff) : const Color(0xffccccff),
+          shape: BoxShape.circle
+      ),
+    );
+  }
+}
+
 
 

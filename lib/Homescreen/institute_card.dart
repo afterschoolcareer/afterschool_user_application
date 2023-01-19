@@ -2,13 +2,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class InstituteCard extends StatefulWidget {
-  const InstituteCard({Key? key}) : super(key: key);
+  final String logo_url;
+  final String name;
+  final String location;
+  final String fees;
+  final String selection_rate;
+  final String top_rank;
+  final String in_top_100;
+  final String rating;
+  const InstituteCard(this.logo_url, this.name, this.location, this.fees,
+      this.selection_rate, this.top_rank, this.in_top_100, this.rating, {Key? key}
+      ) : super(key: key);
 
   @override
-  State<InstituteCard> createState() => _InstituteCardState();
+  State<InstituteCard> createState() => _InstituteCardState(logo_url, name, location,
+  fees, selection_rate, top_rank, in_top_100, rating);
 }
 
 class _InstituteCardState extends State<InstituteCard> {
+  final String logo_url;
+  final String name;
+  final String location;
+  final String fees;
+  final String selection_rate;
+  final String top_rank;
+  final String in_top_100;
+  final String rating;
+  _InstituteCardState(
+      this.logo_url, this.name, this.location, this.fees,
+      this.selection_rate, this.top_rank, this.in_top_100, this.rating
+      );
 
   void onViewDetailsTapped() {
     print("view details tapped");
@@ -25,9 +48,9 @@ class _InstituteCardState extends State<InstituteCard> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width *0.90,
-      height: 270,
+      height: 260,
       child: Container(
-        padding: const EdgeInsets.only(top:30, left:10, right: 10),
+        padding: const EdgeInsets.only(top:20, left:10, right: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -52,41 +75,41 @@ class _InstituteCardState extends State<InstituteCard> {
                   width: 50,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20.0),
-                      image: const DecorationImage(
+                      image:  DecorationImage(
                           fit: BoxFit.cover,
-                          image: AssetImage("images/smicon22.png"))),
+                          image: AssetImage(logo_url))),
                 ),
 
                 /* Institute name and Location and Fees */
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "ABC Institute",
-                      style: TextStyle(
+                    Text(
+                      name,
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
                     const SizedBox(height: 5),
                     RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                         children: [
                           TextSpan(
-                              text: "New Delhi",
-                            style: TextStyle(
+                              text: location,
+                            style: const TextStyle(
                               color: Colors.black
                             )
                           ),
-                          TextSpan(
+                          const TextSpan(
                               text: " • ",
                             style: TextStyle(
                               color: Colors.black
                             )
                           ),
                           TextSpan(
-                            text: "₹ 1.7 Lakhs",
-                            style: TextStyle(
+                            text: fees,
+                            style: const TextStyle(
                               color: Colors.black
                             )
                           )
@@ -97,15 +120,19 @@ class _InstituteCardState extends State<InstituteCard> {
                 ),
 
                 /* rating Star */
-                const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-
-                /* Rating Value */
-                const Text(
-                  "4.7",
-                )
+               Row(
+                 children: [
+                   const Icon(
+                     Icons.star,
+                     color: Colors.amber,
+                   ),
+                   const SizedBox(width: 6),
+                   /* Rating Value */
+                   Text(
+                     rating,
+                   )
+                 ],
+               )
               ],
             ),
 
@@ -123,9 +150,9 @@ class _InstituteCardState extends State<InstituteCard> {
                           shape: BoxShape.circle,
                           color: Color(0xff9999ff),
                         ),
-                        child: const Text(
-                          "97%",
-                          style: TextStyle(
+                        child: Text(
+                          selection_rate,
+                          style: const TextStyle(
                             color: Colors.white
                           ),
                         ),
@@ -154,9 +181,9 @@ class _InstituteCardState extends State<InstituteCard> {
                           shape: BoxShape.circle,
                           color: Color(0xff9999ff),
                         ),
-                        child: const Text(
-                          "AIR 5",
-                          style: TextStyle(
+                        child: Text(
+                          top_rank,
+                          style: const TextStyle(
                               color: Colors.white
                           ),
                         ),
@@ -176,7 +203,7 @@ class _InstituteCardState extends State<InstituteCard> {
                       )
                     ],
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 18),
                   Column(
                     children: [
                       Container(
@@ -185,9 +212,9 @@ class _InstituteCardState extends State<InstituteCard> {
                           shape: BoxShape.circle,
                           color: Color(0xff9999ff),
                         ),
-                        child: const Text(
-                          "33",
-                          style: TextStyle(
+                        child: Text(
+                          in_top_100,
+                          style: const TextStyle(
                               color: Colors.white
                           ),
                         ),
@@ -210,7 +237,7 @@ class _InstituteCardState extends State<InstituteCard> {
                 ],
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.only(left: 10),
               child: Row(
@@ -218,11 +245,11 @@ class _InstituteCardState extends State<InstituteCard> {
                   InkWell(
                     onTap: onViewDetailsTapped,
                     child: Container(
-                      padding: const EdgeInsets.only(top: 5, bottom: 5),
-                      width: MediaQuery.of(context).size.width / 2,
-                      height: 30,
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      width: MediaQuery.of(context).size.width / 1.6,
+                      height: 40,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(10),
                         color: const Color(0xff9999ff),
                       ),
                       child: const Text(
