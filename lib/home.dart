@@ -72,28 +72,38 @@ class _HomepageState extends State<Homepage> {
         backgroundColor: Colors.white,
         leading: Builder(
           builder: (BuildContext) {
-            return IconButton(
-                onPressed: () => _scaffoldDrawer.currentState?.openDrawer(),
-                icon: const Icon(
-                  Icons.menu,
-                  color: Colors.black,
-                ));
+            return Transform.scale(
+              scale: 1.1,
+              child: IconButton(
+                  onPressed: () => _scaffoldDrawer.currentState?.openDrawer(),
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.black,
+                  )),
+            );
           },
         ),
         actions: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(5),
-                width: width/2,
+                padding: const EdgeInsets.all(0),
+                height: 35,
+                //margin: const EdgeInsets.all(13),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                  color: Color(0xff9999ff)
+                ),
+                //padding: const EdgeInsets.all(5),
+                width: width/2.4,
                 child: Transform.scale(
-                  scale: 0.8,
+                  scale: 1,
                   child: DropdownButtonFormField<String>(
                     icon: const Icon(
-                      Icons.arrow_drop_down_circle,
-                      color: Color(0xff6633ff),
+                      Icons.keyboard_arrow_down_outlined,
+                      color: Colors.white,
                     ),
-                    dropdownColor: Colors.white,
+                    dropdownColor: Color(0xff6633ff),
                     items: course_choices.map((String choice) {
                       return DropdownMenuItem<String>(
                         value: choice,
@@ -102,8 +112,8 @@ class _HomepageState extends State<Homepage> {
                     }).toList(),
                     value: currentSelected,
                     style: const TextStyle(
-                      fontSize: 18,
-                      color: Colors.black
+                      fontSize: 16,
+                      color: Colors.white
                     ),
                     onChanged: (selectedValueNew) {
                       setState(() => currentSelected = selectedValueNew as String);
@@ -112,13 +122,13 @@ class _HomepageState extends State<Homepage> {
                       contentPadding: EdgeInsets.only(left: 20, right: 20),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: Color(0xff6633ff)),
+                        BorderSide(color: Color(0xff9999ff)),
                         borderRadius: BorderRadius.all(
                             Radius.circular(30.0)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: Color(0xff6633ff)),
+                            color: Color(0xff9999ff)),
                         borderRadius: BorderRadius.all(
                             Radius.circular(30.0)),
                       ),
@@ -126,7 +136,7 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              const SizedBox(width: 50),
+              const SizedBox(width: 90),
               InkWell(
                 onTap: () => print("Profile icon tapped"),
                 child: Container(

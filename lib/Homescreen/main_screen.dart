@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.only(top: 30, left: 10, right: 10),
+                  padding: const EdgeInsets.only(top: 30, left: 20, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -100,7 +100,7 @@ class _MainScreenState extends State<MainScreen> {
                     )
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
                 /* Institute Card container */
                 SizedBox(
@@ -132,15 +132,12 @@ class _MainScreenState extends State<MainScreen> {
                 ),
 
                 /* Indicator container */
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ...List.generate(advertisementList.length, (index) => 
-                      Indicator(isActive : pageIndex == index ? true : false))
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...List.generate(advertisementList.length, (index) =>
+                    Indicator(isActive : pageIndex == index ? true : false))
+                  ],
                 )
               ],
             ),

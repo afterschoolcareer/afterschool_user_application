@@ -82,13 +82,14 @@ class _InstituteCardState extends State<InstituteCard> {
 
                 /* Institute name and Location and Fees */
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       name,
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 22,
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -139,7 +140,7 @@ class _InstituteCardState extends State<InstituteCard> {
             const SizedBox(height: 20),
             /* data metrics */
             Container(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 20),
               child: Row(
                 children: [
                   Column(
@@ -239,7 +240,7 @@ class _InstituteCardState extends State<InstituteCard> {
             ),
             const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 20),
               child: Row(
                 children: [
                   InkWell(
