@@ -95,7 +95,7 @@ class _HomepageState extends State<Homepage> {
                   color: Color(0xff9999ff)
                 ),
                 //padding: const EdgeInsets.all(5),
-                width: width/2.4,
+                width: width/3,
                 child: Transform.scale(
                   scale: 1,
                   child: DropdownButtonFormField<String>(
@@ -136,7 +136,7 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              const SizedBox(width: 90),
+              const SizedBox(width: 120),
               InkWell(
                 onTap: () => print("Profile icon tapped"),
                 child: Container(

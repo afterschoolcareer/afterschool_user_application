@@ -1,3 +1,4 @@
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -34,16 +35,22 @@ class _InstituteCardState extends State<InstituteCard> {
       );
 
   void onViewDetailsTapped() {
-    print("view details tapped");
+    print("view details tapped :$name");
   }
 
   void onShortlistButtonTapped() {
+    setState(() {
+      isShortlisted = !isShortlisted;
+    });
     print("shortlist button tapped");
   }
 
   void onSendButtonTapped() {
     print("Send button tapped");
   }
+
+  bool isShortlisted = false;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -258,22 +265,25 @@ class _InstituteCardState extends State<InstituteCard> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
+                          fontSize: 17
                         ),
                       ),
                     ),
                   ),
-                  IconButton(
-                      onPressed: onShortlistButtonTapped,
-                      icon: const Icon(
-                        Icons.bookmark_border_outlined,
-                        color: Colors.black,
-                      )),
-                  IconButton(
-                      onPressed: onSendButtonTapped,
-                      icon: const Icon(
-                        Icons.send,
-                        color: Colors.black,
-                      )),
+                  const SizedBox(width: 20),
+                  Transform.scale(
+                    scale: 1.5,
+                    child: IconButton(
+                        onPressed: onShortlistButtonTapped,
+                        icon: Icon(
+                          isShortlisted?
+                          FluentSystemIcons.ic_fluent_bookmark_filled :
+                          FluentSystemIcons.ic_fluent_bookmark_regular,
+                          // Icons.bookmark_add_outlined,
+                          color: isShortlisted?
+                          const Color(0xff6633ff) : Colors.black,
+                        )),
+                  ),
                 ],
               ),
             )
