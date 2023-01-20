@@ -156,7 +156,7 @@ class _InstituteCardState extends State<InstituteCard> {
                         padding: const EdgeInsets.all(18),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff9999ff),
+                          color: Color(0xff6633ff),
                         ),
                         child: Text(
                           selection_rate,
@@ -187,7 +187,7 @@ class _InstituteCardState extends State<InstituteCard> {
                         padding: const EdgeInsets.all(18),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff9999ff),
+                          color: Color(0xff6633ff),
                         ),
                         child: Text(
                           top_rank,
@@ -218,7 +218,7 @@ class _InstituteCardState extends State<InstituteCard> {
                         padding: const EdgeInsets.all(18),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff9999ff),
+                          color: Color(0xff6633ff),
                         ),
                         child: Text(
                           in_top_100,
@@ -258,7 +258,7 @@ class _InstituteCardState extends State<InstituteCard> {
                       height: 40,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: const Color(0xff9999ff),
+                        color: const Color(0xff6633ff),
                       ),
                       child: const Text(
                         "View Details",
