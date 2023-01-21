@@ -2,6 +2,7 @@ import 'package:afterschool/Homescreen/institute_card.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Models/advertisement_list.dart';
 
@@ -16,6 +17,9 @@ class _MainScreenState extends State<MainScreen> {
   TextEditingController searchBarController = TextEditingController();
   int pageIndex = 0;
   int featuresPageIndex = 0;
+  Uri phoneNumber = Uri.parse('tel:+918375957165');
+  Uri emailData = Uri.parse('mailto:contact@afterschoolcareer.com?subject=Admission Counselling');
+
   List<String> featuresImageLinks = [
     'images/features_1.png',
     'images/features_2.png',
@@ -46,10 +50,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void onExpertPhoneTapped() {
+    launchUrl(phoneNumber);
     print("Expert Phone tapped");
   }
 
+
   void onExpertEmailTapped() {
+    launchUrl(emailData);
     print("Expert Email Tapped");
   }
 

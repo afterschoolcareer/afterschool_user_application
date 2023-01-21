@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void onSignupTapped() {
-    Navigator.pushReplacement(
+    Navigator.push(
         context, MaterialPageRoute(builder: (context) => const SignupDetails()));
   }
 

@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_launcher_icons: ^0.8.0
   fluentui_icons: ^1.0.0
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:
