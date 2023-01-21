@@ -45,10 +45,6 @@ class _InstituteCardState extends State<InstituteCard> {
     print("shortlist button tapped");
   }
 
-  void onSendButtonTapped() {
-    print("Send button tapped");
-  }
-
   bool isShortlisted = false;
 
   @override

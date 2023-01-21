@@ -124,7 +124,6 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       itemCount: advertisementList.length,
                       itemBuilder: (context, index) {
-                        var scale = pageIndex == index ? 1.0 : 0.8;
                         return Transform.scale(
                           scale: 0.85,
                           child: InstituteCard(
@@ -151,6 +150,8 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 const SizedBox(height: 40),
+
+                /* City List Container */
                 Container(
                   width: MediaQuery.of(context).size.width,
                   padding: const EdgeInsets.only(left: 20, right: 20),
@@ -188,7 +189,9 @@ class _MainScreenState extends State<MainScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 35),
+
+                /* Search By Preference Section */
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -222,7 +225,7 @@ class _MainScreenState extends State<MainScreen> {
                       onTap: onFilterButtonTapped,
                       child: Container(
                         width: 40,
-                        height: 60,
+                        height: 50,
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -247,6 +250,8 @@ class _MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 const SizedBox(height: 40),
+
+                /* Search By Preference Shortcuts */
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -344,7 +349,8 @@ class _MainScreenState extends State<MainScreen> {
                       ],
                     ),
                   ],
-                )
+                ),
+                const SizedBox(height: 40)
               ],
             ),
           )

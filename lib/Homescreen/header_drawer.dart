@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Login/loginpage.dart';
 
 class MyHeaderDrawer extends StatefulWidget {
   const MyHeaderDrawer({Key? key}) : super(key: key);
@@ -8,6 +11,17 @@ class MyHeaderDrawer extends StatefulWidget {
 }
 
 class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
+
+  void logout() async {
+    final SharedPreferences sharedPreferences =
+    await SharedPreferences.getInstance();
+    sharedPreferences.setBool('number', false);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder:  (context) => const LoginPage(),
+        ));
+
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,6 +62,13 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
                           image: AssetImage("images/logo_img.png"))),
                 )
               ],
+            ),
+            MaterialButton(
+                onPressed: logout,
+              color: Colors.white,
+              child: const Text(
+                "Logout"
+              ),
             )
           ],
         ));
