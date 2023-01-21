@@ -1,3 +1,4 @@
+import 'package:afterschool/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,25 +8,11 @@ class MyHeaderDrawer extends StatefulWidget {
   const MyHeaderDrawer({Key? key}) : super(key: key);
 
   @override
-  State<MyHeaderDrawer> createState() => _MyHeaderDrawerState();
+  State<MyHeaderDrawer> createState() => MyHeaderDrawerState();
 }
 
-class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
-
-  void logout() async {
-    final SharedPreferences sharedPreferences =
-    await SharedPreferences.getInstance();
-    sharedPreferences.setBool('number', false);
-    goToLogin();
-  }
-
-  void goToLogin() {
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder:  (context) => const LoginPage(),
-        ));
-  }
-
+class MyHeaderDrawerState extends State<MyHeaderDrawer> {
+  static ValueNotifier<String> courseValue = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,22 +25,27 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
+                  children:  [
+                    const Text(
                       "Shubham Vats",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      "IIT-JEE",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
+                    const SizedBox(height: 5),
+                    ValueListenableBuilder(
+                        valueListenable: courseValue,
+                        builder: (BuildContext context, String newValue, Widget? child) {
+                          return Text(
+                            newValue,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          );
+                        },
+                    )
                   ],
                 ),
                 Container(
@@ -67,18 +59,6 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
                 )
               ],
             ),
-
-            /* Logout Button */
-            MaterialButton(
-                onPressed: logout,
-              color: Colors.white,
-              child: const Text(
-                "Logout",
-                style: TextStyle(
-                  color: Color(0xff6633ff)
-                ),
-              ),
-            )
           ],
         ));
   }

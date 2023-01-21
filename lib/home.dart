@@ -2,6 +2,7 @@ import 'package:afterschool/Homescreen/enrollment_screen.dart';
 import 'package:afterschool/Homescreen/main_screen.dart';
 import 'package:afterschool/Homescreen/shortlist_screen.dart';
 import 'package:afterschool/Homescreen/smart_compare_screen.dart';
+import 'package:afterschool/profile.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +26,10 @@ class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<Homepage> createState() => HomepageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class HomepageState extends State<Homepage> {
   void logout() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', false);
@@ -48,6 +49,11 @@ class _HomepageState extends State<Homepage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void onProfileIconTapped() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const ProfilePage()));
   }
 
   /* to launch a drawer on button tap */
@@ -75,7 +81,10 @@ class _HomepageState extends State<Homepage> {
             return Transform.scale(
               scale: 1.1,
               child: IconButton(
-                  onPressed: () => _scaffoldDrawer.currentState?.openDrawer(),
+                  onPressed: () {
+                    _scaffoldDrawer.currentState?.openDrawer();
+                    MyHeaderDrawerState.courseValue.value = currentSelected;
+                  },
                   icon: const Icon(
                     Icons.menu,
                     color: Colors.black,
@@ -103,7 +112,7 @@ class _HomepageState extends State<Homepage> {
                       Icons.keyboard_arrow_down_outlined,
                       color: Colors.white,
                     ),
-                    dropdownColor: Color(0xff6633ff),
+                    dropdownColor: const Color(0xff6633ff),
                     items: course_choices.map((String choice) {
                       return DropdownMenuItem<String>(
                         value: choice,
@@ -116,7 +125,10 @@ class _HomepageState extends State<Homepage> {
                       color: Colors.white
                     ),
                     onChanged: (selectedValueNew) {
-                      setState(() => currentSelected = selectedValueNew as String);
+                      setState(() {
+                        currentSelected = selectedValueNew as String;
+                      });
+                      MyHeaderDrawerState.courseValue.value = selectedValueNew??"";
                     },
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.only(left: 20, right: 20),
@@ -138,7 +150,7 @@ class _HomepageState extends State<Homepage> {
               ),
               const SizedBox(width: 120),
               InkWell(
-                onTap: () => print("Profile icon tapped"),
+                onTap: onProfileIconTapped,
                 child: Container(
                   height: 40,
                   width: 40,

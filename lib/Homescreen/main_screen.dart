@@ -51,13 +51,11 @@ class _MainScreenState extends State<MainScreen> {
 
   void onExpertPhoneTapped() {
     launchUrl(phoneNumber);
-    print("Expert Phone tapped");
   }
 
 
   void onExpertEmailTapped() {
     launchUrl(emailData);
-    print("Expert Email Tapped");
   }
 
   @override
