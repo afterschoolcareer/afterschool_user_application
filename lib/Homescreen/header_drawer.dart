@@ -16,12 +16,16 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
     final SharedPreferences sharedPreferences =
     await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', false);
+    goToLogin();
+  }
+
+  void goToLogin() {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder:  (context) => const LoginPage(),
         ));
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -63,11 +67,16 @@ class _MyHeaderDrawerState extends State<MyHeaderDrawer> {
                 )
               ],
             ),
+
+            /* Logout Button */
             MaterialButton(
                 onPressed: logout,
               color: Colors.white,
               child: const Text(
-                "Logout"
+                "Logout",
+                style: TextStyle(
+                  color: Color(0xff6633ff)
+                ),
               ),
             )
           ],

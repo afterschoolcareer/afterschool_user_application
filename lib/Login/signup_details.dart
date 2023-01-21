@@ -12,6 +12,8 @@ class SignupDetails extends StatefulWidget {
 }
 
 class _SignupDetailsState extends State<SignupDetails> {
+
+  TextEditingController emailAddress = TextEditingController();
   int selectedValue = 0;
   var course_choices = ['IIT-JEE','NEET','Others'];
   var currentSelected = 'IIT-JEE';
@@ -20,9 +22,14 @@ class _SignupDetailsState extends State<SignupDetails> {
     final SharedPreferences sharedPreferences =
     await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', true);
+    goToHome();
+  }
+
+  void goToHome() {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -57,8 +64,9 @@ class _SignupDetailsState extends State<SignupDetails> {
             ),
             child: Column(
               children: [
-                const TextField(
-                  decoration: InputDecoration(
+                 TextField(
+                   controller: emailAddress,
+                  decoration: const InputDecoration(
                     prefixIcon: Icon(
                       Icons.email,
                       color: Color(0xff6633ff),

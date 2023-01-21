@@ -23,6 +23,10 @@ class _LoginPageState extends State<LoginPage> {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', true);
+    goToHome();
+  }
+
+  void goToHome() {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }

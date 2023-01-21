@@ -15,6 +15,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   TextEditingController searchBarController = TextEditingController();
   int pageIndex = 0;
+  int featuresPageIndex = 0;
+  List<String> featuresImageLinks = [
+    'images/features_1.png',
+    'images/features_2.png',
+    'images/features_3.png'
+  ];
 
   /* when the search button is clicked */
   void onSearchQuery() {
@@ -37,6 +43,14 @@ class _MainScreenState extends State<MainScreen> {
 
   void onOnlineAdmissionTapped() {
     print("Online Admission tapped");
+  }
+
+  void onExpertPhoneTapped() {
+    print("Expert Phone tapped");
+  }
+
+  void onExpertEmailTapped() {
+    print("Expert Email Tapped");
   }
 
   @override
@@ -350,7 +364,110 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 40)
+                const SizedBox(height: 40),
+
+                /* Features List */
+                SizedBox(
+                  height: 250,
+                  child: PageView.builder(
+                    onPageChanged: (int index) {
+                      setState(() {
+                        featuresPageIndex = index;
+                      });
+                    },
+                    itemCount: featuresImageLinks.length,
+                    itemBuilder: (context, index) {
+                      return Transform.scale(
+                        scale: 1,
+                        child: FeaturesList(
+                            image_url: featuresImageLinks[index]),
+                      );
+                    },
+                  ),
+                  ),
+
+                /* Indicator container */
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...List.generate(
+                        featuresImageLinks.length,
+                            (index) => Indicator(
+                            isActive: featuresPageIndex == index ? true : false))
+                  ],
+                ),
+                const SizedBox(height: 50),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                      text: "Still confused regarding what to choose?",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500
+                      )),
+                ),
+                const SizedBox(height: 40),
+                Column(
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        text: "Connect with",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 25
+                        )
+                      )
+                    ),
+                    RichText(
+                        text: const TextSpan(
+                            text: "our EXPERTS",
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 25
+                            )
+                        )
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Container(
+                  padding: EdgeInsets.only(left: width/3, right: width/3),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      InkWell(
+                        onTap: onExpertEmailTapped,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration:  BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black)
+                          ),
+                          child: const Icon(
+                            FluentSystemIcons.ic_fluent_mail_filled,
+                            color: Color(0xff6633ff),
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: onExpertPhoneTapped,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration:  BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black)
+                          ),
+                          child: const Icon(
+                            FluentSystemIcons.ic_fluent_phone_filled,
+                            color: Color(0xff6633ff),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 50)
               ],
             ),
           )
@@ -412,4 +529,21 @@ class CityView extends StatelessWidget {
     );
   }
 }
+
+class FeaturesList extends StatelessWidget {
+  final String image_url;
+  const FeaturesList({Key? key, required this.image_url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(image_url)
+        )
+      ),
+    );
+  }
+}
+
 
