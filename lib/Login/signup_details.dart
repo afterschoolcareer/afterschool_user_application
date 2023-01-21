@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home.dart';
 
@@ -15,7 +16,10 @@ class _SignupDetailsState extends State<SignupDetails> {
   var course_choices = ['IIT-JEE','NEET','Others'];
   var currentSelected = 'IIT-JEE';
   bool isSelected = false;
-  void onCompleteSignup() {
+  void onCompleteSignup() async {
+    final SharedPreferences sharedPreferences =
+    await SharedPreferences.getInstance();
+    sharedPreferences.setBool('number', true);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
