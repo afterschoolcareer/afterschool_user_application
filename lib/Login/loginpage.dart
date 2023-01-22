@@ -1,5 +1,5 @@
+import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/signup_details.dart';
-import 'package:afterschool/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void goToHome() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => const Homescreen()));
   }
 
   void onSignupTapped() {

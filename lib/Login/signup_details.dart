@@ -1,8 +1,8 @@
+import 'package:afterschool/Homescreen/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../home.dart';
 
 class SignupDetails extends StatefulWidget {
   const SignupDetails({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class _SignupDetailsState extends State<SignupDetails> {
 
   void goToHome() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => const Homescreen()));
   }
 
   @override

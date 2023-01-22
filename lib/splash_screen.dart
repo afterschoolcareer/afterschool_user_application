@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/loginpage.dart';
-import 'package:afterschool/home.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if(isLoggedIn) {
           Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder:  (context) => const HomeScreen(),
+              MaterialPageRoute(builder:  (context) => const Homescreen(),
               ));
         } else {
           Navigator.pushReplacement(

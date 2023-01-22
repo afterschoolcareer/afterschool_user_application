@@ -21,10 +21,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void goToLogin() {
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder:  (context) => const LoginPage(),
-        ));
+    Navigator.of(context, rootNavigator: true).pushReplacement(
+      MaterialPageRoute(
+          builder: (context) => const LoginPage()
+      )
+    );
   }
 
   @override

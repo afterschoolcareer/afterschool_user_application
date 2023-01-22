@@ -1,3 +1,4 @@
+import 'package:afterschool/Homescreen/drawer.dart';
 import 'package:afterschool/Homescreen/institute_card.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Models/advertisement_list.dart';
+import '../profile.dart';
+import 'header_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -14,6 +17,23 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  /* managing appbar and drawer */
+  void onProfileIconTapped() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+  }
+
+  /* to launch a drawer on button tap */
+  final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
+
+  var course_choices = ['IIT-JEE','NEET','Others'];
+  var currentSelected = 'IIT-JEE';
+
+  Widget MyDrawerList() {
+    return Container();
+  }
+
+
   TextEditingController searchBarController = TextEditingController();
   int pageIndex = 0;
   int featuresPageIndex = 0;
@@ -64,7 +84,105 @@ class _MainScreenState extends State<MainScreen> {
     var height = size.height;
     var width = size.width;
     return Scaffold(
+      key: _scaffoldDrawer,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        leading: Builder(
+          builder: (BuildContext) {
+            return Transform.scale(
+              scale: 1.1,
+              child: IconButton(
+                  onPressed: () {
+                    _scaffoldDrawer.currentState?.openDrawer();
+                    MyHeaderDrawerState.courseValue.value = currentSelected;
+                  },
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.black,
+                  )),
+            );
+          },
+        ),
+        actions: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(0),
+                height: 35,
+                //margin: const EdgeInsets.all(13),
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    color: Color(0xff9999ff)
+                ),
+                //padding: const EdgeInsets.all(5),
+                width: width/3,
+                child: Transform.scale(
+                  scale: 1,
+                  child: DropdownButtonFormField<String>(
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_outlined,
+                      color: Colors.white,
+                    ),
+                    dropdownColor: const Color(0xff6633ff),
+                    items: course_choices.map((String choice) {
+                      return DropdownMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList(),
+                    value: currentSelected,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white
+                    ),
+                    onChanged: (selectedValueNew) {
+                      setState(() {
+                        currentSelected = selectedValueNew as String;
+                      });
+                      MyHeaderDrawerState.courseValue.value = selectedValueNew??"";
+                    },
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 20, right: 20),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Color(0xff9999ff)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(30.0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Color(0xff9999ff)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(30.0)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 120),
+              InkWell(
+                onTap: onProfileIconTapped,
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      image: const DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage("images/smicon22.png"))),
+                ),
+              ),
+              const SizedBox(width: 25)
+            ],
+          )
+        ],
+      ),
+      drawer: const AppBarDrawer(),
       backgroundColor: Colors.white,
+
+
+      /* main body of the page */
       body: ListView(
         children: [
           Container(
