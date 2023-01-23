@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../Models/advertisement_list.dart';
 import '../profile.dart';
-import 'header_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -28,10 +27,6 @@ class _MainScreenState extends State<MainScreen> {
 
   var course_choices = ['IIT-JEE','NEET','Others'];
   var currentSelected = 'IIT-JEE';
-
-  Widget MyDrawerList() {
-    return Container();
-  }
 
 
   TextEditingController searchBarController = TextEditingController();
@@ -95,7 +90,6 @@ class _MainScreenState extends State<MainScreen> {
               child: IconButton(
                   onPressed: () {
                     _scaffoldDrawer.currentState?.openDrawer();
-                    MyHeaderDrawerState.courseValue.value = currentSelected;
                   },
                   icon: const Icon(
                     Icons.menu,
@@ -140,7 +134,6 @@ class _MainScreenState extends State<MainScreen> {
                       setState(() {
                         currentSelected = selectedValueNew as String;
                       });
-                      MyHeaderDrawerState.courseValue.value = selectedValueNew??"";
                     },
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.only(left: 20, right: 20),
@@ -163,14 +156,17 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(width: 120),
               InkWell(
                 onTap: onProfileIconTapped,
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
-                      image: const DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage("images/smicon22.png"))),
+                child: Transform.scale(
+                  scale: 1.2,
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30.0),
+                        image: const DecorationImage(
+                            fit: BoxFit.cover,
+                            image: AssetImage("images/profile_icon.png"))),
+                  ),
                 ),
               ),
               const SizedBox(width: 25)
@@ -185,414 +181,412 @@ class _MainScreenState extends State<MainScreen> {
       /* main body of the page */
       body: ListView(
         children: [
-          Container(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(top: 30, left: 20, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      /* Search Bar */
-                      SizedBox(
-                        width: width / 1.3,
-                        height: 35,
-                        child: TextFormField(
-                            controller: searchBarController,
-                            decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.only(left: 20, top: 0, bottom: 0),
-                              hintText: "Search",
-                              hintStyle: TextStyle(color: Color(0xff6633ff)),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff6633ff)),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40.0)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff6633ff)),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(40.0)),
-                              ),
-                            )),
-                      ),
-
-                      /* Search Button*/
-                      InkWell(
-                        onTap: onSearchQuery,
-                        child: Container(
-                          height: 35,
-                          padding: const EdgeInsets.all(5.0),
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: const Color(0xff6633ff))),
-                          child: const Icon(
-                            FluentSystemIcons.ic_fluent_search_filled,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                      text: "Handpicked for You",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                      )),
-                ),
-                const SizedBox(height: 10),
-
-                /* Institute Card container */
-                SizedBox(
-                    height: 260,
-                    child: PageView.builder(
-                      onPageChanged: (int index) {
-                        setState(() {
-                          pageIndex = index;
-                        });
-                      },
-                      itemCount: advertisementList.length,
-                      itemBuilder: (context, index) {
-                        return Transform.scale(
-                          scale: 0.85,
-                          child: InstituteCard(
-                              advertisementList[index].logo_url,
-                              advertisementList[index].name,
-                              advertisementList[index].location,
-                              advertisementList[index].fees,
-                              advertisementList[index].selection_rate,
-                              advertisementList[index].top_rank,
-                              advertisementList[index].in_top_100,
-                              advertisementList[index].rating),
-                        );
-                      },
-                    )),
-
-                /* Indicator container */
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ...List.generate(
-                        advertisementList.length,
-                        (index) => Indicator(
-                            isActive: pageIndex == index ? true : false))
-                  ],
-                ),
-                const SizedBox(height: 40),
-
-                /* City List Container */
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    children:  [
-                      const Icon(
-                        Icons.keyboard_double_arrow_left,
-                        color: Colors.black,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width /1.3,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: const [
-                              CityView(image_url: "images/delhi.jpg", name: "Delhi-NCR"),
-                              SizedBox(width: 15),
-                              CityView(image_url: "images/hyderabad.jpg", name: "Hyderabad"),
-                              SizedBox(width: 15),
-                              CityView(image_url: "images/kota.png", name: "Kota"),
-                              SizedBox(width: 15),
-                              CityView(image_url: "images/kolkata.jpg", name: "Kolkata"),
-                              SizedBox(width: 15),
-                              CityView(image_url: "images/mumbai.jpg", name: "Mumbai"),
-                              SizedBox(width: 15),
-                              CityView(image_url: "images/patna.jpeg", name: "Patna")
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.keyboard_double_arrow_right,
-                        color: Colors.black,
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 35),
-
-                /* Search By Preference Section */
-                Row(
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 30, left: 20, right: 10),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Search",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 30
-                          ),
-                        ),
-                        Text(
-                          "By",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30
-                          ),
-                        ),
-                        Text(
-                          "Preference",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30
-                          ),
-                        )
-                      ],
+                    /* Search Bar */
+                    SizedBox(
+                      width: width / 1.3,
+                      height: 35,
+                      child: TextFormField(
+                          controller: searchBarController,
+                          decoration: const InputDecoration(
+                            contentPadding:
+                                EdgeInsets.only(left: 20, top: 0, bottom: 0),
+                            hintText: "Search",
+                            hintStyle: TextStyle(color: Color(0xff6633ff)),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Color(0xff6633ff)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40.0)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Color(0xff6633ff)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(40.0)),
+                            ),
+                          )),
                     ),
+
+                    /* Search Button*/
                     InkWell(
-                      onTap: onFilterButtonTapped,
+                      onTap: onSearchQuery,
                       child: Container(
-                        width: 40,
-                        height: 50,
+                        height: 35,
+                        padding: const EdgeInsets.all(5.0),
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                            BoxShadow(
-                                color: Color(0xff9999ff),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 0)
-                            )
-                            ]
-                        ),
-                        child: Container(
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage("images/filter_icon.png")
-                              )
-                            ),
-                          )
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(color: const Color(0xff6633ff))),
+                        child: const Icon(
+                          FluentSystemIcons.ic_fluent_search_filled,
+                          color: Colors.black,
                         ),
                       ),
-                  ],
-                ),
-                const SizedBox(height: 40),
-
-                /* Search By Preference Shortcuts */
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: onSelectionRatioTapped,
-                          child: Transform.scale(
-                            scale: 1.8,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.all(Radius.circular(20.0))
-                              ),
-                              child: const Icon(
-                                Icons.area_chart,
-                                color: Color(0xff6633ff),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          children: const [
-                            Text(
-                              "Selection"
-                            ),
-                            Text(
-                              "Ratio"
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: onFeeStructureTapped,
-                          child: Transform.scale(
-                            scale: 1.8,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(20.0))
-                              ),
-                              child: const Icon(
-                                Icons.account_balance_wallet_rounded,
-                                color: Color(0xff6633ff),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          children: const [
-                            Text(
-                                "Fee"
-                            ),
-                            Text(
-                                "Structure"
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: onOnlineAdmissionTapped,
-                          child: Transform.scale(
-                            scale: 1.8,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(20.0))
-                              ),
-                              child: const Icon(
-                                FluentSystemIcons.ic_fluent_globe_search_filled,
-                                color: Color(0xff6633ff),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          children: const [
-                            Text(
-                                "Online"
-                            ),
-                            Text(
-                                "Admission"
-                            )
-                          ],
-                        )
-                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 40),
+              ),
+              const SizedBox(height: 25),
+              RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                    text: "Handpicked for You",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    )),
+              ),
+              const SizedBox(height: 10),
 
-                /* Features List */
-                SizedBox(
-                  height: 250,
+              /* Institute Card container */
+              SizedBox(
+                  height: 260,
                   child: PageView.builder(
                     onPageChanged: (int index) {
                       setState(() {
-                        featuresPageIndex = index;
+                        pageIndex = index;
                       });
                     },
-                    itemCount: featuresImageLinks.length,
+                    itemCount: advertisementList.length,
                     itemBuilder: (context, index) {
                       return Transform.scale(
-                        scale: 1,
-                        child: FeaturesList(
-                            image_url: featuresImageLinks[index]),
+                        scale: 0.85,
+                        child: InstituteCard(
+                            advertisementList[index].logo_url,
+                            advertisementList[index].name,
+                            advertisementList[index].location,
+                            advertisementList[index].fees,
+                            advertisementList[index].selection_rate,
+                            advertisementList[index].top_rank,
+                            advertisementList[index].in_top_100,
+                            advertisementList[index].rating),
                       );
                     },
-                  ),
-                  ),
+                  )),
 
-                /* Indicator container */
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ...List.generate(
-                        featuresImageLinks.length,
-                            (index) => Indicator(
-                            isActive: featuresPageIndex == index ? true : false))
-                  ],
-                ),
-                const SizedBox(height: 50),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                      text: "Still confused regarding what to choose?",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500
-                      )),
-                ),
-                const SizedBox(height: 40),
-                Column(
-                  children: [
-                    RichText(
-                      text: const TextSpan(
-                        text: "Connect with",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 25
-                        )
-                      )
+              /* Indicator container */
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...List.generate(
+                      advertisementList.length,
+                      (index) => Indicator(
+                          isActive: pageIndex == index ? true : false))
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              /* City List Container */
+              Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  children:  [
+                    const Icon(
+                      Icons.keyboard_double_arrow_left,
+                      color: Colors.black,
                     ),
-                    RichText(
-                        text: const TextSpan(
-                            text: "our EXPERTS",
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 25
-                            )
-                        )
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                Container(
-                  padding: EdgeInsets.only(left: width/3, right: width/3),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        onTap: onExpertEmailTapped,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration:  BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black)
-                          ),
-                          child: const Icon(
-                            FluentSystemIcons.ic_fluent_mail_filled,
-                            color: Color(0xff6633ff),
-                          ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width /1.3,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: const [
+                            CityView(image_url: "images/delhi.jpg", name: "Delhi-NCR"),
+                            SizedBox(width: 15),
+                            CityView(image_url: "images/hyderabad.jpg", name: "Hyderabad"),
+                            SizedBox(width: 15),
+                            CityView(image_url: "images/kota.png", name: "Kota"),
+                            SizedBox(width: 15),
+                            CityView(image_url: "images/kolkata.jpg", name: "Kolkata"),
+                            SizedBox(width: 15),
+                            CityView(image_url: "images/mumbai.jpg", name: "Mumbai"),
+                            SizedBox(width: 15),
+                            CityView(image_url: "images/patna.jpeg", name: "Patna")
+                          ],
                         ),
                       ),
-                      InkWell(
-                        onTap: onExpertPhoneTapped,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration:  BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black)
-                          ),
-                          child: const Icon(
-                            FluentSystemIcons.ic_fluent_phone_filled,
-                            color: Color(0xff6633ff),
-                          ),
+                    ),
+                    const Icon(
+                      Icons.keyboard_double_arrow_right,
+                      color: Colors.black,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 35),
+
+              /* Search By Preference Section */
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Search",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30
+                        ),
+                      ),
+                      Text(
+                        "By",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 30
+                        ),
+                      ),
+                      Text(
+                        "Preference",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 30
                         ),
                       )
                     ],
                   ),
+                  InkWell(
+                    onTap: onFilterButtonTapped,
+                    child: Container(
+                      width: 40,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                          BoxShadow(
+                              color: Color(0xff9999ff),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 0)
+                          )
+                          ]
+                      ),
+                      child: Container(
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage("images/filter_icon.png")
+                            )
+                          ),
+                        )
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              /* Search By Preference Shortcuts */
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: onSelectionRatioTapped,
+                        child: Transform.scale(
+                          scale: 1.8,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(20.0))
+                            ),
+                            child: const Icon(
+                              Icons.area_chart,
+                              color: Color(0xff6633ff),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: const [
+                          Text(
+                            "Selection"
+                          ),
+                          Text(
+                            "Ratio"
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: onFeeStructureTapped,
+                        child: Transform.scale(
+                          scale: 1.8,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                            ),
+                            child: const Icon(
+                              Icons.account_balance_wallet_rounded,
+                              color: Color(0xff6633ff),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: const [
+                          Text(
+                              "Fee"
+                          ),
+                          Text(
+                              "Structure"
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: onOnlineAdmissionTapped,
+                        child: Transform.scale(
+                          scale: 1.8,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(20.0))
+                            ),
+                            child: const Icon(
+                              FluentSystemIcons.ic_fluent_globe_search_filled,
+                              color: Color(0xff6633ff),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: const [
+                          Text(
+                              "Online"
+                          ),
+                          Text(
+                              "Admission"
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              /* Features List */
+              SizedBox(
+                height: 250,
+                child: PageView.builder(
+                  onPageChanged: (int index) {
+                    setState(() {
+                      featuresPageIndex = index;
+                    });
+                  },
+                  itemCount: featuresImageLinks.length,
+                  itemBuilder: (context, index) {
+                    return Transform.scale(
+                      scale: 1,
+                      child: FeaturesList(
+                          image_url: featuresImageLinks[index]),
+                    );
+                  },
                 ),
-                const SizedBox(height: 50)
-              ],
-            ),
+                ),
+
+              /* Indicator container */
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ...List.generate(
+                      featuresImageLinks.length,
+                          (index) => Indicator(
+                          isActive: featuresPageIndex == index ? true : false))
+                ],
+              ),
+              const SizedBox(height: 50),
+              RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                    text: "Still confused regarding what to choose?",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500
+                    )),
+              ),
+              const SizedBox(height: 40),
+              Column(
+                children: [
+                  RichText(
+                    text: const TextSpan(
+                      text: "Connect with",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 25
+                      )
+                    )
+                  ),
+                  RichText(
+                      text: const TextSpan(
+                          text: "our EXPERTS",
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 25
+                          )
+                      )
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Container(
+                padding: EdgeInsets.only(left: width/3, right: width/3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: onExpertEmailTapped,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration:  BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black)
+                        ),
+                        child: const Icon(
+                          FluentSystemIcons.ic_fluent_mail_filled,
+                          color: Color(0xff6633ff),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: onExpertPhoneTapped,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration:  BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black)
+                        ),
+                        child: const Icon(
+                          FluentSystemIcons.ic_fluent_phone_filled,
+                          color: Color(0xff6633ff),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50)
+            ],
           )
         ],
       ),

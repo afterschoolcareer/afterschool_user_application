@@ -12,9 +12,9 @@ class Homescreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
-      backgroundColor: Colors.white,
         tabBar: CupertinoTabBar(
           iconSize: 25,
+          backgroundColor: Colors.white,
           activeColor: const Color(0xff6633ff),
           inactiveColor: Colors.black,
           items: const <BottomNavigationBarItem> [
