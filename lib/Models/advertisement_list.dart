@@ -2,7 +2,7 @@ import 'dart:core';
 
 class AdvertisementList {
   final String logo_url;
-  final String name;
+  String name;
   final String location;
   final String fees;
   final String selection_rate;
@@ -19,5 +19,5 @@ List<AdvertisementList> advertisementList = [
   AdvertisementList("images/smicon22.png", "Career Institute", "New Delhi", "₹ 1.9 Lakhs", "90%", "AIR 14", "27", "4.8"),
   AdvertisementList("images/smicon22.png", "Super Institute", "Kota", "₹ 1.4 Lakhs", "92%", "AIR 32", "5", "4.9"),
   AdvertisementList("images/smicon22.png", "XYZ Institute", "Hyderabad", "₹ 2.1 Lakhs", "82%", "AIR 2", "8", "4.8"),
-  AdvertisementList("images/smicon22.png", "Medical Classes", "Kolkata", "₹ 2 Lakhs", "94%", "AIR 21", "12", "4.2")
+  AdvertisementList("images/smicon22.png", "Medical Classes", "Kolkata", "₹ 2.0 Lakhs", "94%", "AIR 21", "12", "4.2")
 ];

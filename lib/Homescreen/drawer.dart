@@ -76,7 +76,7 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
 
   Widget menuItems(String menuName, IconData iconData) {
     return Material(
-      color: Colors.grey[300],
+      color: Colors.grey[200],
       child: InkWell(
         onTap: () => onMenuItemTapped(menuName),
         child: Padding(
@@ -112,7 +112,7 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
           bottomRight: Radius.circular(30)
         )
       ),
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.grey[200],
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -137,7 +137,7 @@ class MyHeaderDrawerState extends State<MyHeaderDrawer> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Container(
-        color: Colors.grey[300],
+        color: Colors.grey[200],
         padding: const EdgeInsets.only(top: 60, left: 30, right: 30, bottom: 30),
         child: Column(
           children: [
