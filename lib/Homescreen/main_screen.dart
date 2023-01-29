@@ -1,5 +1,6 @@
 import 'package:afterschool/Homescreen/drawer.dart';
 import 'package:afterschool/Homescreen/institute_card.dart';
+import 'package:afterschool/Screens/connect_with_toppers.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
   /* managing appbar and drawer */
   void onProfileIconTapped() {
     Navigator.push(
@@ -526,27 +528,34 @@ class _MainScreenState extends State<MainScreen> {
                     )),
               ),
               const SizedBox(height: 40),
-              Column(
-                children: [
-                  RichText(
-                    text: const TextSpan(
-                      text: "Connect with",
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 25
-                      )
-                    )
-                  ),
-                  RichText(
+              Container(
+                width: width,
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: Color(0xff6633ff),
+                ),
+                child: Column(
+                  children: [
+                    RichText(
                       text: const TextSpan(
-                          text: "our EXPERTS",
-                          style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 25
-                          )
+                        text: "Connect with",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25
+                        )
                       )
-                  ),
-                ],
+                    ),
+                    RichText(
+                        text: const TextSpan(
+                            text: "our Counsellors",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 25
+                            )
+                        )
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 30),
               Container(
@@ -555,34 +564,170 @@ class _MainScreenState extends State<MainScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     InkWell(
-                      onTap: onExpertEmailTapped,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration:  BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black)
-                        ),
-                        child: const Icon(
-                          FluentSystemIcons.ic_fluent_mail_filled,
-                          color: Color(0xff6633ff),
+                      onTap: onExpertPhoneTapped,
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration:  BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black)
+                          ),
+                          child: const Icon(
+                            FluentSystemIcons.ic_fluent_phone_filled,
+                            color: Color(0xff6633ff),
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 10),
                     InkWell(
-                      onTap: onExpertPhoneTapped,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration:  BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black)
-                        ),
-                        child: const Icon(
-                          FluentSystemIcons.ic_fluent_phone_filled,
-                          color: Color(0xff6633ff),
+                      onTap: onExpertEmailTapped,
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration:  BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black)
+                          ),
+                          child: const Icon(
+                            FluentSystemIcons.ic_fluent_mail_filled,
+                            color: Color(0xff6633ff),
+                          ),
                         ),
                       ),
                     )
                   ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                "OR",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w500
+                ),
+              ),
+              const SizedBox(height: 30),
+              Container(
+                width: width,
+                padding: const EdgeInsets.all((20)),
+                decoration: const BoxDecoration(
+                  color: Color(0xff6633ff)
+                ),
+                child: Column(
+                  children: [
+                    RichText(
+                        text: const TextSpan(
+                            text: "Connect with",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 25
+                            )
+                        )
+                    ),
+                    RichText(
+                        text: const TextSpan(
+                            text: "Top Achievers",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 25
+                            )
+                        )
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              Text(
+                currentSelected,
+                style: const TextStyle(
+                  color: Color(0xffff9900),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              /* AchieversList */
+              Container(
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  children:  [
+                    const Icon(
+                      Icons.keyboard_double_arrow_left,
+                      color: Colors.black,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width /1.3,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: const [
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Shubham Vats", collegeName: "IIT Bidholi"),
+                            SizedBox(width: 15),
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Sujeet Vishwakarma", collegeName: "IIT BHU"),
+                            SizedBox(width: 15),
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Ankur Kumar", collegeName: "IIT BHU"),
+                            SizedBox(width: 15),
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Harshit Kumar", collegeName: "IIT UMU"),
+                            SizedBox(width: 15),
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Akshay Kumar", collegeName: "IIT UMU"),
+                            SizedBox(width: 15),
+                            AchieversList(logoUrl: "images/profile_icon.png",
+                                name: "Random Topper", collegeName: "IIT Roorkee"),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.keyboard_double_arrow_right,
+                      color: Colors.black,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              /* Request a Call Section Button */
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (
+                      context) => const ConnectWithAchievers()
+                  ));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  height: 40,
+                  width: width/2,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color(0xff9999ff),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: Offset(0, 0)
+                        )
+                      ]
+                  ),
+                  child: const Text(
+                    "Request a Session",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xff6633ff)
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 50)
@@ -662,5 +807,39 @@ class FeaturesList extends StatelessWidget {
     );
   }
 }
+
+class AchieversList extends StatelessWidget {
+  final String logoUrl;
+  final String name;
+  final String collegeName;
+  const AchieversList({Key? key, required this.logoUrl, required this.name,
+    required this.collegeName}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+          image: AssetImage(logoUrl))
+    ),
+          ),
+        const SizedBox(height: 10),
+        Text(
+          name,
+        ),
+        const SizedBox(height: 5),
+        Text(
+          collegeName
+        )
+      ],
+    );
+  }
+}
+
 
 

@@ -273,8 +273,8 @@ class _InstituteCardState extends State<InstituteCard> {
                         onPressed: onShortlistButtonTapped,
                         icon: Icon(
                           isShortlisted?
-                          FluentSystemIcons.ic_fluent_bookmark_filled :
-                          FluentSystemIcons.ic_fluent_bookmark_regular,
+                          FluentSystemIcons.ic_fluent_star_filled:
+                          FluentSystemIcons.ic_fluent_star_regular,
                           // Icons.bookmark_add_outlined,
                           color: isShortlisted?
                           const Color(0xff6633ff) : Colors.black,

@@ -24,15 +24,12 @@ class _SmartCompareScreenState extends State<SmartCompareScreen> {
   }
   /* to launch a drawer on button tap */
   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
-  var courseChoices = ['IIT-JEE','NEET','Others'];
-  var currentSelected = 'IIT-JEE';
-
 
   TextEditingController query1 = TextEditingController();
   TextEditingController query2 = TextEditingController();
   bool showCompareData = false;
   bool isSameEntry = false;
-  bool inValidData = false;
+  bool isInvalidQuery = false;
 
   String firstCoachingName="";
   String secondCoachingName="";
@@ -65,7 +62,7 @@ class _SmartCompareScreenState extends State<SmartCompareScreen> {
       showCompareData = firstQuery.isNotEmpty && secondQuery.isNotEmpty &&
                         firstQuery != secondQuery;
       isSameEntry = firstQuery.isNotEmpty && secondQuery.isNotEmpty && firstQuery == secondQuery;
-      inValidData = false;
+      isInvalidQuery = false;
     });
     int index1, index2;
     index1 = index2 = -1;
@@ -83,11 +80,11 @@ class _SmartCompareScreenState extends State<SmartCompareScreen> {
     if(index1 == -1 || index2 == -1) {
       setState(() {
         showCompareData = false;
-        inValidData = true;
+        isInvalidQuery = true;
       });
     }
 
-    if(inValidData) return;
+    if(isInvalidQuery) return;
 
     List<AdvertisementList> coachingInfo = advertisementList;
     AdvertisementList coaching1 = coachingInfo[index1];
@@ -620,7 +617,7 @@ class _SmartCompareScreenState extends State<SmartCompareScreen> {
           ),
 
           Visibility(
-              visible: inValidData,
+              visible: isInvalidQuery,
               child: const Text(
                 "Invalid Query. Please select a valid Institute.",
                 style: TextStyle(

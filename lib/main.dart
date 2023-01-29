@@ -6,10 +6,6 @@ void main() {
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
-  static Future init() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-  }
   const MyApp({Key? key}) : super(key: key);
 
   @override

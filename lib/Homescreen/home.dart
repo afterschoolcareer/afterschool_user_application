@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:afterschool/Homescreen/enrollment_screen.dart';
 import 'package:afterschool/Homescreen/main_screen.dart';
 import 'package:afterschool/Homescreen/shortlist_screen.dart';
@@ -23,19 +25,19 @@ class Homescreen extends StatelessWidget {
                 activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
                 ),
             BottomNavigationBarItem(
-                icon: Icon(
-                    FluentSystemIcons.ic_fluent_book_formula_database_regular),
-                activeIcon: Icon(
-                    FluentSystemIcons.ic_fluent_book_formula_database_filled),
-                ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.compare_rounded),
-                activeIcon: Icon(Icons.compare_rounded),
-                ),
-            BottomNavigationBarItem(
                 icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
                 activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
-                )
+                ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.compare_rounded),
+              activeIcon: Icon(Icons.compare_rounded),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                  FluentSystemIcons.ic_fluent_book_formula_database_regular),
+              activeIcon: Icon(
+                  FluentSystemIcons.ic_fluent_book_formula_database_filled),
+            ),
           ],
         ),
         tabBuilder: (context, index) {
@@ -52,7 +54,7 @@ class Homescreen extends StatelessWidget {
               return CupertinoTabView(
                 builder: (context) {
                   return const CupertinoPageScaffold(
-                      child: EnrollmentScreen()
+                      child: ShortlistScreen()
                   );
                 },
               );
@@ -68,7 +70,7 @@ class Homescreen extends StatelessWidget {
               return CupertinoTabView(
                 builder: (context) {
                   return const CupertinoPageScaffold(
-                      child: ShortlistScreen()
+                      child: EnrollmentScreen()
                   );
                 },
               );

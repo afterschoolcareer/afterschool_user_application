@@ -3,6 +3,7 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Screens/connect_with_toppers.dart';
 import '../profile.dart';
 import 'home.dart';
 
@@ -38,7 +39,11 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
     }
 
     if(menuName == "Talk to Toppers") {
-
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => const ConnectWithAchievers()
+      )
+      );
     }
 
     if(menuName == "Contact Us") {
