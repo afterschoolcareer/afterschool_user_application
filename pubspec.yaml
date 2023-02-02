@@ -42,6 +42,7 @@ dependencies:
   url_launcher: ^6.1.5
   custom_navigator: ^0.3.0
   flutter_typeahead: ^3.2.4
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

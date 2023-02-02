@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/signup_details.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,11 +20,16 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController loginNum = TextEditingController();
   TextEditingController loginPass = TextEditingController();
 
-  Future<void> onLoginTap() async {
+  void onLoginTap() async {
     String num = loginNum.text;
     String pass = loginPass.text;
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
+    var url = 'https://afterschoolcareer.com:8080/studentLogin/?phone_number=123456789&password=abc321';
+    var uri = Uri.parse(url);
+    // var client = http.Client();
+    var res = http.get(uri);
+    print(res.body);
     sharedPreferences.setBool('number', true);
     goToHome();
   }
