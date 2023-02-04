@@ -1,5 +1,6 @@
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/signup_details.dart';
+import 'package:afterschool/Models/student_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,16 +14,19 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   bool obscure = true;
   TextEditingController loginNum = TextEditingController();
   TextEditingController loginPass = TextEditingController();
 
-  Future<void> onLoginTap() async {
+  void onLoginTap() async {
     String num = loginNum.text;
     String pass = loginPass.text;
+
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     sharedPreferences.setBool('number', true);
+    StudentAuth.get();
     goToHome();
   }
 

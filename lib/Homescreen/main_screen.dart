@@ -4,6 +4,7 @@ import 'package:afterschool/Screens/connect_with_toppers.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Models/advertisement_list.dart';
@@ -133,8 +134,10 @@ class _MainScreenState extends State<MainScreen> {
                         color: Colors.white
                     ),
                     onChanged: (selectedValueNew) {
-                      setState(() {
+                      setState(() async {
+                        final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                         currentSelected = selectedValueNew as String;
+                        sharedPreferences.setString('course', currentSelected);
                       });
                     },
                     decoration: const InputDecoration(
