@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/signup_details.dart';
+import 'package:afterschool/Models/student_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   bool obscure = true;
   TextEditingController loginNum = TextEditingController();
   TextEditingController loginPass = TextEditingController();
@@ -23,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   void onLoginTap() async {
     String num = loginNum.text;
     String pass = loginPass.text;
+
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var url = 'https://afterschoolcareer.com:8080/studentLogin/?phone_number=123456789&password=abc321';
@@ -31,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     var res = http.get(uri);
     print(res.body);
     sharedPreferences.setBool('number', true);
+    StudentAuth.get();
     goToHome();
   }
 
