@@ -22,7 +22,7 @@ class InstituteCard extends StatefulWidget {
 class _InstituteCardState extends State<InstituteCard> {
 
   void onViewDetailsTapped() {
-    print("view details tapped :$widget.name");
+    print("view details tapped :${widget.name}");
   }
 
   void onShortlistButtonTapped() {

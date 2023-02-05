@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 class InstituteModel {
   static var client = http.Client();
-  static var baseUrl = 'https://afterschoolcareer.com:8080/';
+  static var baseUrl = 'https://afterschoolcareer.com:8080';
 
   static Future<dynamic> getLocationList(String location) async {
     var uri = Uri.parse('$baseUrl/instituteListByLocation/?course=IIT&city=Kota');
