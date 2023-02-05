@@ -19,15 +19,33 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController loginNum = TextEditingController();
   TextEditingController loginPass = TextEditingController();
 
+  TextEditingController signupName = TextEditingController();
+  TextEditingController signupNum = TextEditingController();
+  TextEditingController signupPass = TextEditingController();
+
   void onLoginTap() async {
     String num = loginNum.text;
     String pass = loginPass.text;
 
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
-    sharedPreferences.setBool('number', true);
-    StudentAuth.get();
-    goToHome();
+    var responseStatus = await StudentAuth.get(num,pass);
+    if(responseStatus == 200) {
+      sharedPreferences.setBool('number', true);
+      goToHome();
+    } else {
+      _showToast(context, "Invalid Details. Check your credentials.");
+    }
+  }
+
+  void _showToast(BuildContext context, String msg) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        action: SnackBarAction(label: 'Login Here', onPressed: goToLogin),
+      ),
+    );
   }
 
   void goToHome() {
@@ -35,9 +53,17 @@ class _LoginPageState extends State<LoginPage> {
         context, MaterialPageRoute(builder: (context) => const Homescreen()));
   }
 
-  void onSignupTapped() {
+  void goToLogin() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const SignupDetails()));
+        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+  }
+
+  void onSignupTapped() {
+    String phoneNumber = signupNum.text;
+    String name = signupName.text;
+    String pass = signupPass.text;
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass)));
   }
 
   @override
@@ -271,8 +297,9 @@ class _LoginPageState extends State<LoginPage> {
                                     vertical: 30, horizontal: 30),
                                 child: Column(
                                   children: [
-                                    const TextField(
-                                      decoration: InputDecoration(
+                                     TextField(
+                                      controller: signupName,
+                                      decoration: const InputDecoration(
                                         prefixIcon: Icon(
                                           Icons.person,
                                           color: Color(0xff6633ff),
@@ -293,8 +320,9 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 10),
-                                    const TextField(
-                                      decoration: InputDecoration(
+                                    TextField(
+                                      controller: signupNum,
+                                      decoration: const InputDecoration(
                                         prefixIcon: Icon(
                                           Icons.phone_android_rounded,
                                           color: Color(0xff6633ff),
@@ -316,6 +344,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                     const SizedBox(height: 10),
                                      TextField(
+                                       controller: signupPass,
                                       obscureText: obscure,
                                       decoration: InputDecoration(
                                         prefixIcon: const Icon(

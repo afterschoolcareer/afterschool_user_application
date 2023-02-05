@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   /* to launch a drawer on button tap */
   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
 
-  var course_choices = ['IIT-JEE','NEET','Others'];
+  var course_choices = ['IIT-JEE','NEET'];
   var currentSelected = 'IIT-JEE';
 
 
