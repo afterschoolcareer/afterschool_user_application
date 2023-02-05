@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Models/advertisement_list.dart';
+import '../Models/institute_model.dart';
 import '../profile.dart';
 
 class MainScreen extends StatefulWidget {
@@ -28,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
   /* to launch a drawer on button tap */
   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
 
-  var course_choices = ['IIT-JEE','NEET'];
-  var currentSelected = 'IIT-JEE';
+  var course_choices = ['IIT','NEET'];
+  var currentSelected = 'IIT';
 
 
   TextEditingController searchBarController = TextEditingController();
@@ -47,23 +48,28 @@ class _MainScreenState extends State<MainScreen> {
   /* when the search button is clicked */
   void onSearchQuery() {
     String searchQuery = searchBarController.text;
+    var response = InstituteModel.getSearchResultList("");
     print("Search Button tapped");
     //code to execute the search
   }
 
   void onFilterButtonTapped() {
+    var response = InstituteModel.getLocationAndFeeStructureList("");
     print("Filter Button tapped");
   }
 
   void onSelectionRatioTapped() {
+    var response = InstituteModel.getSelectionRatioList("");
     print("Selection Ratio tapped");
   }
 
   void onFeeStructureTapped() {
+    var response = InstituteModel.getFeeStructureList("");
     print("Fee Structure tapped");
   }
 
   void onOnlineAdmissionTapped() {
+    var response = InstituteModel.getOnlineAdmissionList("");
     print("Online Admission tapped");
   }
 
@@ -766,7 +772,8 @@ class CityView extends StatelessWidget {
   final String name;
   const CityView({Key? key, required this.image_url, required this.name}) : super(key: key);
 
-  void CityViewTapped() {
+  void CityViewTapped() async{
+    var response = InstituteModel.getLocationList("Kota");
     print("City View Tapped :$name");
   }
 

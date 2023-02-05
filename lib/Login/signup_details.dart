@@ -14,14 +14,10 @@ class SignupDetails extends StatefulWidget {
   const SignupDetails(this.name, this.number, this.pass, {Key? key}) : super(key: key);
 
   @override
-  State<SignupDetails> createState() => _SignupDetailsState(name, number, pass);
+  State<SignupDetails> createState() => _SignupDetailsState();
 }
 
 class _SignupDetailsState extends State<SignupDetails> {
-  final String name;
-  final String number;
-  final String pass;
-  _SignupDetailsState(this.name, this.number, this.pass);
 
   TextEditingController emailAddress = TextEditingController();
   int selectedValue = 1;
@@ -34,7 +30,7 @@ class _SignupDetailsState extends State<SignupDetails> {
     final String email = emailAddress.text;
     final SharedPreferences sharedPreferences =
     await SharedPreferences.getInstance();
-    var responseStatus = await StudentAuth.post(name, number, pass, email, selectedValue.toString());
+    var responseStatus = await StudentAuth.post(widget.name, widget.number, widget.pass, email, selectedValue.toString());
     if(responseStatus == 201) {
       sharedPreferences.setBool('number', true);
       goToHome();

@@ -7,7 +7,7 @@ class SmartCompareSearch {
   static List<String> getList() {
     List<String> allResults = List.filled(advList.length, "", growable: false);
     for(int i=0; i<advList.length; i++) {
-      allResults[i] = "${advList[i].name} , ${advList[i].location}";
+      allResults[i] = "${advList[i].name}, ${advList[i].location}";
     }
     return allResults;
   }
@@ -20,7 +20,7 @@ class SmartCompareSearch {
     if (query.isEmpty) return matches;
 
     for(int i=0; i<advList.length; i++) {
-      getMatches[i] = "${advList[i].name} , ${advList[i].location}";
+      getMatches[i] = "${advList[i].name}, ${advList[i].location}";
     }
     matches.addAll(getMatches);
     matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));

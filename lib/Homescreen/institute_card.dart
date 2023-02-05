@@ -16,26 +16,13 @@ class InstituteCard extends StatefulWidget {
       ) : super(key: key);
 
   @override
-  State<InstituteCard> createState() => _InstituteCardState(logo_url, name, location,
-  fees, selection_rate, top_rank, in_top_100, rating);
+  State<InstituteCard> createState() => _InstituteCardState();
 }
 
 class _InstituteCardState extends State<InstituteCard> {
-  final String logo_url;
-  final String name;
-  final String location;
-  final String fees;
-  final String selection_rate;
-  final String top_rank;
-  final String in_top_100;
-  final String rating;
-  _InstituteCardState(
-      this.logo_url, this.name, this.location, this.fees,
-      this.selection_rate, this.top_rank, this.in_top_100, this.rating
-      );
 
   void onViewDetailsTapped() {
-    print("view details tapped :$name");
+    print("view details tapped :$widget.name");
   }
 
   void onShortlistButtonTapped() {
@@ -80,7 +67,7 @@ class _InstituteCardState extends State<InstituteCard> {
                       borderRadius: BorderRadius.circular(20.0),
                       image:  DecorationImage(
                           fit: BoxFit.cover,
-                          image: AssetImage(logo_url))),
+                          image: AssetImage(widget.logo_url))),
                 ),
 
                 /* Institute name and Location and Fees */
@@ -89,7 +76,7 @@ class _InstituteCardState extends State<InstituteCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      widget.name,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
@@ -100,7 +87,7 @@ class _InstituteCardState extends State<InstituteCard> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text: location,
+                              text: widget.location,
                             style: const TextStyle(
                               color: Colors.black
                             )
@@ -112,7 +99,7 @@ class _InstituteCardState extends State<InstituteCard> {
                             )
                           ),
                           TextSpan(
-                            text: fees,
+                            text: widget.fees,
                             style: const TextStyle(
                               color: Colors.black
                             )
@@ -133,7 +120,7 @@ class _InstituteCardState extends State<InstituteCard> {
                    const SizedBox(width: 6),
                    /* Rating Value */
                    Text(
-                     rating,
+                     widget.rating,
                    )
                  ],
                )
@@ -155,7 +142,7 @@ class _InstituteCardState extends State<InstituteCard> {
                           color: Color(0xff6633ff),
                         ),
                         child: Text(
-                          selection_rate,
+                          widget.selection_rate,
                           style: const TextStyle(
                             color: Colors.white
                           ),
@@ -186,7 +173,7 @@ class _InstituteCardState extends State<InstituteCard> {
                           color: Color(0xff6633ff),
                         ),
                         child: Text(
-                          top_rank,
+                          widget.top_rank,
                           style: const TextStyle(
                               color: Colors.white
                           ),
@@ -217,7 +204,7 @@ class _InstituteCardState extends State<InstituteCard> {
                           color: Color(0xff6633ff),
                         ),
                         child: Text(
-                          in_top_100,
+                          widget.in_top_100,
                           style: const TextStyle(
                               color: Colors.white
                           ),

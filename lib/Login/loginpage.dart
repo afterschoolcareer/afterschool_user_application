@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       sharedPreferences.setBool('number', true);
       goToHome();
     } else {
-      _showToast(context, "Invalid Details. Check your credentials.");
+      _showToast(context, "Invalid Details. Check your credentials or Sign Up.");
     }
   }
 
