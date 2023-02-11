@@ -423,7 +423,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   MainAxisAlignment.center,
                                               children: const [
                                                 Icon(
-                                                  Icons.whatsapp,
+                                                  Icons.whatshot,
                                                   color: Colors.white,
                                                 ),
                                                 SizedBox(width: 5),

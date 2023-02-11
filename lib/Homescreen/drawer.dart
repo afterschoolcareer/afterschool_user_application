@@ -1,7 +1,9 @@
 import 'package:afterschool/Homescreen/enrollment_screen.dart';
+import 'package:afterschool/Homescreen/referral_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../Screens/connect_with_toppers.dart';
 import '../profile.dart';
@@ -16,7 +18,7 @@ class AppBarDrawer extends StatefulWidget {
 
 class _AppBarDrawerState extends State<AppBarDrawer> {
 
-  void onMenuItemTapped(String menuName) {
+  Future<void> onMenuItemTapped(String menuName) async {
 
     if(menuName == "Home") {
       Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -46,6 +48,18 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       );
     }
 
+    if(menuName == "Refer and Earn") {
+      return await Share.share('Greetings from afterSchool!\nKindly install our mobile app from the link below and use referral code ANK50 to get 50% off on your next counselling session\n afterschoolcareer.com');
+    }
+
+    if(menuName == "Redeem Code") {
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => const ReferralScreen()
+      )
+      );
+    }
+
     if(menuName == "Contact Us") {
 
     }
@@ -69,6 +83,10 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
           menuItems("Career Counselling", Icons.wifi_calling_3),
           const SizedBox(height: 10),
           menuItems("Talk to Toppers", FluentSystemIcons.ic_fluent_trophy_filled),
+          const SizedBox(height: 10),
+          menuItems("Refer and Earn", Icons.share),
+          const SizedBox(height: 10),
+          menuItems("Redeem Code", Icons.currency_bitcoin),
           const SizedBox(height: 10),
           menuItems("Contact Us", Icons.email_rounded),
           const SizedBox(height: 10),
