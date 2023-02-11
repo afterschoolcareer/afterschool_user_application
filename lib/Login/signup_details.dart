@@ -1,11 +1,17 @@
 import 'package:afterschool/Homescreen/home.dart';
+import 'package:afterschool/Login/loginpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Models/student_auth.dart';
+
 
 class SignupDetails extends StatefulWidget {
-  const SignupDetails({Key? key}) : super(key: key);
+  final String name;
+  final String number;
+  final String pass;
+  const SignupDetails(this.name, this.number, this.pass, {Key? key}) : super(key: key);
 
   @override
   State<SignupDetails> createState() => _SignupDetailsState();
@@ -14,20 +20,46 @@ class SignupDetails extends StatefulWidget {
 class _SignupDetailsState extends State<SignupDetails> {
 
   TextEditingController emailAddress = TextEditingController();
-  int selectedValue = 0;
+  int selectedValue = 1;
   var course_choices = ['IIT-JEE','NEET','Others'];
   var currentSelected = 'IIT-JEE';
   bool isSelected = false;
+  bool snackbarAction = true;
+
   void onCompleteSignup() async {
+    final String email = emailAddress.text;
     final SharedPreferences sharedPreferences =
     await SharedPreferences.getInstance();
-    sharedPreferences.setBool('number', true);
-    goToHome();
+    var responseStatus = await StudentAuth.post(widget.name, widget.number, widget.pass, email, selectedValue.toString());
+    if(responseStatus == 201) {
+      sharedPreferences.setBool('number', true);
+      goToHome();
+    } else if(responseStatus == 200) {
+      _showToast(context, 'Phone number already exists. Please login to continue');
+    } else {
+      snackbarAction = false;
+      _showToast(context, 'Invalid email entered');
+    }
+  }
+
+  void _showToast(BuildContext context, String msg) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        action: snackbarAction ? SnackBarAction(label: 'Login Here', onPressed: goToLogin) : null,
+      ),
+    );
   }
 
   void goToHome() {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const Homescreen()));
+  }
+
+  void goToLogin() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override
