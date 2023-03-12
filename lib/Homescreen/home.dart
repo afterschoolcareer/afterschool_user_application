@@ -7,83 +7,141 @@ import 'package:afterschool/Homescreen/smart_compare_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Homescreen extends StatelessWidget {
-  const Homescreen({Key? key}) : super(key: key);
+class Homescreen extends StatefulWidget {
+  Homescreen({Key? key}) : super(key: key);
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+  int selectedIndex = 0;
+
+  final List<Widget> widgetOptions = [
+    const MainScreen(),
+    const ShortlistScreen(),
+    const SmartCompareScreen(),
+    const EnrollmentScreen(),
+  ];
+
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          iconSize: 25,
-          backgroundColor: Colors.white,
-          activeColor: const Color(0xff6633ff),
-          inactiveColor: Colors.black,
-          items: const <BottomNavigationBarItem> [
-            BottomNavigationBarItem(
-                icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
-                activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
+    return Scaffold(
+      body: widgetOptions[selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: onItemTapped,
+        elevation: 10,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        selectedItemColor: const Color(0xff6633ff),
+        unselectedItemColor: Colors.black,
+        items: const <BottomNavigationBarItem> [
+                BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
+                  label: "Home"
+                    ),
+                BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
+                  label: "Shortlist"
+                    ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.compare_rounded),
+                  activeIcon: Icon(Icons.compare_rounded),
+                  label: "Smart Compare"
                 ),
-            BottomNavigationBarItem(
-                icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
-                activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                      FluentSystemIcons.ic_fluent_book_formula_database_regular),
+                  activeIcon: Icon(
+                      FluentSystemIcons.ic_fluent_book_formula_database_filled),
+                  label: "Enrollment"
                 ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.compare_rounded),
-              activeIcon: Icon(Icons.compare_rounded),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                  FluentSystemIcons.ic_fluent_book_formula_database_regular),
-              activeIcon: Icon(
-                  FluentSystemIcons.ic_fluent_book_formula_database_filled),
-            ),
-          ],
-        ),
-        tabBuilder: (context, index) {
-          switch(index) {
-            case 0:
-              return CupertinoTabView(
-                builder: (context) {
-                  return const CupertinoPageScaffold(
-                      child: MainScreen()
-                  );
-                },
-              );
-            case 1:
-              return CupertinoTabView(
-                builder: (context) {
-                  return const CupertinoPageScaffold(
-                      child: ShortlistScreen()
-                  );
-                },
-              );
-            case 2:
-              return CupertinoTabView(
-                builder: (context) {
-                  return const CupertinoPageScaffold(
-                      child: SmartCompareScreen()
-                  );
-                },
-              );
-            case 3:
-              return CupertinoTabView(
-                builder: (context) {
-                  return const CupertinoPageScaffold(
-                      child: EnrollmentScreen()
-                  );
-                },
-              );
-            default:
-              return CupertinoTabView(
-                builder: (context) {
-                  return const CupertinoPageScaffold(
-                      child: MainScreen()
-                  );
-                },
-              );
-          }
-        }
+        ]
+      ),
     );
+    // return CupertinoTabScaffold(
+    //     tabBar: CupertinoTabBar(
+    //       iconSize: 25,
+    //       backgroundColor: Colors.white,
+    //       activeColor: const Color(0xff6633ff),
+    //       inactiveColor: Colors.black,
+    //       items: const <BottomNavigationBarItem> [
+    //         BottomNavigationBarItem(
+    //             icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
+    //             activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
+    //             ),
+    //         BottomNavigationBarItem(
+    //             icon: Icon(FluentSystemIcons.ic_fluent_star_regular),
+    //             activeIcon: Icon(FluentSystemIcons.ic_fluent_star_filled),
+    //             ),
+    //         BottomNavigationBarItem(
+    //           icon: Icon(Icons.compare_rounded),
+    //           activeIcon: Icon(Icons.compare_rounded),
+    //         ),
+    //         BottomNavigationBarItem(
+    //           icon: Icon(
+    //               FluentSystemIcons.ic_fluent_book_formula_database_regular),
+    //           activeIcon: Icon(
+    //               FluentSystemIcons.ic_fluent_book_formula_database_filled),
+    //         ),
+    //       ],
+    //     ),
+    //     tabBuilder: (context, index) {
+    //       switch(index) {
+    //         case 0:
+    //           return CupertinoTabView(
+    //             builder: (context) {
+    //               return const CupertinoPageScaffold(
+    //                   child: MainScreen()
+    //               );
+    //             },
+    //           );
+    //         case 1:
+    //           return CupertinoTabView(
+    //             builder: (context) {
+    //               return const CupertinoPageScaffold(
+    //                   child: ShortlistScreen()
+    //               );
+    //             },
+    //           );
+    //         case 2:
+    //           return CupertinoTabView(
+    //             builder: (context) {
+    //               return const CupertinoPageScaffold(
+    //                   child: SmartCompareScreen()
+    //               );
+    //             },
+    //           );
+    //         case 3:
+    //           return CupertinoTabView(
+    //             builder: (context) {
+    //               return const CupertinoPageScaffold(
+    //                   child: EnrollmentScreen()
+    //               );
+    //             },
+    //           );
+    //         default:
+    //           return CupertinoTabView(
+    //             builder: (context) {
+    //               return const CupertinoPageScaffold(
+    //                   child: MainScreen()
+    //               );
+    //             },
+    //           );
+    //       }
+    //     }
+    // );
   }
 }

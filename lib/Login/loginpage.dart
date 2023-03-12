@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController signupName = TextEditingController();
   TextEditingController signupNum = TextEditingController();
   TextEditingController signupPass = TextEditingController();
+  TextEditingController signupReferral = TextEditingController();
 
   void onLoginTap() async {
     String num = loginNum.text;
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void goToHome() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Homescreen()));
+        context, MaterialPageRoute(builder: (context) => Homescreen()));
   }
 
   void goToLogin() {
@@ -62,8 +63,9 @@ class _LoginPageState extends State<LoginPage> {
     String phoneNumber = signupNum.text;
     String name = signupName.text;
     String pass = signupPass.text;
+    String referralCode = signupReferral.text;
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass)));
+        context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass, referralCode)));
   }
 
   @override
@@ -382,6 +384,28 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 20),
+                                    TextField(
+                                      controller: signupReferral,
+                                      decoration: const InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.person,
+                                          color: Color(0xff6633ff),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide:
+                                          BorderSide(color: Colors.grey),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0xff6633ff)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                        ),
+                                        hintText: "Enter Referral code if any",
+                                      ),
+                                    ),
                                     Column(
                                       children: [
                                         InkWell(
@@ -400,43 +424,6 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         ),
                                         const SizedBox(height: 20),
-                                        const Text(
-                                          "OR Signup with",
-                                          style: TextStyle(
-                                            color: Color(0xff6633ff),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
-                                        InkWell(
-                                          child: Container(
-                                            height: 50,
-                                            width: 150,
-                                            decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons.whatsapp,
-                                                  color: Colors.white,
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  "Whatsapp",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            print("whatsapp button tapped");
-                                          },
-                                        ),
                                       ],
                                     )
                                   ],

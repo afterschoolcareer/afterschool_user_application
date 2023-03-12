@@ -1,8 +1,12 @@
+import 'dart:collection';
+
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InstituteCard extends StatefulWidget {
+  final int id;
   final String logo_url;
   final String name;
   final String location;
@@ -11,7 +15,7 @@ class InstituteCard extends StatefulWidget {
   final String top_rank;
   final String in_top_100;
   final String rating;
-  const InstituteCard(this.logo_url, this.name, this.location, this.fees,
+  const InstituteCard(this.id, this.logo_url, this.name, this.location, this.fees,
       this.selection_rate, this.top_rank, this.in_top_100, this.rating, {Key? key}
       ) : super(key: key);
 
@@ -21,18 +25,67 @@ class InstituteCard extends StatefulWidget {
 
 class _InstituteCardState extends State<InstituteCard> {
 
+  bool showShortlisted = false;
+
+  @override
+  void initState() {
+    setShortlistData();
+    super.initState();
+  }
+
+  void setShortlistData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var idList = sharedPreferences.getStringList('shortlist');
+    if(idList == null) {
+      setState(() {
+        showShortlisted = false;
+      });
+    } else {
+      if(idList.contains(widget.id.toString())) {
+        setState(() {
+        showShortlisted = true;
+      });
+      } else {
+        setState(() {
+          showShortlisted = false;
+        });
+      }
+    }
+  }
+
   void onViewDetailsTapped() {
     print("view details tapped :${widget.name}");
   }
 
-  void onShortlistButtonTapped() {
-    setState(() {
-      isShortlisted = !isShortlisted;
-    });
-    print("shortlist button tapped");
-  }
+  void onShortlistButtonTapped() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var list = sharedPreferences.getStringList('shortlist');
 
-  bool isShortlisted = false;
+    //if no shortlist
+    if(list == null) {
+      setState(() {
+        showShortlisted = true;
+      });
+      List<String> shortlist = [];
+      shortlist.add(widget.id.toString());
+      sharedPreferences.setStringList('shortlist', shortlist);
+      return;
+    }
+    if(list.contains(widget.id.toString())) {
+      setState(() {
+        showShortlisted = false;
+      });
+      list.remove(widget.id.toString());
+      sharedPreferences.setStringList('shortlist', list);
+    } else {
+      setState(() {
+        showShortlisted = true;
+      });
+      list.add(widget.id.toString());
+      sharedPreferences.setStringList('shortlist', list);
+    }
+    print(list);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,11 +312,11 @@ class _InstituteCardState extends State<InstituteCard> {
                     child: IconButton(
                         onPressed: onShortlistButtonTapped,
                         icon: Icon(
-                          isShortlisted?
-                          FluentSystemIcons.ic_fluent_star_filled:
+                          showShortlisted ?
+                          FluentSystemIcons.ic_fluent_star_filled :
                           FluentSystemIcons.ic_fluent_star_regular,
                           // Icons.bookmark_add_outlined,
-                          color: isShortlisted?
+                          color: showShortlisted?
                           const Color(0xff6633ff) : Colors.black,
                         )),
                   ),

@@ -17,7 +17,7 @@ class StudentAuth {
        "phone_number" : phoneNumber,
        "password" : password,
        "email" : email,
-       "std" : studentType
+       "std" : studentType,
     } ;
      var uri = Uri.parse(baseUrl);
      var response = await client.post(uri, body: studentData);

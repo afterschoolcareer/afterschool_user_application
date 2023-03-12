@@ -1,12 +1,23 @@
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:afterschool/Homescreen/drawer.dart';
 import 'package:afterschool/Homescreen/institute_card.dart';
+import 'package:afterschool/Screens/city_list_screen.dart';
+import 'package:afterschool/Screens/coaching_screen.dart';
 import 'package:afterschool/Screens/connect_with_toppers.dart';
+import 'package:afterschool/Screens/fee_structure_list.dart';
+import 'package:afterschool/Screens/filter_screen.dart';
+import 'package:afterschool/Screens/online_admission.dart';
+import 'package:afterschool/Screens/selection_data_list_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:http/http.dart' as http;
 import '../Models/advertisement_list.dart';
 import '../Models/institute_model.dart';
 import '../profile.dart';
@@ -20,6 +31,70 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
+  List<String> getMatchesMain = [];
+  late var map;
+  bool showLoading = false;
+  int searchResultId = -1;
+  HashSet shortlists = HashSet();
+
+  @override
+  void initState() {
+    setCurrentSelected();
+    setSearchResults();
+    super.initState();
+  }
+
+  void setCurrentSelected() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var course = sharedPreferences.getString('course');
+    setState(() {
+      if(course!=null) {
+        currentSelected = course;
+      } else {
+        currentSelected = 'IIT';
+      }
+    });
+  }
+
+  void setSearchResults() async {
+    setState(() {
+      showLoading = true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var course = sharedPreferences.getString('course');
+    if (course == null) {
+      sharedPreferences.setString('course', 'IIT');
+      course = 'IIT';
+    }
+    var uri = Uri.parse('$baseUrl/instituteData/?course=$course');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    List results = data["data"];
+    getMatchesMain = List.filled(results.length, "", growable: false);
+    map = {};
+    for (int i = 0; i < results.length; i++) {
+      Map data = results[i];
+      String name = data["name"];
+      String city = data["city"];
+      getMatchesMain[i] = "$name, $city";
+      map[getMatchesMain[i]] = data["id"];
+    }
+    setState(() {
+      showLoading = false;
+    });
+  }
+
+  List<String> getSearchResultForSearchBar(String query) {
+    List<String> matches = [];
+    if(query.isEmpty) {
+      return matches;
+    }
+      matches.addAll(getMatchesMain);
+      matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
+      return matches;
+    }
+
   /* managing appbar and drawer */
   void onProfileIconTapped() {
     Navigator.push(
@@ -32,6 +107,8 @@ class _MainScreenState extends State<MainScreen> {
   var course_choices = ['IIT','NEET'];
   var currentSelected = 'IIT';
 
+  var client = http.Client();
+  var baseUrl = 'https://afterschoolcareer.com:8080';
 
   TextEditingController searchBarController = TextEditingController();
   int pageIndex = 0;
@@ -45,32 +122,116 @@ class _MainScreenState extends State<MainScreen> {
     'images/features_3.png'
   ];
 
+  Future<dynamic> showAlertDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Important"),
+            content: const Text("The course that you select here will be used to filter the data of Institutes across the platform. So, please select preferred course only."),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                      "Understood!",
+                    style: TextStyle(
+                      color: Color(0xff6633ff)
+                    ),
+                  ))
+            ],
+          );
+        }
+    );
+  }
+
+  void setCourse() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('course', currentSelected);
+    setSearchResults();
+    print(sharedPreferences.getString('course'));
+  }
+
+  void showLoadingIndicator() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Opacity(
+          opacity: 0.5,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ))
+    );
+  }
+  void removeLoadingIndicator() {
+    Navigator.pop(context);
+  }
   /* when the search button is clicked */
   void onSearchQuery() {
-    String searchQuery = searchBarController.text;
-    var response = InstituteModel.getSearchResultList("");
-    print("Search Button tapped");
-    //code to execute the search
+    if(searchResultId != -1) {
+      String query = searchBarController.text;
+      String name = "";
+      for(int i=0;i<query.length;i++) {
+        if(query[i] == ',') break;
+        name+=query[i];
+      }
+      goToCoachingScreen(searchResultId, name);
+    }
+  }
+
+  void goToCoachingScreen(int id, String name) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>  CoachingScreen(id: searchResultId, coachingName: name))
+    );
   }
 
   void onFilterButtonTapped() {
-    var response = InstituteModel.getLocationAndFeeStructureList("");
-    print("Filter Button tapped");
+    Navigator.push(
+        context, 
+        MaterialPageRoute(builder: (context) => const FilterScreen()));
   }
 
-  void onSelectionRatioTapped() {
-    var response = InstituteModel.getSelectionRatioList("");
-    print("Selection Ratio tapped");
+  void onSelectionRatioTapped() async{
+    // showLoadingIndicator();
+    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // var course = sharedPreferences.getString('course');
+    // var uri = Uri.parse('$baseUrl/selectionRatioData/?course=$course');
+    // var response = await client.get(uri);
+    // Map data;
+    // data = json.decode(response.body);
+    // List selectionList = data["data"];
+    // goToSelectionDataListScreen(selectionList);
   }
 
-  void onFeeStructureTapped() {
-    var response = InstituteModel.getFeeStructureList("");
-    print("Fee Structure tapped");
+  void goToSelectionDataListScreen(List data) {
+    // removeLoadingIndicator();
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => SelectionDataListScreen(data: data))
+    // );
   }
 
-  void onOnlineAdmissionTapped() {
-    var response = InstituteModel.getOnlineAdmissionList("");
-    print("Online Admission tapped");
+  void onFeeStructureTapped() async{
+    goToFeeStructureListScreen();
+  }
+
+  void goToFeeStructureListScreen() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FeeStructureList())
+    );
+  }
+
+  void onOnlineAdmissionTapped() async{
+    goToOnlineAdmissionListScreen();
+  }
+
+  void goToOnlineAdmissionListScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => OnlineAdmissionListScreen())
+    );
   }
 
   void onExpertPhoneTapped() {
@@ -140,10 +301,9 @@ class _MainScreenState extends State<MainScreen> {
                         color: Colors.white
                     ),
                     onChanged: (selectedValueNew) {
-                      setState(() async {
-                        final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                      setState(()  {
                         currentSelected = selectedValueNew as String;
-                        sharedPreferences.setString('course', currentSelected);
+                        setCourse();
                       });
                     },
                     decoration: const InputDecoration(
@@ -164,7 +324,17 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 120),
+              Transform.scale(
+                scale: 0.8,
+                child: IconButton(
+                    onPressed: showAlertDialog,
+                    icon: const Icon(
+                      Icons.info,
+                      color: Color(0xff9999ff),
+                    )
+                ),
+              ),
+              const SizedBox(width: 80),
               InkWell(
                 onTap: onProfileIconTapped,
                 child: Transform.scale(
@@ -190,7 +360,8 @@ class _MainScreenState extends State<MainScreen> {
 
 
       /* main body of the page */
-      body: ListView(
+      body: showLoading? const Center(child: CircularProgressIndicator()) :
+      ListView(
         children: [
           Column(
             children: [
@@ -202,34 +373,90 @@ class _MainScreenState extends State<MainScreen> {
                     /* Search Bar */
                     SizedBox(
                       width: width / 1.3,
-                      height: 35,
-                      child: TextFormField(
-                          controller: searchBarController,
-                          decoration: const InputDecoration(
-                            contentPadding:
-                                EdgeInsets.only(left: 20, top: 0, bottom: 0),
-                            hintText: "Search",
-                            hintStyle: TextStyle(color: Color(0xff6633ff)),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
+                      height: 40,
+                      child: TypeAheadField(
+                        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
+                            color: Colors.white,
+                            elevation: 1.0,
+                            borderRadius: BorderRadius.all(Radius.circular(15))
+                        ),
+                        debounceDuration: const Duration(milliseconds: 300),
+                        textFieldConfiguration: TextFieldConfiguration(
+                            controller: searchBarController,
+                            decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                  onPressed: () => setState(() {
+                                    searchBarController.clear();
+                                    searchResultId = -1;
+                                  }),
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: searchBarController.text.isEmpty ? Colors.grey :
+                                    const Color(0xff6633ff),
+                                  ),
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide:
                                   BorderSide(color: Color(0xff6633ff)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40.0)),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(20.0)),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color(0xff6633ff)),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(20.0)),
+                                ),
+                                hintText: "Search for an institute",
+                              hintStyle: const TextStyle(
+                                color: Color(0xff6633ff)
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Color(0xff6633ff)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(40.0)),
-                            ),
-                          )),
+                          textAlignVertical: TextAlignVertical.bottom,
+                          textAlign: TextAlign.start
+                        ),
+                        noItemsFoundBuilder: (context) => const SizedBox(
+                          height: 50,
+                          child: Center(
+                            child: Text('No Matching Results found'),
+                          ),
+                        ),
+                        suggestionsCallback: (value) {
+                          return getSearchResultForSearchBar(value);
+                        },
+                        itemBuilder: (context, String suggestion) {
+                          return Row(
+                            children: [
+                              const SizedBox(width: 20),
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6),
+                                  child: Text(
+                                    suggestion,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                        fontSize: 16
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                        onSuggestionSelected: (String suggestion) {
+                          setState(() {
+                            searchBarController.text = suggestion;
+                            searchResultId = map[suggestion];
+                          });
+                        },
+                      ),
                     ),
 
                     /* Search Button*/
                     InkWell(
                       onTap: onSearchQuery,
                       child: Container(
-                        height: 35,
+                        height: 40,
                         padding: const EdgeInsets.all(5.0),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -270,6 +497,7 @@ class _MainScreenState extends State<MainScreen> {
                       return Transform.scale(
                         scale: 0.85,
                         child: InstituteCard(
+                          advertisementList[index].id,
                             advertisementList[index].logo_url,
                             advertisementList[index].name,
                             advertisementList[index].location,
@@ -398,37 +626,37 @@ class _MainScreenState extends State<MainScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: onSelectionRatioTapped,
-                        child: Transform.scale(
-                          scale: 1.8,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(20.0))
-                            ),
-                            child: const Icon(
-                              Icons.area_chart,
-                              color: Color(0xff6633ff),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Column(
-                        children: const [
-                          Text(
-                            "Selection"
-                          ),
-                          Text(
-                            "Ratio"
-                          )
-                        ],
-                      )
-                    ],
-                  ),
+                  // Column(
+                  //   children: [
+                  //     InkWell(
+                  //       onTap: onSelectionRatioTapped,
+                  //       child: Transform.scale(
+                  //         scale: 1.8,
+                  //         child: Container(
+                  //           decoration: const BoxDecoration(
+                  //             color: Colors.white,
+                  //             borderRadius: BorderRadius.all(Radius.circular(20.0))
+                  //           ),
+                  //           child: const Icon(
+                  //             Icons.area_chart,
+                  //             color: Color(0xff6633ff),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     const SizedBox(height: 10),
+                  //     Column(
+                  //       children: const [
+                  //         Text(
+                  //           "Selection"
+                  //         ),
+                  //         Text(
+                  //           "Ratio"
+                  //         )
+                  //       ],
+                  //     )
+                  //   ],
+                  // ),
                   Column(
                     children: [
                       InkWell(
@@ -767,14 +995,40 @@ class Indicator extends StatelessWidget {
   }
 }
 
-class CityView extends StatelessWidget {
+class CityView extends StatefulWidget {
   final String image_url;
   final String name;
+
   const CityView({Key? key, required this.image_url, required this.name}) : super(key: key);
 
-  void CityViewTapped() async{
-    var response = InstituteModel.getLocationList("Kota");
-    print("City View Tapped :$name");
+  @override
+  State<CityView> createState() => _CityViewState();
+}
+
+class _CityViewState extends State<CityView> {
+
+  void CityViewTapped() {
+    goToCityListScreen();
+  }
+
+  void goToCityListScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CityListScreen(name: widget.name))
+    );
+  }
+
+  void showLoadingIndicator() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ))
+    );
+  }
+
+  void removeLoadingIndicator() {
+    Navigator.pop(context);
   }
 
   @override
@@ -789,13 +1043,13 @@ class CityView extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                    image: AssetImage(image_url))
+                    image: AssetImage(widget.image_url))
               ),
             ),
           ),
            const SizedBox(height: 8),
            Text(
-              name
+              widget.name
           )
         ]
     );

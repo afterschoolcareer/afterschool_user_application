@@ -11,7 +11,8 @@ class SignupDetails extends StatefulWidget {
   final String name;
   final String number;
   final String pass;
-  const SignupDetails(this.name, this.number, this.pass, {Key? key}) : super(key: key);
+  final String referralCode;
+  const SignupDetails(this.name, this.number, this.pass, this.referralCode, {Key? key}) : super(key: key);
 
   @override
   State<SignupDetails> createState() => _SignupDetailsState();
@@ -28,9 +29,10 @@ class _SignupDetailsState extends State<SignupDetails> {
 
   void onCompleteSignup() async {
     final String email = emailAddress.text;
-    final SharedPreferences sharedPreferences =
-    await SharedPreferences.getInstance();
-    var responseStatus = await StudentAuth.post(widget.name, widget.number, widget.pass, email, selectedValue.toString());
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('type', selectedValue.toString());
+    var responseStatus = await StudentAuth.post(widget.name, widget.number,
+        widget.pass, email, selectedValue.toString());
     if(responseStatus == 201) {
       sharedPreferences.setBool('number', true);
       goToHome();
@@ -54,7 +56,7 @@ class _SignupDetailsState extends State<SignupDetails> {
 
   void goToHome() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Homescreen()));
+        context, MaterialPageRoute(builder: (context) => Homescreen()));
   }
 
   void goToLogin() {
