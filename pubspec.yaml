@@ -43,6 +43,10 @@ dependencies:
   custom_navigator: ^0.3.0
   flutter_typeahead: ^3.2.4
   http: ^0.13.5
+  razorpay_flutter: ^1.2.7
+  fluttertoast: ^8.0.8
+  share_plus: ^4.0.4
+  flutter_local_notifications: ^5.0.0+4
 
 dev_dependencies:
   flutter_test:

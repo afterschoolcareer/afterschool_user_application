@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:afterschool/Homescreen/enrollment_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/connect_with_toppers.dart';
+import '../Screens/RedeemCoins.dart';
+import '../Screens/ReferAndEarn.dart';
 import '../profile.dart';
 import 'home.dart';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
 class AppBarDrawer extends StatefulWidget {
   const AppBarDrawer({Key? key}) : super(key: key);
 
@@ -16,16 +22,88 @@ class AppBarDrawer extends StatefulWidget {
 
 class _AppBarDrawerState extends State<AppBarDrawer> {
 
+  static var client = http.Client();
+  static String baseUrl = 'https://afterschoolcareer.com:8080/';
   void onMenuItemTapped(String menuName) {
 
     if(menuName == "Home") {
       Navigator.of(context, rootNavigator: true).pushReplacement(
           MaterialPageRoute(
-              builder: (context) =>  Homescreen()
+              builder: (context) => Homescreen()
+          )
+      );
+    }
+    void showLoadingIndictor(){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const Center(
+                child:CircularProgressIndicator(),
+              )
           )
       );
     }
 
+    void removeLoadingIndicator(){
+      Navigator.pop(context);
+    }
+    void share() async {
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      var phone_number = sharedPreferences.getString('phone_number');
+      showLoadingIndictor();
+      var uri = Uri.parse('$baseUrl/getreferralcode/?phone_number=$phone_number');
+
+      var response = await client.get(uri);
+
+      Map data = json.decode(response.body);
+      String code = data["data"];
+      removeLoadingIndicator();
+      Share.share("use my afterschool coupon code $code to get 50 coins ");
+    }
+    void redeemPage() async {
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      var phone_number = sharedPreferences.getString('phone_number');
+
+      if(sharedPreferences.containsKey("coins")){
+        var coins = sharedPreferences.getInt("coins");
+        if(coins != null) {
+          Navigator.push(
+              context, MaterialPageRoute(
+              builder: (context) => RedeemCoins(false, coins)
+          )
+          );
+        }else{
+          int coins =0;
+          var uri = Uri.parse(
+              '$baseUrl/getavailablecoins/?phone_number=$phone_number');
+          showLoadingIndictor();
+          var response = await client.get(uri);
+          removeLoadingIndicator();
+          Map data = json.decode(response.body);
+          coins = data["data"];
+          sharedPreferences.setInt('coins',coins);
+          Navigator.push(
+              context, MaterialPageRoute(
+              builder: (context) => RedeemCoins(false, coins)
+          ));
+        }
+      }else {
+        int coins=0;
+        var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
+        showLoadingIndictor();
+        var response = await client.get(uri);
+        removeLoadingIndicator();
+        Map data = json.decode(response.body);
+        coins = data["data"];
+        Navigator.push(
+            context, MaterialPageRoute(
+            builder: (context) => RedeemCoins(false, coins)
+        ));
+
+        sharedPreferences.setInt('coins',coins);
+      }
+
+    }
     if(menuName == "Explore") {
 
     }
@@ -45,7 +123,13 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       )
       );
     }
-
+    if(menuName == "Redeem") {
+      redeemPage();
+    }
+    if(menuName == "Refer and Earn") {
+      print("share");
+      share();
+    }
     if(menuName == "Contact Us") {
 
     }
@@ -70,6 +154,10 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
           const SizedBox(height: 10),
           menuItems("Talk to Toppers", FluentSystemIcons.ic_fluent_trophy_filled),
           const SizedBox(height: 10),
+          menuItems("Redeem", Icons.currency_bitcoin),
+          const SizedBox(height: 10),
+          menuItems("Refer and Earn", Icons.currency_bitcoin),
+          const SizedBox(height: 10),
           menuItems("Contact Us", Icons.email_rounded),
           const SizedBox(height: 10),
           menuItems("Privacy Policy", Icons.privacy_tip_outlined),
@@ -89,18 +177,18 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
           child: Row(
             children:  [
               Icon(
-                  iconData,
-                  color: Colors.black,
-                  size: 30,
-                ),
-                const SizedBox(width: 20),
-                Text(
-                  menuName,
-                  style: const TextStyle(
+                iconData,
+                color: Colors.black,
+                size: 30,
+              ),
+              const SizedBox(width: 20),
+              Text(
+                menuName,
+                style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18
-                  ),
                 ),
+              ),
             ],
           ),
         ),
@@ -112,20 +200,20 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(30),
-          bottomRight: Radius.circular(30)
-        )
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30)
+          )
       ),
       backgroundColor: Colors.grey[200],
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const MyHeaderDrawer(),
-              MyDrawerList(),
-            ],
-          ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const MyHeaderDrawer(),
+            MyDrawerList(),
+          ],
         ),
+      ),
     );
   }
 }
