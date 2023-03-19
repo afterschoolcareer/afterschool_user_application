@@ -338,7 +338,6 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
                         ),
                         const SizedBox(width: 20),
                         Column(
-
                           children: [
                             Center(
                                 child:const Text(

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/connect_with_toppers.dart';
+import '../Screens/careerCounselling.dart';
 import '../Screens/RedeemCoins.dart';
 import '../Screens/ReferAndEarn.dart';
 import '../profile.dart';
@@ -114,6 +115,11 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
 
     if(menuName == "Career Counselling") {
 
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => const ConnectWithCounsellor()
+      )
+      );
     }
 
     if(menuName == "Talk to Toppers") {

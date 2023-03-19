@@ -46,7 +46,6 @@ dependencies:
   razorpay_flutter: ^1.2.7
   fluttertoast: ^8.0.8
   share_plus: ^4.0.4
-  flutter_local_notifications: ^5.0.0+4
 
 dev_dependencies:
   flutter_test:
