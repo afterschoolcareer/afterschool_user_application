@@ -359,11 +359,11 @@ class ProfilePageState extends State<ProfilePage> {
                         TextButton(
                           style: TextButton.styleFrom(
                             textStyle: const TextStyle(fontSize: 20),
-                            backgroundColor: Colors.black,
+                            backgroundColor: Colors.white,
                           ),
                           onPressed: getSessionHistory,
                           child:  Text(
-                            "Consultation History",
+                            "Sessions Booked",
                             style: TextStyle(
                               color:Colors.black,
                             ),

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'SessionCard.dart';
+
 class SessionsBooked extends StatefulWidget {
 
   const SessionsBooked({Key? key}) : super(key: key);
@@ -94,18 +96,19 @@ class _SessionsBookedState extends State<SessionsBooked> {
       ListView.builder(
           itemCount: dates.length,
           itemBuilder: (BuildContext context, int index) {
-            return buildItem(context, index);
+            return SessionCard(
+              phoneNumber:phones[index],
+              date:dates[index],
+              sessionType:sessionTypes[index],
+              hour:hours[index],
+              minute:minutes[index],
+            );
           }
       ),
     );
   }
 
-  Widget buildItem(BuildContext context, int index) =>ListTile(
-    trailing: Text(
-      '$index${sessionTypes[index]}-${phones[index]}-${dates[index]}',
-      style: TextStyle(color:Colors.green, fontSize: 10),
-    ),
-  );
+
 
 }
 

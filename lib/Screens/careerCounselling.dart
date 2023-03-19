@@ -254,7 +254,6 @@ class _ConnectWithCounsellorState extends State<ConnectWithCounsellor> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       )
-
                                     ]
                                 ),
                                 Row(
