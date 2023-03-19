@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     var responseStatus = await StudentAuth.get(num,pass);
     if(responseStatus == 200) {
       sharedPreferences.setBool('number', true);
+      sharedPreferences.setString('phone_number', num);
       goToHome();
     } else {
       _showToast(context, "Invalid Details. Check your credentials or Sign Up.");

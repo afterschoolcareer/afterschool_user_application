@@ -64,7 +64,6 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
     void redeemPage() async {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       var phone_number = sharedPreferences.getString('phone_number');
-
       if(sharedPreferences.containsKey("coins")){
         var coins = sharedPreferences.getInt("coins");
         if(coins != null) {
@@ -75,8 +74,7 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
           );
         }else{
           int coins =0;
-          var uri = Uri.parse(
-              '$baseUrl/getavailablecoins/?phone_number=$phone_number');
+          var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
           showLoadingIndictor();
           var response = await client.get(uri);
           removeLoadingIndicator();

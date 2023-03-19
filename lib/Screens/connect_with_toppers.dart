@@ -21,8 +21,10 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
   bool selected = false;
   static var client = http.Client();
   static String baseUrl = 'https://afterschoolcareer.com:8080/';
+
   void onViewDetailsTapped_50(){
   }
+
   void showLoadingIndictor(){
     Navigator.push(
         context,
@@ -37,26 +39,59 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
   void removeLoadingIndicator(){
     Navigator.pop(context);
   }
-  Future<dynamic> Confirm(){
 
-    return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Congrats'),
-        content: const Text('Congratulations!! You can consult with toppers and solve your doubts'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Ok'),
-          ),
-        ],
-
-
-      ),
+  Future<dynamic> showOptions() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Pay or Redeem'),
+            content: const Text('Pay or Redeem'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context1) =>PaymentPage())
+                ),
+                child: const Text('Pay'),
+              ),
+              TextButton(
+                onPressed: () async
+                {
+                  await ConfirmRedeemPopUp(context);
+                },
+                child: const Text('Redeem'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop()
+                ,
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        }
     );
-
   }
-  Future<dynamic> SessionBookedPopUp(BuildContext context){
+
+  Future<dynamic> Confirm() {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Congrats'),
+          content: const Text('Congratulations!! You can consult with toppers and solve your doubts'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<dynamic> SessionBookedPopUp(BuildContext context) {
     Navigator.of(context).pop();
     return showDialog<String>(
       context: context,
@@ -74,8 +109,8 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
       ),
     );
   }
-  Future<dynamic> SessionBookedFailed(BuildContext context){
 
+  Future<dynamic> SessionBookedFailed(BuildContext context) {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -91,10 +126,10 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
       ),
     );
   }
+
   Future<dynamic> CreateTopperSession(BuildContext context, String phone_number,String date,String hour,String minute,String AMPM) async {
     showLoadingIndictor();
     var uri = Uri.parse('$baseUrl/createTopperSession/?phone_number=$phone_number&date=$date&hour=$hour&minute=$minute&AMPM=$AMPM');
-
     var response = await client.get(uri);
     Map data = json.decode(response.body);
     print(data);
@@ -427,34 +462,7 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
           ],
         ),
         bottomNavigationBar: ElevatedButton(
-          onPressed: ()=>Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (BuildContext context1) => AlertDialog(
-              title: const Text('Pay or Redeem'),
-              content: const Text('Pay or Redeem'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context1).push(
-                      MaterialPageRoute(builder: (context1) =>PaymentPage())
-                  ),
-                  child: const Text('Pay'),
-                ),
-                TextButton(
-                  onPressed: () async
-                  {
-                    await ConfirmRedeemPopUp(context1);
-                  },
-                  child: const Text('Redeem'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context1).pop()
-                  ,
-                  child: const Text('Cancel'),
-                ),
-              ],
-            ),
-          ),
-        ),
+          onPressed: showOptions,
           child: const Text('Request Session'),
           style: ElevatedButton.styleFrom(
               primary: const Color(0xff6633ff),

@@ -232,6 +232,12 @@ class _MainScreenState extends State<MainScreen> {
       context,
       MaterialPageRoute(builder: (context) => OnlineAdmissionListScreen())
     );
+    // Navigator.of(context).push(
+    //   PageRouteBuilder(
+    //     opaque: false,
+    //       pageBuilder: (_,__,___) => const OnlineAdmissionListScreen()
+    //   )
+    // );
   }
 
   void onExpertPhoneTapped() {
@@ -525,30 +531,30 @@ class _MainScreenState extends State<MainScreen> {
               /* City List Container */
               Container(
                 width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children:  [
                     const Icon(
                       Icons.keyboard_double_arrow_left,
                       color: Colors.black,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width /1.3,
+                      width: width * 0.8,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: const [
-                            CityView(image_url: "images/delhi.jpg", name: "Delhi-NCR"),
-                            SizedBox(width: 15),
-                            CityView(image_url: "images/hyderabad.jpg", name: "Hyderabad"),
-                            SizedBox(width: 15),
-                            CityView(image_url: "images/kota.png", name: "Kota"),
-                            SizedBox(width: 15),
-                            CityView(image_url: "images/kolkata.jpg", name: "Kolkata"),
-                            SizedBox(width: 15),
-                            CityView(image_url: "images/mumbai.jpg", name: "Mumbai"),
-                            SizedBox(width: 15),
-                            CityView(image_url: "images/patna.jpeg", name: "Patna")
+                          children:  [
+                            const CityView(image_url: "images/delhi.jpg", name: "Delhi-NCR"),
+                            SizedBox(width: width * 0.05),
+                            const CityView(image_url: "images/hyderabad.jpg", name: "Hyderabad"),
+                            SizedBox(width: width * 0.05),
+                            const CityView(image_url: "images/kota.png", name: "Kota"),
+                            SizedBox(width: width * 0.05),
+                            const CityView(image_url: "images/kolkata.jpg", name: "Kolkata"),
+                            SizedBox(width: width * 0.05),
+                            const CityView(image_url: "images/mumbai.jpg", name: "Mumbai"),
+                            SizedBox(width: width * 0.05),
+                            const CityView(image_url: "images/patna.jpeg", name: "Patna")
                           ],
                         ),
                       ),
@@ -891,7 +897,6 @@ class _MainScreenState extends State<MainScreen> {
               /* AchieversList */
               Container(
                 width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children:  [
                     const Icon(
@@ -899,10 +904,11 @@ class _MainScreenState extends State<MainScreen> {
                       color: Colors.black,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width /1.3,
+                      width: width * 0.8,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: const [
                             AchieversList(logoUrl: "images/profile_icon.png",
                                 name: "Shubham Vats", collegeName: "IIT Bidholi"),

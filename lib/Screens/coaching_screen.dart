@@ -313,7 +313,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
       ListView(
         children: [
           Container(
-            height: height * 0.8,
+            height: height,
             child: DefaultTabController(
                 length: 2,
                 child: Scaffold(
@@ -631,7 +631,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                                   }).toList(),
                                                   value: currentSelected,
                                                   style: const TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 14,
                                                       color: Colors.white
                                                   ),
                                                   onChanged: (selectedValueNew) {

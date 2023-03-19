@@ -59,6 +59,7 @@ class ProfilePageState extends State<ProfilePage> {
                       print('option 2 clicked');
                       break;
                     case 'LogOut':
+                      logout();
                       print('I want to delete');
                       break;
                     default:
@@ -352,7 +353,7 @@ class ProfilePageState extends State<ProfilePage> {
                         TextButton(
                           style: TextButton.styleFrom(
                             textStyle: const TextStyle(fontSize: 20),
-                            iconColor: Colors.black,
+                            backgroundColor: Colors.black,
                           ),
                           onPressed: getSessionHistory,
                           child:  Text(
