@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Login/loginpage.dart';
 import 'Screens/EditProfilePage.dart';
+import 'Screens/SessionsBooked.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -30,7 +31,12 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
   void getSessionHistory()  {
-    print("Session history");
+    Navigator.of(context, rootNavigator: true).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => const SessionsBooked()
+        )
+    );
+
   }
 
 
