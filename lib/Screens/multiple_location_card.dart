@@ -21,9 +21,6 @@ class MultipleLocationCard extends StatefulWidget {
 
 class _MultipleLocationCardState extends State<MultipleLocationCard> {
 
-  var baseUrl = 'https://afterschoolcareer.com:8080';
-  var client = http.Client();
-
   void onViewDetailsTapped() {
     goToCoachingScreen(widget.id);
   }
@@ -61,7 +58,7 @@ class _MultipleLocationCardState extends State<MultipleLocationCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Container(
+                    SizedBox(
                         width: width/3,
                         height: 80,
                         child: Image.network(widget.logo)
@@ -69,10 +66,14 @@ class _MultipleLocationCardState extends State<MultipleLocationCard> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          widget.name,
-                          style: const TextStyle(
-                              fontSize: 18
+                        SizedBox(
+                          width: width * 0.4,
+                          child: Text(
+                            widget.name,
+                            style: const TextStyle(
+                                fontSize: 18
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         const SizedBox(height: 5),

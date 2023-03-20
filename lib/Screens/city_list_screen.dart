@@ -52,7 +52,9 @@ class _CityListScreenState extends State<CityListScreen> {
         title: Text("Location: ${widget.name}"),
         backgroundColor: const Color(0xff6633ff),
       ),
-      body: showLoading? const Center(child: CircularProgressIndicator()) :
+      body: showLoading? const Center(child: CircularProgressIndicator(
+        color: Color(0xff6633ff),
+      )) :
       ListView.builder(
         itemCount: populate.length,
         itemBuilder: (BuildContext context, int index) {

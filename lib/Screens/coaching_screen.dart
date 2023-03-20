@@ -51,6 +51,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   bool isTop1000 = true;
   bool isTotalSelection = true;
   bool isTotalNumber = true;
+  bool isRegistered = false;
 
   bool showShortlisted = false;
   bool showLoading = false;
@@ -236,6 +237,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
     topRankers = entries["topRankers"];
     scholarship = entries["scholarship"];
     selectionData = entries["selectionData"];
+    isRegistered = entries["is_registered"];
     setShortlisted();
     setFees();
     setFaculties();
@@ -295,476 +297,461 @@ class _CoachingScreenState extends State<CoachingScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.coachingName),
-        backgroundColor: const Color(0xff6633ff),
-        actions: [
-          IconButton(
-              onPressed: onShortlistTapped,
-              icon:  Icon(
-                showShortlisted? Icons.star_outlined :
-                Icons.star_outline ),
-                color: Colors.white,
-              )
-        ],
-      ),
-      body: showLoading? const Center(child: CircularProgressIndicator()) :
-      ListView(
-        children: [
-          Container(
-            height: height,
-            child: DefaultTabController(
+    return DefaultTabController(
                 length: 2,
                 child: Scaffold(
+                  appBar: AppBar(
+                    title: Text(widget.coachingName),
+                    backgroundColor: const Color(0xff6633ff),
+                    actions: [
+                      IconButton(
+                        onPressed: onShortlistTapped,
+                        icon:  Icon(
+                            showShortlisted? Icons.star_outlined :
+                            Icons.star_outline ),
+                        color: Colors.white,
+                      )
+                    ],
+                    bottom: const TabBar(
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorColor: Colors.white,
+                        tabs: [
+                          Tab(
+                            text: "Details",
+                          ),
+                          Tab(
+                            text: "Admission",
+                          )
+                        ]),
+                  ),
                   backgroundColor: Colors.white,
-                    body: Column(
+                  body: showLoading? const Center(child: CircularProgressIndicator(
+                    color: Color(0xff6633ff),
+                  )) : TabBarView(
                       children: [
-                        const TabBar(
-                            labelColor: Color(0xff6633ff),
-                            unselectedLabelColor: Colors.grey,
-                            indicatorColor: Color(0xff6633ff),
-                            tabs: [
-                              Tab(
-                                text: "Details",
-                              ),
-                              Tab(
-                                text: "Admission",
-                              )
-                            ]),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              /* details tab */
-                              ListView(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          height: 120,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Image.network(logo),
-                                        ),
-                                        const SizedBox(height: 20),
-                                        Container(
-                                          padding: const EdgeInsets.all(20),
-                                          decoration:   BoxDecoration(
-                                            borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                            border: Border.all(color: const Color(0xff6633ff)),
-                                            color: const Color(0xffeeeeff),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              const Center(
-                                                child: Text(
-                                                  "City",
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Color(0xff6633ff)
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 3),
-                                              Center(
-                                                child: Text(
-                                                  location,
-                                                  style: const TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.black
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              const Center(
-                                                child: Text(
-                                                  "Center Location",
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Color(0xff6633ff)
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 3),
-                                              Center(
-                                                child: SizedBox(
-                                                  width: width*0.7,
-                                                  child: Text(
-                                                    center,
-                                                    style: const TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.black,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              const Center(
-                                                child: Text(
-                                                  "State",
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      color: Color(0xff6633ff)
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 3),
-                                              Center(
-                                                child: Text(
-                                                  state,
-                                                  style: const TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.black
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(height: 40),
-                                        if(isFaculty) const Text(
-                                              "Faculties",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Color(0xff6633ff)
-                                              ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: facultyData.length,
-                                            itemBuilder: (BuildContext context, int index) {
-                                              return FacultyView(
-                                                  name: facultyData[index].name,
-                                                  image: facultyData[index].image,
-                                                  subject: facultyData[index].subject,
-                                                  qual: facultyData[index].qual,
-                                                  exp: facultyData[index].experience
-                                              );
-                                            }
-                                        ),
-                                        if(isTotalSelection) const SizedBox(height: 40),
-                                        if(isTotalSelection) Center(
-                                          child:
-                                              Container(
-                                                margin: const EdgeInsets.only(left: 15, right: 15),
-                                                padding: const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                                  border: Border.all(color: const Color(0xff6633ff))
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    const Text(
-                                                      "Total Selections: ",
-                                                      style: TextStyle(
-                                                        fontSize: 20,
-                                                          color: Color(0xff6633ff)
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      totalSelections.toString(),
-                                                      style: const TextStyle(
-                                                        fontSize: 20,
-                                                        color: Color(0xff6633ff)
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                        ),
-                                        if(isTotalSelection) const SizedBox(height: 30),
-                                        if(isTop100 || isTop200 || isTop500 || isTop100) Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            if(isTop100) Column(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(18),
-                                                  decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Color(0xff6633ff),
-                                                  ),
-                                                  child: Text(
-                                                    top100.toString(),
-                                                    style: const TextStyle(
-                                                        color: Colors.white
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                const Text("In Top 100")
-                                              ]
-                                            ),
-                                            if(isTop200) Column(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(18),
-                                                    decoration: const BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Color(0xff6633ff),
-                                                    ),
-                                                    child: Text(
-                                                      top100.toString(),
-                                                      style: const TextStyle(
-                                                          color: Colors.white
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  const Text("In Top 200")
-                                                ]
-                                            ),
-                                            if(isTop500) Column(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(18),
-                                                    decoration: const BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Color(0xff6633ff),
-                                                    ),
-                                                    child: Text(
-                                                      top100.toString(),
-                                                      style: const TextStyle(
-                                                          color: Colors.white
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  const Text("In Top 500")
-                                                ]
-                                            ),
-                                            if(isTop1000) Column(
-                                                children: [
-                                                  Container(
-                                                    padding: const EdgeInsets.all(18),
-                                                    decoration: const BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: Color(0xff6633ff),
-                                                    ),
-                                                    child: Text(
-                                                      top100.toString(),
-                                                      style: const TextStyle(
-                                                          color: Colors.white
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  const Text("In Top 1000")
-                                                ]
-                                            ),
-                                          ],
-                                        ),
-                                        if(isTotalSelection) const SizedBox(height: 20),
-                                        if(isRankers) const Center(
-                                          child: Text(
-                                            "Rankers Info",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Color(0xff6633ff)
-                                            ),
-                                          ),
-                                        ),
-                                        ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: rankerData.length,
-                                                  itemBuilder: (BuildContext context, int index) {
-                                                    return RankerView(
-                                                        name: rankerData[index].name,
-                                                        image: rankerData[index].image,
-                                                        rank: rankerData[index].rank
-                                                    );
-                                                  }
-                                                  ),
-                                        Text("text after faculty widget"),
-                                      ],
-                                    ),
+                        /* details tab */
+                        SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 120,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
                                   ),
-                                ]
-                              ),
-
-
-                              /* Admission Tab */
-                              ListView(
-                                children: [
-                                  Column(
+                                  child: Image.network(logo),
+                                ),
+                                const SizedBox(height: 20),
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration:   BoxDecoration(
+                                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                    border: Border.all(color: const Color(0xff6633ff)),
+                                    color: const Color(0xffeeeeff),
+                                  ),
+                                  child: Column(
                                     children: [
+                                      const Center(
+                                        child: Text(
+                                          "City",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color(0xff6633ff)
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Center(
+                                        child: Text(
+                                          location,
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Center(
+                                        child: Text(
+                                          "Center Location",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color(0xff6633ff)
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Center(
+                                        child: SizedBox(
+                                          width: width*0.7,
+                                          child: Text(
+                                            center,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Center(
+                                        child: Text(
+                                          "State",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Color(0xff6633ff)
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Center(
+                                        child: Text(
+                                          state,
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                                if(isFaculty) const Text(
+                                      "Faculties",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: Color(0xff6633ff)
+                                      ),
+                                ),
+                                const SizedBox(height: 10),
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: facultyData.length,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return FacultyView(
+                                          name: facultyData[index].name,
+                                          image: facultyData[index].image,
+                                          subject: facultyData[index].subject,
+                                          qual: facultyData[index].qual,
+                                          exp: facultyData[index].experience
+                                      );
+                                    }
+                                ),
+                                if(isTotalSelection) const SizedBox(height: 40),
+                                if(isTotalSelection) Center(
+                                  child:
                                       Container(
-                                        margin: const EdgeInsets.only(top:20),
+                                        margin: const EdgeInsets.only(left: 15, right: 15),
                                         padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                          border: Border.all(color: const Color(0xff6633ff))
+                                        ),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             const Text(
-                                                "Fee Structure:",
-                                              style: TextStyle(
-                                                fontSize: 16
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.all(0),
-                                              height: 35,
-                                              //margin: const EdgeInsets.all(13),
-                                              decoration: const BoxDecoration(
-                                                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                                  color: Color(0xff9999ff)
-                                              ),
-                                              //padding: const EdgeInsets.all(5),
-                                              width: width*0.6,
-                                              child: DropdownButtonFormField<String>(
-                                                  icon: const Icon(
-                                                    Icons.keyboard_arrow_down_outlined,
-                                                    color: Colors.white,
-                                                  ),
-                                                  dropdownColor: const Color(0xff6633ff),
-                                                  items: feeView.map((String choice) {
-                                                    return DropdownMenuItem<String>(
-                                                      value: choice,
-                                                      child: Text(choice),
-                                                    );
-                                                  }).toList(),
-                                                  value: currentSelected,
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.white
-                                                  ),
-                                                  onChanged: (selectedValueNew) {
-                                                    setState(()  {
-                                                      currentSelected = selectedValueNew as String;
-                                                    });
-                                                  },
-                                                  decoration: const InputDecoration(
-                                                    contentPadding: EdgeInsets.only(left: 20, right: 20),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderSide:
-                                                      BorderSide(color: Color(0xff9999ff)),
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(30.0)),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                          color: Color(0xff9999ff)),
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(30.0)),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.only(top:20),
-                                        padding: const EdgeInsets.all(30),
-                                        width: width*0.8,
-                                        decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                                          color: Color(0xff6633ff),
-                                        ),
-                                        child: Text(
-                                          "Rs. ${feeInfo[currentSelected].toString()}",
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      SizedBox(
-                                        width: width*0.95,
-                                        child: const Text(
-                                          "Fees shown above is subject to vary with respect to marks scored in the Boards or if any scholarship is applicable. Final fees shall be confirmed by institute only.",
-                                          style:  TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          const Text(
-                                              "Book Your Seat",
-                                            style: TextStyle(
-                                              fontSize: 20
-                                            ),
-                                          ),
-                                          IconButton(
-                                                onPressed: showAlertDialog,
-                                                icon: const Icon(
-                                                  Icons.info,
-                                                  color: Color(0xffff9900),
-                                                )
-                                            ),
-                                        ],
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.all(20),
-                                        width: width,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xff9999ff)
-                                        ),
-                                        child: Column(
-                                          children: const [
-                                            Text(
-                                                "Rs. 4999/- only",
+                                              "Total Selections: ",
                                               style: TextStyle(
                                                 fontSize: 20,
-                                                fontWeight: FontWeight.bold
+                                                  color: Color(0xff6633ff)
                                               ),
                                             ),
-                                            SizedBox(height: 20),
                                             Text(
-                                              "This amount will be adjusted when you pay the fees to the Institute.",
-                                              style: TextStyle(
-                                                fontSize: 16,
+                                              totalSelections.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                color: Color(0xff6633ff)
                                               ),
-                                              textAlign: TextAlign.center,
                                             )
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(height: 20),
-                                      ElevatedButton(
-                                          onPressed: onBooking,
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20),
-                                              )
-                                            ),
-                                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
+                                ),
+                                if(isTotalSelection) const SizedBox(height: 30),
+                                if(isTop100 || isTop200 || isTop500 || isTop100) Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    if(isTop100) Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(18),
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Color(0xff6633ff),
                                           ),
-                                          child: const Text(
-                                            "BOOK NOW",
-                                            style: TextStyle(
-                                              fontSize: 20
+                                          child: Text(
+                                            top100.toString(),
+                                            style: const TextStyle(
+                                                color: Colors.white
                                             ),
-                                          )
-                                      )
-                                    ],
-                                  )
-                                ]
-                              )
-                                      ],
-                                    ),)
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text("In Top 100")
+                                      ]
+                                    ),
+                                    if(isTop200) Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(18),
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xff6633ff),
+                                            ),
+                                            child: Text(
+                                              top200.toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.white
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text("In Top 200")
+                                        ]
+                                    ),
+                                    if(isTop500) Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(18),
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xff6633ff),
+                                            ),
+                                            child: Text(
+                                              top500.toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.white
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text("In Top 500")
+                                        ]
+                                    ),
+                                    if(isTop1000) Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(18),
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xff6633ff),
+                                            ),
+                                            child: Text(
+                                              top1000.toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.white
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text("In Top 1000")
+                                        ]
+                                    ),
                                   ],
                                 ),
-                              ),
+                                if(isTotalSelection) const SizedBox(height: 20),
+                                if(isRankers) const SizedBox(height: 20),
+                                if(isRankers) const Center(
+                                  child: Text(
+                                    "Rankers Info",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Color(0xff6633ff)
+                                    ),
+                                  ),
+                                ),
+                                ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: rankerData.length,
+                                          itemBuilder: (BuildContext context, int index) {
+                                            return RankerView(
+                                                name: rankerData[index].name,
+                                                image: rankerData[index].image,
+                                                rank: rankerData[index].rank
+                                            );
+                                          }
+                                          ),
+                                const SizedBox(height: 50)
+                              ],
+                            ),
                           ),
-          ),
-                    ],
-                  ),
-            );
+                        ),
+
+
+                        /* Admission Tab */
+                        ListView(
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(top:20),
+                                  padding: const EdgeInsets.only(top:20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      const Text(
+                                          "Fee Structure:",
+                                        style: TextStyle(
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(0),
+                                        width: width*0.6,
+                                        height: 35,
+                                        //margin: const EdgeInsets.all(13),
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                            color: Color(0xff9999ff)
+                                        ),
+                                        //padding: const EdgeInsets.all(5),
+                                        child: DropdownButtonFormField<String>(
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_down_outlined,
+                                              color: Colors.white,
+                                            ),
+                                            dropdownColor: const Color(0xff6633ff),
+                                            items: feeView.map((String choice) {
+                                              return DropdownMenuItem<String>(
+                                                value: choice,
+                                                child: Text(choice),
+                                              );
+                                            }).toList(),
+                                            value: currentSelected,
+                                            style: const TextStyle(
+                                                color: Colors.white
+                                            ),
+                                            onChanged: (selectedValueNew) {
+                                              setState(()  {
+                                                currentSelected = selectedValueNew as String;
+                                              });
+                                            },
+                                            decoration: const InputDecoration(
+                                              contentPadding: EdgeInsets.only(left: 20, right: 20),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide:
+                                                BorderSide(color: Color(0xff9999ff)),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(30.0)),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Color(0xff9999ff)),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(30.0)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top:20),
+                                  padding: const EdgeInsets.all(30),
+                                  width: width*0.8,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                                    color: Color(0xff6633ff),
+                                  ),
+                                  child: Text(
+                                    "Rs. ${feeInfo[currentSelected].toString()}",
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  width: width*0.95,
+                                  child: const Text(
+                                    "Fees shown above is subject to vary with respect to marks scored in the Boards or if any scholarship is applicable. Final fees shall be confirmed by institute only.",
+                                    style:  TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 30),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                        "Book Your Seat",
+                                      style: TextStyle(
+                                        fontSize: 20
+                                      ),
+                                    ),
+                                    IconButton(
+                                          onPressed: showAlertDialog,
+                                          icon: const Icon(
+                                            Icons.info,
+                                            color: Color(0xffff9900),
+                                          )
+                                      ),
+                                  ],
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  width: width,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xff9999ff)
+                                  ),
+                                  child: Column(
+                                    children: const [
+                                      Text(
+                                          "Rs. 4999/- only",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        "This amount will be adjusted when you pay the fees to the Institute.",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton(
+                                    onPressed: onBooking,
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        )
+                                      ),
+                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
+                                    ),
+                                    child: Text(
+                                      isRegistered ? "BOOK NOW" : "SHOW INTEREST",
+                                      style: TextStyle(
+                                        fontSize: 20
+                                      ),
+                                    )
+                                )
+                              ],
+                            )
+                          ]
+                        )
+                                ],
+                              ),
+                              ),
+    );
   }
 }
 

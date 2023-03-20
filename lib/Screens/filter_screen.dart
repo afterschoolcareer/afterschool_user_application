@@ -22,6 +22,7 @@ class _FilterScreenState extends State<FilterScreen> {
   List<String> selectedItems = [];
   bool showData = false;
   bool showButton = false;
+  bool showLoading = false;
 
   void locationList() async {
     final List<String> locations = ["Delhi","Kota","Ranchi","Patna"];
@@ -43,6 +44,9 @@ class _FilterScreenState extends State<FilterScreen> {
 
   void onShowData() async {
     if(selectedItems.isEmpty) return;
+    setState(() {
+      showLoading = true;
+    });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var course = sharedPreferences.getString('course');
     String locationQuery = "";
@@ -56,6 +60,7 @@ class _FilterScreenState extends State<FilterScreen> {
     List multipleLocationList = data["data"];
     populateData(multipleLocationList);
     setState(() {
+      showLoading = false;
       showData = true;
       showButton = false;
     });
@@ -77,7 +82,9 @@ class _FilterScreenState extends State<FilterScreen> {
         title: const Text("Preference Filters"),
         backgroundColor: const Color(0xff6633ff),
       ),
-      body:
+      body: showLoading ? const Center(child: CircularProgressIndicator(
+        color: Color(0xff6633ff),
+      )) :
           Container(
             padding: const EdgeInsets.only(top:30),
             child: Column(
@@ -137,8 +144,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 ),
                 Visibility(
                   visible: showData,
-                    child:
-                          Expanded(
+                    child: Expanded(
                             child: ListView.builder(
                             shrinkWrap: true,
                             itemCount: populate.length,

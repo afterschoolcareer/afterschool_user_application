@@ -25,15 +25,10 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
 
   static var client = http.Client();
   static String baseUrl = 'https://afterschoolcareer.com:8080/';
+  bool showLoading = false;
+
   void onMenuItemTapped(String menuName) {
 
-    if(menuName == "Home") {
-      Navigator.of(context, rootNavigator: true).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) => Homescreen()
-          )
-      );
-    }
     void showLoadingIndictor(){
       Navigator.push(
           context,
@@ -51,16 +46,13 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
     void share() async {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       var phone_number = sharedPreferences.getString('phone_number');
-      showLoadingIndictor();
       var uri = Uri.parse('$baseUrl/getreferralcode/?phone_number=$phone_number');
-
       var response = await client.get(uri);
-
       Map data = json.decode(response.body);
       String code = data["data"];
-      removeLoadingIndicator();
       Share.share("use my afterschool coupon code $code to get 50 coins ");
     }
+
     void redeemPage() async {
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       var phone_number = sharedPreferences.getString('phone_number');
@@ -103,9 +95,6 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       }
 
     }
-    if(menuName == "Explore") {
-
-    }
 
     if(menuName == "Notifications") {
 
@@ -127,13 +116,15 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       )
       );
     }
-    if(menuName == "Redeem") {
+
+    if(menuName == "Redeem Coins") {
       redeemPage();
     }
+
     if(menuName == "Refer and Earn") {
-      print("share");
       share();
     }
+
     if(menuName == "Contact Us") {
 
     }
@@ -148,17 +139,13 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       padding: const EdgeInsets.only(top: 20),
       child: Column(
         children: [
-          menuItems("Home", Icons.home_filled),
-          const SizedBox(height: 10),
-          menuItems("Explore", Icons.search),
-          const SizedBox(height: 10),
           menuItems("Notifications", Icons.notifications),
           const SizedBox(height: 10),
           menuItems("Career Counselling", Icons.wifi_calling_3),
           const SizedBox(height: 10),
           menuItems("Talk to Toppers", FluentSystemIcons.ic_fluent_trophy_filled),
           const SizedBox(height: 10),
-          menuItems("Redeem", Icons.currency_bitcoin),
+          menuItems("Redeem Coins", Icons.currency_exchange_rounded),
           const SizedBox(height: 10),
           menuItems("Refer and Earn", Icons.currency_bitcoin),
           const SizedBox(height: 10),

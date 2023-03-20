@@ -58,7 +58,9 @@ class _FeeStructureListState extends State<FeeStructureList> {
         title: const Text("Filtered by Fees"),
         backgroundColor: const Color(0xff6633ff),
       ),
-      body: showLoading? const Center(child: CircularProgressIndicator()) :
+      body: showLoading? const Center(child: CircularProgressIndicator(
+        color: Color(0xff6633ff),
+      )) :
           ListView.builder(
           itemCount: populate.length,
           itemBuilder: (BuildContext context, int index) {
