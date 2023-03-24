@@ -1,28 +1,35 @@
+import 'dart:convert';
+
 import 'package:afterschool/Homescreen/PaymentPage.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class RedeemCoins extends StatefulWidget {
-  final bool selected;
-  final int available_coins;
-  const RedeemCoins(this.selected ,this.available_coins, {Key? key}) : super(key: key);
+
+  const RedeemCoins({Key? key}) : super(key: key);
 
   @override
-  State<RedeemCoins> createState() => _RedeemCoins(this.selected,this.available_coins);
+  State<RedeemCoins> createState() => _RedeemCoins();
 }
 
 class _RedeemCoins extends State<RedeemCoins> {
-  bool selected;
-  int available_coins;
+  bool selected = false;
+  int available_coins = 0;
+  static var client = http.Client();
+  static String baseUrl = 'https://afterschoolcareer.com:8080/';
+  bool showLoading = false;
+
   late SharedPreferences sharedPreferences;
-  _RedeemCoins(this.selected,this.available_coins);
+
   void onViewDetailsTapped_500() {
     var coins = 500;
     //get this value from the rest api;
     //change the value of coins available using post api
   }
+
   void loadSharedPreferences() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -30,10 +37,49 @@ class _RedeemCoins extends State<RedeemCoins> {
   @override
   void initState() {
     // TODO: implement initState
-
-    super.initState();
+    setStateCoins();
     loadSharedPreferences();
+    super.initState();
   }
+
+  void setStateCoins() async {
+    setState(() {
+      showLoading = true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var phone_number = sharedPreferences.getString('phone_number');
+    if (sharedPreferences.containsKey("coins")) {
+      var coins = sharedPreferences.getInt("coins");
+      if (coins != null) {
+        selected = false;
+        available_coins = coins;
+      } else {
+        int coins = 0;
+        var uri = Uri.parse(
+            '$baseUrl/getavailablecoins/?phone_number=$phone_number');
+        var response = await client.get(uri);
+        Map data = json.decode(response.body);
+        coins = data["data"];
+        available_coins = coins;
+        sharedPreferences.setInt('coins', coins);
+        selected = false;
+      }
+    } else {
+      int coins = 0;
+      var uri = Uri.parse(
+          '$baseUrl/getavailablecoins/?phone_number=$phone_number');
+      var response = await client.get(uri);
+      Map data = json.decode(response.body);
+      coins = data["data"];
+      available_coins = coins;
+      selected = false;
+      sharedPreferences.setInt('coins', coins);
+    }
+    setState(() {
+      showLoading = false;
+    });
+  }
+
   void redeemed(context){
     Navigator.of(context).pop();
     setState(() {
@@ -82,12 +128,6 @@ class _RedeemCoins extends State<RedeemCoins> {
     );
   }
 
-
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -132,7 +172,9 @@ class _RedeemCoins extends State<RedeemCoins> {
         ),
 
         /* main body */
-        body: ListView(
+        body: showLoading? const Center(child: CircularProgressIndicator(
+          color: Color(0xff6633ff),
+        )) : ListView(
           children: [
             Column(
               children: [

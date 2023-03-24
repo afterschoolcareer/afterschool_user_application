@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:afterschool/Homescreen/enrollment_screen.dart';
+import 'package:afterschool/Homescreen/loan_screen.dart';
 import 'package:afterschool/Homescreen/main_screen.dart';
 import 'package:afterschool/Homescreen/shortlist_screen.dart';
 import 'package:afterschool/Homescreen/smart_compare_screen.dart';
@@ -22,7 +23,7 @@ class _HomescreenState extends State<Homescreen> {
   final List<Widget> widgetOptions = [
     const MainScreen(),
     const ShortlistScreen(),
-    const SmartCompareScreen(),
+    const LoanScreen(),
     const EnrollmentScreen(),
   ];
 
@@ -59,7 +60,7 @@ class _HomescreenState extends State<Homescreen> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.compare_rounded),
                   activeIcon: Icon(Icons.compare_rounded),
-                  label: "Smart Compare"
+                  label: "Loan Screen"
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(

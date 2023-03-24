@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:afterschool/Homescreen/enrollment_screen.dart';
+import 'package:afterschool/Models/global_vals.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,46 +54,51 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       Share.share("use my afterschool coupon code $code to get 50 coins ");
     }
 
-    void redeemPage() async {
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      var phone_number = sharedPreferences.getString('phone_number');
-      if(sharedPreferences.containsKey("coins")){
-        var coins = sharedPreferences.getInt("coins");
-        if(coins != null) {
-          Navigator.push(
-              context, MaterialPageRoute(
-              builder: (context) => RedeemCoins(false, coins)
-          )
-          );
-        }else{
-          int coins =0;
-          var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
-          showLoadingIndictor();
-          var response = await client.get(uri);
-          removeLoadingIndicator();
-          Map data = json.decode(response.body);
-          coins = data["data"];
-          sharedPreferences.setInt('coins',coins);
-          Navigator.push(
-              context, MaterialPageRoute(
-              builder: (context) => RedeemCoins(false, coins)
-          ));
-        }
-      }else {
-        int coins=0;
-        var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
-        showLoadingIndictor();
-        var response = await client.get(uri);
-        removeLoadingIndicator();
-        Map data = json.decode(response.body);
-        coins = data["data"];
-        Navigator.push(
-            context, MaterialPageRoute(
-            builder: (context) => RedeemCoins(false, coins)
-        ));
-
-        sharedPreferences.setInt('coins',coins);
-      }
+    void redeemPage() {
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => RedeemCoins()
+      )
+      );
+      // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      // var phone_number = sharedPreferences.getString('phone_number');
+      // if(sharedPreferences.containsKey("coins")){
+      //   var coins = sharedPreferences.getInt("coins");
+      //   if(coins != null) {
+      //     Navigator.push(
+      //         context, MaterialPageRoute(
+      //         builder: (context) => RedeemCoins(false, coins)
+      //     )
+      //     );
+      //   }else{
+      //     int coins =0;
+      //     var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
+      //     showLoadingIndictor();
+      //     var response = await client.get(uri);
+      //     removeLoadingIndicator();
+      //     Map data = json.decode(response.body);
+      //     coins = data["data"];
+      //     sharedPreferences.setInt('coins',coins);
+      //     Navigator.push(
+      //         context, MaterialPageRoute(
+      //         builder: (context) => RedeemCoins(false, coins)
+      //     ));
+      //   }
+      // }else {
+      //   int coins=0;
+      //   var uri = Uri.parse('$baseUrl/getavailablecoins/?phone_number=$phone_number');
+      //   showLoadingIndictor();
+      //   var response = await client.get(uri);
+      //   removeLoadingIndicator();
+      //   Map data = json.decode(response.body);
+      //   coins = data["data"];
+      //   Navigator.push(
+      //       context, MaterialPageRoute(
+      //       builder: (context) => RedeemCoins(false, coins)
+      //   ));
+      //
+      //   sharedPreferences.setInt('coins',coins);
+      // }
 
     }
 
@@ -245,9 +251,9 @@ class MyHeaderDrawerState extends State<MyHeaderDrawer> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  "Shubham Vats",
-                  style: TextStyle(
+                Text(
+                  GlobalVals.getName(),
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 24,
                   ),

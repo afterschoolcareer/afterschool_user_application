@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/signup_details.dart';
 import 'package:afterschool/Models/student_auth.dart';
@@ -5,6 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+import '../Models/global_vals.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -24,6 +29,9 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController signupPass = TextEditingController();
   TextEditingController signupReferral = TextEditingController();
 
+  var client = http.Client();
+  var baseUrl = 'https://afterschoolcareer.com:8080';
+
   final int EMPTY_FIELD = 1;
   final int INVALID_NUMBER = 2;
   final int INVALID_PASSWORD = 3;
@@ -37,10 +45,10 @@ class _LoginPageState extends State<LoginPage> {
             content: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: const [
-                Text("Verifying User"),
                 CircularProgressIndicator(
                   color: Color(0xff6633ff),
-                )
+                ),
+                Text("Verifying User"),
               ],
             )
           );
@@ -51,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<dynamic> showErrorDialog(int i) {
     String msg = "";
     if(i == EMPTY_FIELD) {
-      msg = "Phone Number or Password field is left blank. Please fill in the correct credentials or Sign Up";
+      msg = "One or more fields are left blank. Please fill in the correct credentials or Sign Up";
     }
     if(i == INVALID_NUMBER) {
       msg = "You are trying to enter an invalid number. Please check your number and try again.";
@@ -145,6 +153,18 @@ class _LoginPageState extends State<LoginPage> {
     String name = signupName.text;
     String pass = signupPass.text;
     String referralCode = signupReferral.text;
+    if(phoneNumber.isEmpty || name.isEmpty || pass.isEmpty) {
+      showErrorDialog(1);
+      return;
+    }
+    if(phoneNumber.length!=10 || int.tryParse(phoneNumber) == null) {
+      showErrorDialog(2);
+      return;
+    }
+    if(pass.length < 8) {
+      showErrorDialog(3);
+      return;
+    }
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass, referralCode)));
   }

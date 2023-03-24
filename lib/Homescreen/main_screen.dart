@@ -4,6 +4,7 @@ import 'dart:ffi';
 
 import 'package:afterschool/Homescreen/drawer.dart';
 import 'package:afterschool/Homescreen/institute_card.dart';
+import 'package:afterschool/Models/global_vals.dart';
 import 'package:afterschool/Screens/city_list_screen.dart';
 import 'package:afterschool/Screens/coaching_screen.dart';
 import 'package:afterschool/Screens/connect_with_toppers.dart';
@@ -14,6 +15,7 @@ import 'package:afterschool/Screens/selection_data_list_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,8 +42,26 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     setCurrentSelected();
+    setStudentData();
     setSearchResults();
     super.initState();
+  }
+
+  void setStudentData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var number = sharedPreferences.getString('phone_number');
+    if(number != null) {
+      var uri = Uri.parse('$baseUrl/getStudentData/?phone_number=$number');
+      var response = await client.get(uri);
+      Map map = json.decode(response.body);
+      List studentData = map["data"];
+      Map studentInfo = studentData[0];
+      String studentName = studentInfo["name"];
+      String studentPhone = studentInfo["phone_number"];
+      String studentEmail = studentInfo["email"];
+      int studentType = studentInfo["studentType"];
+      GlobalVals.setData(studentName, studentPhone, studentType.toString(), studentEmail);
+    }
   }
 
   void setCurrentSelected() async {
@@ -392,8 +412,13 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           debounceDuration: const Duration(milliseconds: 300),
                           textFieldConfiguration: TextFieldConfiguration(
+                            cursorColor: const Color(0xff6633ff),
                               controller: searchBarController,
+                              maxLines: 1,
                               decoration: InputDecoration(
+                                contentPadding: const
+
+                                EdgeInsets.only(left:10, right: 10, top: 7, bottom: 13),
                                   suffixIcon: IconButton(
                                     onPressed: () => setState(() {
                                       searchBarController.clear();
@@ -455,7 +480,7 @@ class _MainScreenState extends State<MainScreen> {
                           },
                           onSuggestionSelected: (String suggestion) {
                             setState(() {
-                              searchBarController.text = suggestion;
+                              searchBarController.text =  suggestion;
                               searchResultId = map[suggestion];
                             });
                           },

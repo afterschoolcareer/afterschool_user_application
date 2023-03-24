@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/loginpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
+import '../Models/global_vals.dart';
 import '../Models/student_auth.dart';
 
 
@@ -26,6 +29,8 @@ class _SignupDetailsState extends State<SignupDetails> {
   var currentSelected = 'IIT-JEE';
   bool isSelected = false;
   bool snackbarAction = true;
+  var client = http.Client();
+  var baseUrl = 'https://afterschoolcareer.com:8080';
 
   void onCompleteSignup() async {
     final String email = emailAddress.text;
@@ -35,6 +40,7 @@ class _SignupDetailsState extends State<SignupDetails> {
         widget.pass, email, selectedValue.toString());
     if(responseStatus == 201) {
       sharedPreferences.setBool('number', true);
+      sharedPreferences.setString('phone_number', widget.number);
       goToHome();
     } else if(responseStatus == 200) {
       _showToast(context, 'Phone number already exists. Please login to continue');

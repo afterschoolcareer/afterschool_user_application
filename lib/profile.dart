@@ -1,9 +1,8 @@
+import 'package:afterschool/Models/global_vals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'Login/loginpage.dart';
-import 'Screens/EditProfilePage.dart';
 import 'Screens/SessionsBooked.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,6 +14,21 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
 
+  var studentType = "";
+
+  @override
+  void initState() {
+    var type = GlobalVals.getType();
+    if(type == "1") {
+      studentType = "10th Passout";
+    } else if(type == "2") {
+      studentType = "11th Passout";
+    } else {
+      studentType = "12th Passout";
+    }
+    super.initState();
+  }
+
   void logout() async {
     final SharedPreferences sharedPreferences =
     await SharedPreferences.getInstance();
@@ -24,19 +38,21 @@ class ProfilePageState extends State<ProfilePage> {
 
 
   void goToLogin() {
-    Navigator.of(context, rootNavigator: true).pushReplacement(
-        MaterialPageRoute(
-            builder: (context) => const LoginPage()
-        )
-    );
+    // Navigator.of(context, rootNavigator: true).pushReplacement(
+    //     MaterialPageRoute(
+    //         builder: (context) => const LoginPage()
+    //     )
+    // );
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (BuildContext) => const LoginPage()),
+            (route) => false);
   }
   void getSessionHistory()  {
-    Navigator.of(context, rootNavigator: true).pushReplacement(
+    Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => const SessionsBooked()
         )
     );
-
   }
 
 
@@ -53,160 +69,115 @@ class ProfilePageState extends State<ProfilePage> {
               PopupMenuButton<String>(
                 onSelected: (String result) {
                   switch (result) {
-                    case 'EditProfile':
-                      print('Launch Edit Profile Page');
-                      Navigator.push(
-                          context, MaterialPageRoute(
-                          builder: (context) => const EditProfilePage()
-                      )
-                      );
-                      break;
-                    case 'ChangePassword':
-                      print('option 2 clicked');
-                      break;
-                    case 'LogOut':
+                    case 'Log Out':
                       logout();
-                      print('I want to delete');
                       break;
                     default:
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   const PopupMenuItem<String>(
-                    value: 'EditProfile',
-                    child: Text('Edit Profile'),
-                  ),
-                  const PopupMenuItem<String>(
-                    value: 'ChangePassword',
-                    child: Text('change Password'),
-                  ),
-                  const PopupMenuItem<String>(
-                    value: 'LogOut',
-                    child: Text('LogOut'),
+                    value: 'Log Out',
+                    child: Text('Log Out'),
                   ),
                 ],
               )
             ]
         ),
-        body:   ListView(
+        body: ListView(
           children: [
             Column(
               children: [
                 //Basic Details Card
-                Container(
-                    width:width,
-                    height: height/4,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const SizedBox(
+                      width:150,
+                      height:150,
+                      child: Image(
+                          image: AssetImage('images/profile_icon.png')
+                      ),
                     ),
-                    child:Row(
-
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-
+                         Text(
+                            GlobalVals.getName(),
+                          style: const TextStyle(
+                            fontSize: 20
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
                           children: [
                             Container(
-                              width:100,
-                              height:100,
-                              child: const Image(
-                                  image: AssetImage('images/profile_icon.png')
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black)
+                              ),
+                              child: const Icon(
+                                Icons.call,
+                                color: Color(0xff6633ff),
+                                size: 16,
                               ),
                             ),
-
-
+                            const SizedBox(width: 8),
+                            Text(GlobalVals.getPhone())
                           ],
                         ),
-                        const SizedBox(width: 20),
-                        Column(
-
+                        const SizedBox(height: 5),
+                        Row(
                           children: [
-                            Center(
-                                child:const Text(
-                                  "Shubham Kumar",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18
-                                  ),
-                                )
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.black)
+                              ),
+                              child: const Icon(
+                                Icons.email,
+                                color: Color(0xff6633ff),
+                                size: 16,
+                              ),
                             ),
-                            Column(
-
-                                children:
-                                [
-                                  Row(
-                                      children:[
-
-                                        const Icon(
-                                          CupertinoIcons.location_circle_fill,
-                                          color: Colors.black,
-                                          size: 20,
-                                        ),
-                                        const Text(
-                                          "Delhi",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 10,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        )
-
-                                      ]
-                                  ),
-                                  Row(
-                                      children:
-                                      [
-                                        const Icon(
-                                          CupertinoIcons.envelope_circle_fill,
-                                          color: Colors.black,
-                                          size: 20,
-                                        ),
-                                        const Text(
-                                          "sujeetkr.vishwakarma21@gmail.com",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 10,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        )
-                                      ]
-                                  ),
-                                  Row(
-                                      children:
-                                      [
-                                        const Icon(
-                                          CupertinoIcons.phone_circle_fill,
-                                          color: Colors.black,
-                                          size: 20,
-                                        ),
-                                        const Text(
-                                          "+916387919701",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 10,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        )
-                                      ]
-                                  )
-                                ]
-                            ),
-
-
+                            const SizedBox(width: 8),
+                            Text(GlobalVals.getEmail())
                           ],
                         ),
-
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.black)
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                color: Color(0xff6633ff),
+                                size: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(studentType)
+                          ],
+                        ),
                       ],
-
                     )
+                  ],
+
                 ),
                 Container(
                     width: width,
+                    margin: const EdgeInsets.only(top: 20, bottom: 20),
                     height: height/20,
                     decoration: const BoxDecoration(
-                        color: const Color(0xff6633ff)
+                        color: Color(0xff6633ff)
                     ),
-                    child:Center(
+                    child: const Center(
                       child:Text(
                         "My Activity",
                         style: TextStyle(
@@ -216,166 +187,101 @@ class ProfilePageState extends State<ProfilePage> {
                       ),
                     )
                 ),
-                Container(
-                    width:width,
-                    height: height/20,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child:
-                    Row(
-                      children: [
-                        const Icon(
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Icon(
                           CupertinoIcons.book,
                           color: Colors.black,
-                          size: 40,
+                          size: 30,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Your Admissions",
+                        SizedBox(width: 20),
+                        Text(
+                            "My Enrollments",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis,
+                            fontSize: 18
                           ),
-                        )
-
+                        ),
                       ],
-
-                    )
+                    ),
+                  ),
                 ),
                 const SizedBox(height:20),
-                Container(
-                    width:width,
-                    height: height/20,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child:
-                    Row(
-                      children: [
-                        const Icon(
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Icon(
                           CupertinoIcons.creditcard,
                           color: Colors.black,
-                          size: 40,
+                          size: 30,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
+                        SizedBox(width: 20),
+                        Text(
                           "Payment History",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis,
+                              fontSize: 18
                           ),
-                        )
-
+                        ),
                       ],
-
-                    )
+                    ),
+                  ),
                 ),
                 const SizedBox(height:20),
-                Container(
-                    width:width,
-                    height: height/20,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child:
-                    Row(
-                      children: [
-                        const Icon(
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Icon(
                           CupertinoIcons.bitcoin,
                           color: Colors.black,
-                          size: 40,
+                          size: 30,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
+                        SizedBox(width: 20),
+                        Text(
                           "Redeem History",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis,
+                              fontSize: 18
                           ),
-                        )
-
-                      ],
-
-                    )
-                ),
-
-                const SizedBox(height:20),
-                Container(
-                    width:width,
-                    height: height/15,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child:
-                    Row(
-
-                      children: [
-                        const Icon(
-                          CupertinoIcons.bookmark_fill,
-                          color: Colors.black,
-                          size: 40,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Saved Institutes",
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height:20),
+                InkWell(
+                  onTap: getSessionHistory,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Icon(
+                          CupertinoIcons.chat_bubble_text,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        SizedBox(width: 20),
+                        Text(
+                          "My Sessions",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis,
+                              fontSize: 18
                           ),
                         ),
-
-
                       ],
-
-                    )
-                ),
-                const SizedBox(height:20),
-                Container(
-                    width:width,
-                    height: height/15,
-                    padding: const EdgeInsets.only(left:10,top:10,right:10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
                     ),
-                    child:
-                    Row(
-
-                      children: [
-                        const Icon(
-                          CupertinoIcons.conversation_bubble,
-                          color: Colors.black,
-                          size: 40,
-                        ),
-                        const SizedBox(width: 10),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            textStyle: const TextStyle(fontSize: 20),
-                            backgroundColor: Colors.white,
-                          ),
-                          onPressed: getSessionHistory,
-                          child:  Text(
-                            "Sessions Booked",
-                            style: TextStyle(
-                              color:Colors.black,
-                            ),
-                          ),
-                        ),
-
-
-                      ],
-
-                    )
+                  ),
                 ),
-
               ],
             ),
 
