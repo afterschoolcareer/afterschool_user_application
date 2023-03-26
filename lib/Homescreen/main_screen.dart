@@ -48,6 +48,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void setStudentData() async {
+    setState(() {
+      showLoading = true;
+    });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var number = sharedPreferences.getString('phone_number');
     if(number != null) {
@@ -62,9 +65,15 @@ class _MainScreenState extends State<MainScreen> {
       int studentType = studentInfo["studentType"];
       GlobalVals.setData(studentName, studentPhone, studentType.toString(), studentEmail);
     }
+    setState(() {
+      showLoading = false;
+    });
   }
 
   void setCurrentSelected() async {
+    setState(() {
+      showLoading = true;
+    });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var course = sharedPreferences.getString('course');
     setState(() {
@@ -73,7 +82,9 @@ class _MainScreenState extends State<MainScreen> {
       } else {
         currentSelected = 'IIT';
       }
+      showLoading = false;
     });
+
   }
 
   void setSearchResults() async {

@@ -18,21 +18,16 @@ class SessionsBooked extends StatefulWidget {
 }
 
 class _SessionsBookedState extends State<SessionsBooked> {
-  List<String> phones = [];
-  List<String> dates = [];
-  List<String> hours = [];
-  List<String> minutes = [];
-  List<String> ampms = [];
-  List<String> sessionTypes = [];
+  bool showText = false;
   bool showLoading = false;
   var baseUrl = 'https://afterschoolcareer.com:8080';
   var client = http.Client();
   late SharedPreferences sharedPreferences;
+  List<SessionDetails> populate = [];
 
   @override
   void initState() {
     getAllData();
-    print("loaded");
     super.initState();
   }
 
@@ -42,42 +37,24 @@ class _SessionsBookedState extends State<SessionsBooked> {
     });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var phone_number = sharedPreferences.getString('phone_number');
-    print(phone_number);
     var uri = Uri.parse('$baseUrl/getAllTheTopperSessionOfStudent/?phone_number=$phone_number');
     var response = await client.get(uri);
     Map data;
     data = json.decode(response.body);
-    List lists = data["data"];
-    List<String> phones1 = [];
-    List<String> dates1 = [];
-    List<String> hours1 = [];
-    List<String> minutes1 = [];
-    List<String> ampms1 = [];
-    List<String> sessionTypes1 = [];
-    for(var i=0; i<lists.length; i++){
-      Map sess = lists[i];
-      var phone_number = sess["phone_number"];
-
-      phones1.add("6387919701");
-
-      var date = sess["date"];
-      dates1.add(date);
-      var hour = sess["hour"];
-      hours1.add(hour);
-      var minute = sess["minute"];
-      minutes1.add(minute);
-      var ampm = sess["ampm"];
-      ampms1.add(ampm);
-      var sessionType = sess["sessionType"];
-      sessionTypes1.add(sessionType);
+    List allData = data["data"];
+    print(allData.length);
+    for(int i=0;i<allData.length;i++) {
+      Map info = allData[i];
+      populate.add(SessionDetails(
+          info["phone_number"],
+          info["date"],
+          info["hour"],
+          info["minute"],
+          info["sessionType"]));
     }
+    print(populate.length);
     setState(() {
-      this.phones = phones1;
-      this.dates = dates1;
-      this.hours = hours1;
-      this.minutes = minutes1;
-      this.ampms = ampms1;
-      this.sessionTypes = sessionTypes1;
+      if(populate.isEmpty) showText = true;
       showLoading = false;
     });
   }
@@ -91,27 +68,37 @@ class _SessionsBookedState extends State<SessionsBooked> {
         title: const Text("Sessions Booked"),
         backgroundColor: const Color(0xff6633ff),
       ),
-      body: showLoading? const Center(child: CircularProgressIndicator()) :
-      dates.isNotEmpty? ListView.builder(
-          itemCount: dates.length,
+      body: showLoading? const Center(child: CircularProgressIndicator(
+        color: Color(0xff6633ff),
+      )) :
+      showText? const Center(
+        child: Text(
+            "Sessions that you book will appear here"
+        ),
+      ) : ListView.builder(
+          itemCount: populate.length,
           itemBuilder: (BuildContext context, int index) {
             return SessionCard(
-              phoneNumber:phones[index],
-              date:dates[index],
-              sessionType:sessionTypes[index],
-              hour:hours[index],
-              minute:minutes[index],
+              phoneNumber: populate[index].phone,
+              date: populate[index].date,
+              sessionType: populate[index].sessionType,
+              hour: populate[index].hour,
+              minute: populate[index].minute,
             );
           }
-      ) : const Center(
-        child: Text(
-          "Sessions that you book will appear here"
-        ),
       )
     );
   }
+}
 
+class SessionDetails {
+  final String phone;
+  final String date;
+  final String hour;
+  final String minute;
+  final String sessionType;
 
+  SessionDetails(this.phone, this.date, this.hour, this.minute, this.sessionType);
 
 }
 

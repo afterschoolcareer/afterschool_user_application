@@ -58,8 +58,8 @@ class _HomescreenState extends State<Homescreen> {
                   label: "Shortlist"
                     ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.compare_rounded),
-                  activeIcon: Icon(Icons.compare_rounded),
+                  icon: Icon(CupertinoIcons.money_dollar_circle),
+                  activeIcon: Icon(CupertinoIcons.money_dollar_circle_fill),
                   label: "Loan Screen"
                 ),
                 BottomNavigationBarItem(
