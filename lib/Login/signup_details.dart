@@ -15,7 +15,7 @@ class SignupDetails extends StatefulWidget {
   final String number;
   final String pass;
   final String referralCode;
-  const SignupDetails(this.name, this.number, this.pass, this.referralCode, {Key? key}) : super(key: key);
+  const  SignupDetails(this.name, this.number, this.pass, this.referralCode, {Key? key}) : super(key: key);
 
   @override
   State<SignupDetails> createState() => _SignupDetailsState();

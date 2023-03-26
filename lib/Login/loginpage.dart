@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../Models/global_vals.dart';
+import 'forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -167,6 +168,12 @@ class _LoginPageState extends State<LoginPage> {
     }
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass, referralCode)));
+  }
+
+  void goToForgotPassword() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (BuildContext context) => const ForgotPassword())
+    );
   }
 
   @override
@@ -339,10 +346,8 @@ class _LoginPageState extends State<LoginPage> {
                                                   ),
                                                   recognizer:
                                                       TapGestureRecognizer()
-                                                        ..onTap = () {
-                                                          print(
-                                                              "forgot password clicked");
-                                                        }),
+                                                        ..onTap = goToForgotPassword
+                                              ),
                                             ]),
                                           ),
                                         ),

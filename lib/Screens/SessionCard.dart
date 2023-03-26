@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'coaching_screen.dart';
 
 class SessionCard extends StatefulWidget {
@@ -12,7 +13,7 @@ class SessionCard extends StatefulWidget {
   final String sessionType;
   final String hour;
   final String minute;
-  SessionCard({Key? key, required this.phoneNumber, required this.date,
+  const SessionCard({Key? key, required this.phoneNumber, required this.date,
     required this.sessionType, required this.hour, required this.minute}) : super(key: key);
 
   @override
@@ -21,69 +22,81 @@ class SessionCard extends StatefulWidget {
 
 class _SessionCardState extends State<SessionCard> {
 
+  String date = "";
 
-  var baseUrl = 'https://afterschoolcareer.com:8080';
-  var client = http.Client();
+  @override
+  void initState() {
+    setDate();
+    super.initState();
+  }
 
+  void setDate() {
+    for(int i=0;i<widget.date.length;i++) {
+      if(widget.date[i] == ' ') break;
+      date+=widget.date[i];
+    }
+  }
+
+  Future<dynamic> showAlertDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Report an Issue"),
+            content: const Text("If you have any issue related to this booked session, tap on Report to connect with us."),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                        color: Colors.black45
+                    ),
+                  )),
+              TextButton(
+                  onPressed: openEmail,
+                  child: const Text(
+                    "Report",
+                    style: TextStyle(
+                        color: Color(0xff6633ff)
+                    ),
+                  ))
+            ],
+          );
+        }
+    );
+  }
+
+  void openEmail() {
+    Uri emailData = Uri.parse('mailto:contact@afterschoolcareer.com?subject=Issue with Session: ${widget.sessionType}, booked on $date, at ${widget.hour}:${widget.minute}');
+    launchUrl(emailData);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
 
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      height: 30,
-      child: Container(
-          padding: const EdgeInsets.only(top:10, left:10, right: 10,bottom: 10),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                    color: Color(0xff9999ff),
-                    spreadRadius: 3,
-                    blurRadius: 10,
-                    offset: Offset(0, 0)
-                )
-              ]
-          ),
-          child: Row(
-             children: [
-               Container(
-                 width: width/5,
-                 height: 30,
-                 child: Text(
-                   widget.phoneNumber,
-                   style: TextStyle(color:Colors.green, fontSize: 10),
-                 ),
-                ),
-                   Container(
-                     width: width/5,
-                     height: 30,
-                     child: Text(
-                       widget.date,
-                       style: TextStyle(color:Colors.green, fontSize: 10),
-                     ),
-                   ),
-               Container(
-                 width: width/5,
-                 height: 30,
-                 child: Text(
-                   widget.sessionType,
-                   style: TextStyle(color:Colors.green, fontSize: 10),
-                 ),
-               ),
-               Container(
-                 width: width/5,
-                 height: 30,
-                 child: Text(
-                   "${widget.hour}:${widget.minute}",
-                   style: TextStyle(color:Colors.green, fontSize: 10),
-                 ),
-               )
-
-             ],
+      padding: const EdgeInsets.all(5),
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(0xff6633ff)),
+        borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Booked: $date at ${widget.hour}:${widget.minute}"),
+          Text("Session: ${widget.sessionType}"),
+          IconButton(
+              onPressed: showAlertDialog,
+              icon: const Icon(
+                Icons.error_outline,
+                color: Color(0xffff9900),
+              )
           )
-
-
+        ],
       ),
     );
   }

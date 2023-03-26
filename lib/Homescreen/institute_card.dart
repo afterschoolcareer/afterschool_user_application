@@ -101,7 +101,7 @@ class _InstituteCardState extends State<InstituteCard> {
             BoxShadow(
             color: Color(0xff9999ff),
                 spreadRadius: 3,
-                blurRadius: 10,
+                blurRadius: 7,
                 offset: Offset(0, 0)
           )
           ]

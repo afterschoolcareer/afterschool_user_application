@@ -29,7 +29,6 @@ class _SessionsBookedState extends State<SessionsBooked> {
   var client = http.Client();
   late SharedPreferences sharedPreferences;
 
-  _SessionsBookedState();
   @override
   void initState() {
     getAllData();
@@ -93,7 +92,7 @@ class _SessionsBookedState extends State<SessionsBooked> {
         backgroundColor: const Color(0xff6633ff),
       ),
       body: showLoading? const Center(child: CircularProgressIndicator()) :
-      ListView.builder(
+      dates.isNotEmpty? ListView.builder(
           itemCount: dates.length,
           itemBuilder: (BuildContext context, int index) {
             return SessionCard(
@@ -104,7 +103,11 @@ class _SessionsBookedState extends State<SessionsBooked> {
               minute:minutes[index],
             );
           }
-      ),
+      ) : const Center(
+        child: Text(
+          "Sessions that you book will appear here"
+        ),
+      )
     );
   }
 

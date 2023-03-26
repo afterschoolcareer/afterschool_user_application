@@ -83,7 +83,7 @@ class _RedeemCoins extends State<RedeemCoins> {
   void redeemed(context){
     Navigator.of(context).pop();
     setState(() {
-      available_coins = available_coins-5;
+      available_coins = available_coins-50;
       sharedPreferences?.setInt("coins", available_coins);
     });
 
@@ -182,7 +182,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                 Container(
                     width:width/1.07,
                     height: height/4,
-
+                    margin: const EdgeInsets.only(top:20),
                     padding: const EdgeInsets.only(left:10,top:10,right:10),
                     decoration: BoxDecoration(
                         color: Colors.white,
@@ -217,6 +217,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                               InkWell(
                                 onTap: onViewDetailsTapped_counsellor,
                                 child: Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
                                   padding: const EdgeInsets.only(top: 10, bottom: 10,),
                                   width: MediaQuery.of(context).size.width / 4,
                                   height: 40,
@@ -251,7 +252,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                       ],
 
                     )),
-                const SizedBox(width: 10,height: 10,),
+                const SizedBox(width: 10,height: 30),
                 Container(
                     width:width/1.07,
                     height: height/4,
@@ -290,6 +291,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                               InkWell(
                                 onTap: onViewDetailsTapped_topper,
                                 child: Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
                                   padding: const EdgeInsets.only(top: 10, bottom: 10,),
                                   width: MediaQuery.of(context).size.width / 4,
                                   height: 40,

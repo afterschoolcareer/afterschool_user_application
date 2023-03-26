@@ -143,7 +143,9 @@ class _ShortlistScreenState extends State<ShortlistScreen> {
       ),
       drawer: const AppBarDrawer(),
       backgroundColor: Colors.white,
-      body: showLoading? const Center(child: CircularProgressIndicator()) :
+      body: showLoading? const Center(child: CircularProgressIndicator(
+        color: Color(0xff6633ff),
+      )) :
           showText? const Center(child: Text("Institutes that you shortlist will appear here.")) :
       ListView.builder(
         itemCount: populate.length,
