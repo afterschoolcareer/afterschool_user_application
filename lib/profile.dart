@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login/loginpage.dart';
 import 'Screens/SessionsBooked.dart';
+import 'Screens/enrollment_list_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -52,6 +53,12 @@ class ProfilePageState extends State<ProfilePage> {
         MaterialPageRoute(
             builder: (context) => const SessionsBooked()
         )
+    );
+  }
+
+  void openEnrollments() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (BuildContext context) => const EnrollmentListScreen())
     );
   }
 
@@ -188,7 +195,7 @@ class ProfilePageState extends State<ProfilePage> {
                     )
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: openEnrollments,
                   child: Container(
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(

@@ -55,6 +55,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   bool showShortlisted = false;
   bool showLoading = false;
+  bool isBooked = false;
 
   List<String> feeView = [
     "10th Passout - 2 Years",
@@ -68,6 +69,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   @override
   void initState() {
+    setBookingInfo();
     getDetails(widget.id);
     super.initState();
   }
@@ -251,6 +253,28 @@ class _CoachingScreenState extends State<CoachingScreen> {
     });
   }
 
+  void setBookingInfo() async {
+    setState(() {
+      showLoading= true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var number = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/getAllBookings/?phone_number=$number');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    List allData = data["data"];
+    for(int i=0;i<allData.length;i++) {
+      Map info = allData[i];
+      int id = info["institute_id"];
+      if(widget.id == id) {
+          setState(() {
+            isBooked = true;
+          });
+      }
+    }
+  }
+
   Future<dynamic> showAlertDialog() {
     return showDialog(
         context: context,
@@ -289,13 +313,109 @@ class _CoachingScreenState extends State<CoachingScreen> {
     );
   }
 
-  void onBooking() {
+  Future<dynamic> bookingDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Book Your Seat"),
+            content: Container(
+              child: const Text("Are you sure you want to book your seat? Institue will process your data and contact you within 3 working days for further admission process.")
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                        color: Colors.black45
+                    ),
+                  )),
+              TextButton(
+                  onPressed: onBooking,
+                  child: const Text("BOOK",
+          style: TextStyle(
+          color: Color(0xff6633ff),
+          )
+          ),
+              )
+            ],
+          );
+        }
+    );
+  }
 
+  void onBooking() async {
+    Navigator.pop(context);
+    setState(() {
+      showLoading = true;
+    });
+    SharedPreferences sharedPreferences = await  SharedPreferences.getInstance();
+    var phoneNumber = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/booknow/?phone_number=$phoneNumber&paid_amount=0&institute_id=${widget.id}');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    String status = data["data"];
+    setState(() {
+      if(status == "success") {
+        isBooked = true;
+      } else {
+        showErrorDialog();
+      }
+        showLoading = false;
+    });
+  }
+
+  Future<dynamic> showErrorDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return  AlertDialog(
+            title: const Text("Error"),
+            content: const Text("There was a technical error while resetting your passwod. Please try again after some time."),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(
+                        color: Color(0xff6633ff)
+                    ),
+                  ))
+            ],
+          );
+        }
+    );
+  }
+
+  Future<dynamic> interestDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return  AlertDialog(
+            title: const Text("Show Interest?"),
+            content: Text("If you click on OK, we will notify ${widget.coachingName} of your interest. They may contact you for further details but it is not guaranteed."),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(
+                        color: Color(0xff6633ff)
+                    ),
+                  ))
+            ],
+          );
+        }
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return DefaultTabController(
                 length: 2,
@@ -707,18 +827,18 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                     color: Color(0xff9999ff)
                                   ),
                                   child: Column(
-                                    children: const [
-                                      Text(
-                                          "Rs. 4999/- only",
+                                    children:  [
+                                      const Text(
+                                          "BOOK FOR FREE !!",
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold
                                         ),
                                       ),
-                                      SizedBox(height: 20),
+                                      const SizedBox(height: 20),
                                       Text(
-                                        "This amount will be adjusted when you pay the fees to the Institute.",
-                                        style: TextStyle(
+                                        "You can secure your admission in ${widget.coachingName} by booking your seat from below. Click on the information icon above to know the benefits of booking from AfterSchool",
+                                        style: const TextStyle(
                                           fontSize: 16,
                                         ),
                                         textAlign: TextAlign.center,
@@ -727,22 +847,81 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                ElevatedButton(
-                                    onPressed: onBooking,
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        )
+                                Visibility(
+                                  visible: !isRegistered,
+                                  child: Container(
+                                    width: width * 0.95,
+                                    margin: const EdgeInsets.only(bottom: 20),
+                                    child: Text("This institute does not support Online Admission. You can show your interest in this institute and we will forward your data to check for availability."),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: !isRegistered,
+                                  child: ElevatedButton(
+                                      onPressed: interestDialog,
+                                      style: ButtonStyle(
+                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              )
+                                          ),
+                                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
                                       ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
-                                    ),
-                                    child: Text(
-                                      isRegistered ? "BOOK NOW" : "SHOW INTEREST",
-                                      style: TextStyle(
-                                        fontSize: 20
+                                      child: const Text(
+                                        "SHOW INTEREST",
+                                        style:  TextStyle(
+                                            fontSize: 20
+                                        ),
+                                      )
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: isRegistered && !isBooked,
+                                  child: ElevatedButton(
+                                      onPressed: bookingDialog,
+                                      style: ButtonStyle(
+                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          )
+                                        ),
+                                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
                                       ),
-                                    )
+                                      child: const Text(
+                                        "BOOK NOW",
+                                        style:  TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: isBooked,
+                                  child: ElevatedButton(
+                                      onPressed: () {},
+                                      style: ButtonStyle(
+                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              )
+                                          ),
+                                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
+                                      ),
+                                      child: const Text(
+                                        "BOOKING SUCCESSFUL",
+                                        style:  TextStyle(
+                                            fontSize: 20
+                                        ),
+                                      )
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Visibility(
+                                  visible: isBooked,
+                                  child: Text(
+                                    "You have successfully booked your seat in ${widget.coachingName}. The coaching will contact you within 3 working days. If you receive no communication, please contact us.",
+                                    textAlign: TextAlign.center,
+                                  ),
                                 )
                               ],
                             )
