@@ -38,7 +38,7 @@ class _OnlineAdmissionListScreenState extends State<OnlineAdmissionListScreen> {
     for(int i=0;i<allData.length;i++) {
       Map info = allData[i];
       populate.add(OnlineAdmissionData(info["logo"], info["name"],
-          info["city"], info["center"], info["id"]));
+          info["city"], info["id"]));
     }
     setState(() {
       showLoading = false;
@@ -73,7 +73,6 @@ class OnlineAdmissionData {
   final String logo;
   final String name;
   final String location;
-  final String center;
   final int id;
-  OnlineAdmissionData(this.logo, this.name, this.location, this.center, this.id);
+  OnlineAdmissionData(this.logo, this.name, this.location, this.id);
 }

@@ -80,23 +80,30 @@ class _SessionCardState extends State<SessionCard> {
     return Container(
       padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(color: Color(0xff6633ff)),
-        borderRadius: BorderRadius.all(Radius.circular(15))
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("Booked: $date at ${widget.hour}:${widget.minute}"),
-          Text("Session: ${widget.sessionType}"),
-          IconButton(
-              onPressed: showAlertDialog,
-              icon: const Icon(
-                Icons.error_outline,
-                color: Color(0xffff9900),
-              )
-          )
-        ],
+      width: MediaQuery.of(context).size.width * 0.95,
+      child: Column(
+        children: [ Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Booking Information: $date at ${widget.hour}:${widget.minute}"),
+                Text("Session Type: ${widget.sessionType} session Booking"),
+              ],
+            ),
+            IconButton(
+                onPressed: showAlertDialog,
+                icon: const Icon(
+                  Icons.error_outline,
+                  color: Color(0xffff9900),
+                )
+            )
+          ],
+        ),
+          const Divider(thickness: 2)
+      ]
       ),
     );
   }
