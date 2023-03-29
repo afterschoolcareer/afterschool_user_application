@@ -4,16 +4,17 @@ import 'package:afterschool/Screens/online_admission_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import './NotificationCard.dart';
 
-class RedeemHistory extends StatefulWidget {
-  const RedeemHistory({Key? key}) : super(key: key);
+class NotificationListScreen extends StatefulWidget {
+  const NotificationListScreen({Key? key}) : super(key: key);
 
   @override
-  State<RedeemHistory> createState() => _RedeemHistoryState();
+  State<NotificationListScreen> createState() => _NotificationListScreenState();
 }
 
-class _RedeemHistoryState extends State<RedeemHistory> {
-  List<OnlineAdmissionData> populate = [];
+class _NotificationListScreenState extends State<NotificationListScreen> {
+  List<String> populate = [];
   bool showLoading = false;
   var baseUrl = 'https://afterschoolcareer.com:8080';
   var client = http.Client();
@@ -29,27 +30,38 @@ class _RedeemHistoryState extends State<RedeemHistory> {
       showLoading = true;
     });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var course = sharedPreferences.getString('course');
-    var uri = Uri.parse('$baseUrl//?course=$course');
+    var phoneNumber = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/getNotification/?phone_number=$phoneNumber');
     var response = await client.get(uri);
     Map data;
     data = json.decode(response.body);
     List allData = data["data"];
     for(int i=0;i<allData.length;i++) {
-      Map info = allData[i];
-      populate.add(OnlineAdmissionData(info["logo"], info["name"],
-          info["city"], info["id"]));
+      String msg = allData[i];
+      List<String> words = msg.split(' ');
+      String finalmsg="";
+      int j=0;
+      for (int i=0;i<words.length;i++){
+        finalmsg+=words[i];
+        finalmsg+=' ';
+        j++;
+        if(j%10==0){
+          finalmsg+='\n';
+        }
+      }
+      populate.add(finalmsg);
     }
     setState(() {
       showLoading = false;
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Online Admission Support"),
+        title: const Text("Notifications"),
         backgroundColor: const Color(0xff6633ff),
       ),
       body: showLoading? const Center(child: CircularProgressIndicator(
@@ -58,21 +70,13 @@ class _RedeemHistoryState extends State<RedeemHistory> {
       ListView.builder(
           itemCount: populate.length,
           itemBuilder: (BuildContext context, int index) {
-            return OnlineAdmissionCard(
-                logo: populate[index].logo,
-                name: populate[index].name,
-                location: populate[index].location,
-                id: populate[index].id);
+            return NotificationCard(
+              messege : populate[index],
+            );
           }
       ),
     );
   }
 }
 
-class OnlineAdmissionData {
-  final String logo;
-  final String name;
-  final String location;
-  final int id;
-  OnlineAdmissionData(this.logo, this.name, this.location, this.id);
-}
+

@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Screens/connect_with_toppers.dart';
 import '../Screens/careerCounselling.dart';
 import '../Screens/RedeemCoins.dart';
+import '../Screens/Notification.dart';
 import '../Screens/ReferAndEarn.dart';
 import '../profile.dart';
 import 'home.dart';
@@ -103,7 +104,11 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
     }
 
     if(menuName == "Notifications") {
-
+      Navigator.push(
+          context, MaterialPageRoute(
+          builder: (context) => const NotificationListScreen()
+      )
+      );
     }
 
     if(menuName == "Career Counselling") {

@@ -165,6 +165,8 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
     if(coins! >= 50 ){
       coins -= 50;
       sharedPreferences.setInt("coins",coins);
+      var uri = Uri.parse('$baseUrl/use50coins/?phone_number=$phone_number');
+      client.get(uri);
       //create topper session
       DateTime now = new DateTime.now();
       DateTime date = new DateTime(now.year,now.month,now.day);
