@@ -17,6 +17,9 @@ class LoanScreen extends StatefulWidget {
 
 class _LoanScreenState extends State<LoanScreen> {
 
+  var baseUrl = 'https://staging.propelld.com/v1';
+  var client = http.Client();
+
   /* managing appbar and drawer */
   void onProfileIconTapped() {
     Navigator.push(
@@ -24,6 +27,39 @@ class _LoanScreenState extends State<LoanScreen> {
   }
   /* to launch a drawer on button tap */
   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
+
+  void tryApi() async {
+    String email = "shubhamvats830@gmail.com";
+    String mobile = "8375957165";
+    int courseId = 1262;
+    String firstName = "Shubham";
+    String lastName = "Vats";
+    int fees = 250000;
+
+    Map<String,dynamic> studentData = {
+      "Email" : email,
+      "Mobile" : mobile,
+      "CourseId" : courseId,
+      "FirstName" : firstName,
+      "LastName" : lastName,
+      "DiscountedCourseFee" : fees
+    };
+
+
+    var uri = Uri.parse('$baseUrl/product/apply/generic');
+    var response = await client.post(uri,
+    headers: {
+      "client-id" : loanCredentials.clientId,
+      "client-secret" : loanCredentials.clientSecretId,
+      "Content-Type" : "application/json"
+    },
+    body: json.encode(studentData));
+
+    Map data;
+    data = json.decode(response.body);
+    print(response.statusCode);
+    print(data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +122,7 @@ class _LoanScreenState extends State<LoanScreen> {
             children: [
               Text("Propelled Screen"),
               TextButton(
-                  onPressed: () {},
+                  onPressed: tryApi,
                   child: Text("FUCK ME"))
             ]
         ),

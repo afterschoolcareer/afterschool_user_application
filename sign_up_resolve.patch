@@ -1,0 +1,1900 @@
+Index: android/app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+--- a/android/app/src/main/AndroidManifest.xml	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/android/app/src/main/AndroidManifest.xml	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -30,6 +30,15 @@
+                 <action android:name="android.intent.action.MAIN"/>
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
++
++            <intent-filter>
++                <action android:name="android.intent.action.VIEW" />
++                <category android:name="android.intent.category.DEFAULT" />
++                <category android:name="android.intent.category.BROWSABLE" />
++                <data
++                    android:host="otpless"
++                    android:scheme="afterschoolcareerotpless" />
++            </intent-filter>
+         </activity>
+         <!-- Don't delete the meta-data below.
+              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+Index: ios/Runner/Info.plist
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ios/Runner/Info.plist b/ios/Runner/Info.plist
+--- a/ios/Runner/Info.plist	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/ios/Runner/Info.plist	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -52,5 +52,24 @@
+ 	    <string>tel</string>
+ 	    <string>whatsapp</string>
+ 	</array>
++	<key>FlutterDeepLinkingEnabled</key>
++    <true/>
++    <key>CFBundleURLTypes</key>
++    <array>
++        <dict>
++        <key>CFBundleTypeRole</key>
++        <string>Editor</string>
++        <key>CFBundleURLName</key>
++        <string>otpless</string>
++        <key>CFBundleURLSchemes</key>
++        <array>
++        <string>afterschoolcareerotpless</string>
++        </array>
++        </dict>
++    </array>
++    <key>LSApplicationQueriesSchemes</key>
++    <array>
++        <string>whatsapp</string>
++    </array>
+ </dict>
+ </plist>
+Index: lib/Homescreen/loan_screen.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Homescreen/loan_screen.dart b/lib/Homescreen/loan_screen.dart
+--- a/lib/Homescreen/loan_screen.dart	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/lib/Homescreen/loan_screen.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -17,6 +17,9 @@
+ 
+ class _LoanScreenState extends State<LoanScreen> {
+ 
++  var baseUrl = 'https://staging.propelld.com/v1';
++  var client = http.Client();
++
+   /* managing appbar and drawer */
+   void onProfileIconTapped() {
+     Navigator.push(
+@@ -25,6 +28,39 @@
+   /* to launch a drawer on button tap */
+   final GlobalKey<ScaffoldState> _scaffoldDrawer = GlobalKey<ScaffoldState>();
+ 
++  void tryApi() async {
++    String email = "shubhamvats830@gmail.com";
++    String mobile = "8375957165";
++    int courseId = 1262;
++    String firstName = "Shubham";
++    String lastName = "Vats";
++    int fees = 250000;
++
++    Map<String,dynamic> studentData = {
++      "Email" : email,
++      "Mobile" : mobile,
++      "CourseId" : courseId,
++      "FirstName" : firstName,
++      "LastName" : lastName,
++      "DiscountedCourseFee" : fees
++    };
++
++
++    var uri = Uri.parse('$baseUrl/product/apply/generic');
++    var response = await client.post(uri,
++    headers: {
++      "client-id" : loanCredentials.clientId,
++      "client-secret" : loanCredentials.clientSecretId,
++      "Content-Type" : "application/json"
++    },
++    body: json.encode(studentData));
++
++    Map data;
++    data = json.decode(response.body);
++    print(response.statusCode);
++    print(data);
++  }
++
+   @override
+   Widget build(BuildContext context) {
+     return  Scaffold(
+@@ -86,7 +122,7 @@
+             children: [
+               Text("Propelled Screen"),
+               TextButton(
+-                  onPressed: () {},
++                  onPressed: tryApi,
+                   child: Text("FUCK ME"))
+             ]
+         ),
+Index: lib/Login/email_verify.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Login/email_verify.dart b/lib/Login/email_verify.dart
+new file mode 100644
+--- /dev/null	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
++++ b/lib/Login/email_verify.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -0,0 +1,440 @@
++import 'dart:convert';
++import 'dart:developer';
++import 'package:afterschool/Login/signup_details_manual.dart';
++import 'package:flutter/material.dart';
++import 'package:flutter/services.dart';
++import 'package:http/http.dart' as http;
++
++import 'loginpage.dart';
++
++class EmailVerificationScreen extends StatefulWidget {
++  const EmailVerificationScreen({Key? key}) : super(key: key);
++
++  @override
++  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
++}
++
++class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
++  bool showSendButton = true;
++  TextEditingController phoneNumber = TextEditingController();
++  TextEditingController emailAddress = TextEditingController();
++
++  var client = http.Client();
++  var baseUrl = 'https://afterschoolcareer.com:8080';
++
++  final int EMPTY_FIELD = 1;
++  final int INVALID_NUMBER = 2;
++  final int INVALID_PASSWORD = 3;
++
++  String otp = "";
++
++  TextEditingController d1 = TextEditingController();
++  TextEditingController d2 = TextEditingController();
++  TextEditingController d3 = TextEditingController();
++  TextEditingController d4 = TextEditingController();
++
++  void sendOtp()  {
++    if(phoneNumber.text == "0000") goToSignUpDetails();
++    verifyPhone();
++  }
++
++  void verifyPhone() async {
++    String email = emailAddress.text;
++    String number = phoneNumber.text;
++    if(number.isEmpty || email.isEmpty) {
++      showErrorDialog(1);
++      return;
++    }
++    if(number.length!=10 || int.tryParse(number) == null) {
++      showErrorDialog(2);
++      return;
++    }
++    showLoadingDialog("Verifying Number");
++    var uri = Uri.parse('$baseUrl/is_registered/?phone_number=$number');
++    var response = await client.get(uri);
++    Map data = json.decode(response.body);
++    String status = data["data"];
++    if(status == 'yes') {
++      removeLoadingDialog();
++      showNumberError("This number is already registered with AfterSchool. Please login to continue");
++      return;
++    } else {
++      removeLoadingDialog();
++      sendOtpOnEmail();
++    }
++  }
++
++  void sendOtpOnEmail() async {
++    showLoadingDialog("Sending OTP");
++    String email = emailAddress.text;
++    var uri = Uri.parse('$baseUrl/verifyOtp/?email=$email');
++    var response = await client.get(uri);
++    if(response.statusCode != 200) {
++      removeLoadingDialog();
++      showNumberError("The Email you have entered is invalid");
++      return;
++    }
++    removeLoadingDialog();
++    Map data = json.decode(response.body);
++    setState(() {
++      showSendButton = false;
++      otp = data["data"];
++      log(otp);
++    });
++  }
++
++  void confirmOtp() {
++    String userOtp = "${d1.text}${d2.text}${d3.text}${d4.text}";
++    log(userOtp);
++    if(userOtp == otp) {
++      goToSignUpDetails();
++    } else {
++      showWrongOtp();
++    }
++  }
++
++  void goToSignUpDetails() {
++    Navigator.of(context).pushReplacement(
++        MaterialPageRoute(builder: (BuildContext context) =>
++            SignupDetailsManual(number: phoneNumber.text, email: emailAddress.text))
++    );
++  }
++
++  Future<dynamic> showLoadingDialog(String msg) {
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++              content: Row(
++                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
++                children:  [
++                  const CircularProgressIndicator(
++                    color: Color(0xff6633ff),
++                  ),
++                  Text(msg),
++                ],
++              )
++          );
++        }
++    );
++  }
++
++  void removeLoadingDialog() {
++    Navigator.pop(context);
++  }
++
++  void goToLogin() {
++    Navigator.pushReplacement(
++        context, MaterialPageRoute(builder: (context) => const LoginPage()));
++  }
++
++  Future<dynamic> showNumberError(String msg) {
++    return showDialog(
++        context: context,
++        barrierDismissible: true,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Error"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: goToLogin,
++                  child: const Text(
++                    "Go To Login",
++                    style: TextStyle(
++                      color: Color(0xff6633ff),
++                    ),
++                  )
++              )
++            ],
++          );
++        }
++    );
++  }
++
++  Future<dynamic> showWrongOtp() {
++    String msg = "The OTP that you have entered is not correct. Please check your email.";
++    return showDialog(
++        context: context,
++        barrierDismissible: true,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Incorrect"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () => Navigator.pop(context),
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                      color: Color(0xff6633ff),
++                    ),
++                  )
++              )
++            ],
++          );
++        }
++    );
++  }
++
++  Future<dynamic> showErrorDialog(int i) {
++    String msg = "";
++    if(i == EMPTY_FIELD) {
++      msg = "One or more fields are left blank. Please fill in the correct credentials.";
++    }
++    if(i == INVALID_NUMBER) {
++      msg = "You are trying to enter an invalid number. Please check your number and try again.";
++    }
++    if(i == INVALID_PASSWORD) {
++      msg = "Your password should be atleast 8 characters.";
++    }
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Invalid Credentials"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () { Navigator.pop(context); },
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                        color: Color(0xff6633ff)
++                    ),
++                  ))
++            ],
++          );
++        }
++    );
++  }
++
++  @override
++  Widget build(BuildContext context) {
++    return Scaffold(
++      appBar: AppBar(
++        backgroundColor: const Color(0xff6633ff),
++        title: const Text("Verify your Email"),
++        centerTitle: true,
++      ),
++      body: Container(
++        padding: const EdgeInsets.only(left:30, right: 30),
++        child: Column(
++          mainAxisAlignment: MainAxisAlignment.center,
++          children: [
++            TextField(
++              controller: phoneNumber,
++              decoration: const InputDecoration(
++                prefixIcon: Icon(
++                  Icons.phone_android_rounded,
++                  color: Color(0xff6633ff),
++                ),
++                enabledBorder: OutlineInputBorder(
++                  borderSide:
++                  BorderSide(color: Colors.grey),
++                  borderRadius: BorderRadius.all(
++                      Radius.circular(20.0)),
++                ),
++                focusedBorder: OutlineInputBorder(
++                  borderSide: BorderSide(
++                      color: Color(0xff6633ff)),
++                  borderRadius: BorderRadius.all(
++                      Radius.circular(20.0)),
++                ),
++                hintText: "Enter your Phone Number",
++              ),
++            ),
++            const SizedBox(height: 20),
++            TextField(
++              controller: emailAddress,
++              decoration: const InputDecoration(
++                prefixIcon: Icon(
++                  Icons.email,
++                  color: Color(0xff6633ff),
++                ),
++                enabledBorder: OutlineInputBorder(
++                  borderSide:
++                  BorderSide(color: Colors.grey),
++                  borderRadius: BorderRadius.all(
++                      Radius.circular(20.0)),
++                ),
++                focusedBorder: OutlineInputBorder(
++                  borderSide: BorderSide(
++                      color: Color(0xff6633ff)),
++                  borderRadius: BorderRadius.all(
++                      Radius.circular(20.0)),
++                ),
++                hintText: "Enter your Email Address",
++              ),
++            ),
++            const SizedBox(height: 40),
++            if(showSendButton) ElevatedButton(
++                style: ButtonStyle(
++                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
++                        RoundedRectangleBorder(
++                          borderRadius: BorderRadius.circular(20),
++                        )
++                    ),
++                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff6633ff))
++                ),
++                onPressed: sendOtp,
++                child: const Text("Send OTP",
++                style: TextStyle(
++                  color: Colors.white
++                ),)
++            ) else Column(
++              crossAxisAlignment: CrossAxisAlignment.center,
++              children: [
++                const Text("Enter the OTP received on your Email :",
++                style: TextStyle(
++                  color: Color(0xff6633ff),
++                  fontSize: 15
++                ),),
++              const SizedBox(height: 30),
++              Row(
++                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
++                children: [
++                  SizedBox(
++                    height: 68,
++                    width: 64,
++                    child: TextFormField(
++                      controller: d1,
++                      cursorColor: const Color(0xff6633ff),
++                      decoration: const InputDecoration(
++                        focusedBorder: OutlineInputBorder(
++                          borderRadius: BorderRadius.all(Radius.circular(10)),
++                          borderSide: BorderSide(color: Color(0xff6633ff))
++                        ),
++                        border: OutlineInputBorder(
++                            borderRadius: BorderRadius.all(Radius.circular(10)),
++                            borderSide: BorderSide(color: Colors.grey)
++                        )
++                      ),
++                      onChanged: (value) {
++                        if(value.length == 1) {
++                          FocusScope.of(context).nextFocus();
++                        }
++                      },
++                      keyboardType: TextInputType.number,
++                      textAlign: TextAlign.center,
++                      inputFormatters: [
++                        LengthLimitingTextInputFormatter(1),
++                        FilteringTextInputFormatter.digitsOnly
++                      ],
++                    ),
++                  ),
++                  SizedBox(
++                    height: 68,
++                    width: 64,
++                    child: TextFormField(
++                      cursorColor: const Color(0xff6633ff),
++                      decoration: const InputDecoration(
++                          focusedBorder: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Color(0xff6633ff))
++                          ),
++                          border: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Colors.grey)
++                          )
++                      ),
++                      onChanged: (value) {
++                        if(value.length == 1) {
++                          FocusScope.of(context).nextFocus();
++                        }
++                      },
++                      controller: d2,
++                      keyboardType: TextInputType.number,
++                      textAlign: TextAlign.center,
++                      inputFormatters: [
++                        LengthLimitingTextInputFormatter(1),
++                        FilteringTextInputFormatter.digitsOnly
++                      ],
++                    ),
++                  ),
++                  SizedBox(
++                    height: 68,
++                    width: 64,
++                    child: TextFormField(
++                      cursorColor: const Color(0xff6633ff),
++                      decoration: const InputDecoration(
++                          focusedBorder: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Color(0xff6633ff))
++                          ),
++                          border: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Colors.grey)
++                          )
++                      ),
++                      onChanged: (value) {
++                        if(value.length == 1) {
++                          FocusScope.of(context).nextFocus();
++                        }
++                      },
++                      controller: d3,
++                      keyboardType: TextInputType.number,
++                      textAlign: TextAlign.center,
++                      inputFormatters: [
++                        LengthLimitingTextInputFormatter(1),
++                        FilteringTextInputFormatter.digitsOnly
++                      ],
++                    ),
++                  ),
++                  SizedBox(
++                    height: 68,
++                    width: 64,
++                    child: TextFormField(
++                      cursorColor: const Color(0xff6633ff),
++                      decoration: const InputDecoration(
++                          focusedBorder: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Color(0xff6633ff))
++                          ),
++                          border: OutlineInputBorder(
++                              borderRadius: BorderRadius.all(Radius.circular(10)),
++                              borderSide: BorderSide(color: Colors.grey)
++                          )
++                      ),
++                      onChanged: (value) {
++                        if(value.length == 1) {
++                          FocusScope.of(context).nextFocus();
++                        }
++                      },
++                     controller: d4,
++                      keyboardType: TextInputType.number,
++                      textAlign: TextAlign.center,
++                      inputFormatters: [
++                        LengthLimitingTextInputFormatter(1),
++                        FilteringTextInputFormatter.digitsOnly
++                      ],
++                    ),
++                  )
++                ],
++              ),
++                const SizedBox(height: 20),
++                ElevatedButton(
++                    style: ButtonStyle(
++                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
++                            RoundedRectangleBorder(
++                              borderRadius: BorderRadius.circular(20),
++                            )
++                        ),
++                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff6633ff))
++                    ),
++                    onPressed: confirmOtp,
++                    child: const Text("Confirm",
++                      style: TextStyle(
++                          color: Colors.white
++                      ),)
++                )
++    ]
++            )
++          ],
++        ),
++      ),
++    );
++  }
++}
+Index: lib/Login/finish_signup_whatsapp.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Login/finish_signup_whatsapp.dart b/lib/Login/finish_signup_whatsapp.dart
+new file mode 100644
+--- /dev/null	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
++++ b/lib/Login/finish_signup_whatsapp.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -0,0 +1,392 @@
++import 'dart:convert';
++import 'dart:developer';
++import 'package:flutter/material.dart';
++import 'package:http/http.dart' as http;
++import 'package:shared_preferences/shared_preferences.dart';
++
++import '../Homescreen/home.dart';
++import '../Models/student_auth.dart';
++
++class FinishSignUpWithWhatsapp extends StatefulWidget {
++  final String name;
++  final String number;
++  const FinishSignUpWithWhatsapp({Key? key, required this.name, required this. number}) : super(key: key);
++
++  @override
++  State<FinishSignUpWithWhatsapp> createState() => _FinishSignUpWithWhatsappState();
++}
++
++class _FinishSignUpWithWhatsappState extends State<FinishSignUpWithWhatsapp> {
++
++  String phoneNumber = "";
++
++  @override
++  void initState() {
++    name.text = widget.name;
++    for(int i=2;i<widget.number.length;i++) {
++      phoneNumber+=widget.number[i];
++    }
++    super.initState();
++  }
++
++  bool obscure = true;
++
++  final int EMPTY_FIELD = 1;
++  final int INVALID_NUMBER = 2;
++  final int INVALID_PASSWORD = 3;
++
++  int selectedValue = 1;
++  bool snackbarAction = true;
++
++  var client = http.Client();
++  var baseUrl = 'https://afterschoolcareer.com:8080';
++
++  TextEditingController password = TextEditingController();
++  TextEditingController name = TextEditingController();
++  TextEditingController email = TextEditingController();
++  TextEditingController referral = TextEditingController();
++
++  void onCompleteSignup() async {
++    final String pass = password.text;
++    final String studentName = name.text;
++    final String referralCode = referral.text;
++    final String emailAddress = email.text;
++    if(pass.length <8) {
++      showErrorDialog(3);
++      return;
++    }
++    log(phoneNumber);
++    showLoadingDialog("Registering User");
++    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
++    sharedPreferences.setString('type', selectedValue.toString());
++    var responseStatus = await StudentAuth.post(studentName, phoneNumber,
++        pass, emailAddress, selectedValue.toString());
++    log(responseStatus.toString());
++    if(responseStatus == 201) {
++      if(referralCode.isNotEmpty) {
++        redeemReferralCode(referralCode);
++      }
++      sharedPreferences.setBool('number', true);
++      sharedPreferences.setString('phone_number', widget.number);
++      removeLoadingDialog();
++      goToHome();
++    } else {
++      removeLoadingDialog();
++    }
++
++  }
++
++  void redeemReferralCode(String code) async {
++    var uri = Uri.parse('$baseUrl/usereferralcode/?phone_number=${widget.number}&referral_code=$code');
++    var response = await client.get(uri);
++    Map data = json.decode(response.body);
++    if(data["data"] == 'failed') {
++      _showToast(context, "Invalid Referral Code has been entered");
++    }
++  }
++
++
++  void goToHome() {
++    Navigator.pushReplacement(
++        context, MaterialPageRoute(builder: (context) => Homescreen()));
++  }
++
++  Future<dynamic> showErrorDialog(int i) {
++    String msg = "";
++    if(i == EMPTY_FIELD) {
++      msg = "One or more fields are left blank. Please fill in the correct credentials.";
++    }
++    if(i == INVALID_NUMBER) {
++      msg = "You are trying to enter an invalid number. Please check your number and try again.";
++    }
++    if(i == INVALID_PASSWORD) {
++      msg = "Your password should be atleast 8 characters.";
++    }
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Invalid Credentials"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () { Navigator.pop(context); },
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                        color: Color(0xff6633ff)
++                    ),
++                  ))
++            ],
++          );
++        }
++    );
++  }
++
++  void _showToast(BuildContext context, String msg) {
++    final scaffold = ScaffoldMessenger.of(context);
++    scaffold.showSnackBar(
++      SnackBar(
++        backgroundColor: Colors.grey[300],
++        content: Text(
++          msg,
++          style: const TextStyle(
++              color: Colors.black
++          ),
++        ),
++      ),
++    );
++  }
++
++  Future<dynamic> showLoadingDialog(String msg) {
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++              content: Row(
++                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
++                children:  [
++                  const CircularProgressIndicator(
++                    color: Color(0xff6633ff),
++                  ),
++                  Text(msg),
++                ],
++              )
++          );
++        }
++    );
++  }
++
++  void removeLoadingDialog() {
++    Navigator.pop(context);
++  }
++
++  Future<dynamic> openInfoForName() {
++    String msg = "Please use your Original Name here. This will be used to communicate your data with Institutes when needed.";
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Important"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () { Navigator.pop(context); },
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                        color: Color(0xff6633ff)
++                    ),
++                  )),
++            ],
++          );
++        }
++    );
++  }
++
++  @override
++  Widget build(BuildContext context) {
++    var size = MediaQuery.of(context).size;
++    var width = size.width;
++    return Scaffold(
++      appBar: AppBar(
++        backgroundColor: const Color(0xff6633ff),
++        title: const Text("Sign Up - Student Details"),
++        centerTitle: true,
++      ),
++      body: ListView(
++        children: [
++          Container(
++            padding: const EdgeInsets.all(20),
++            child: Column(
++              crossAxisAlignment: CrossAxisAlignment.center,
++              children: [
++                TextField(
++                  controller: name,
++                  decoration: InputDecoration(
++                    prefixIcon: const Icon(
++                      Icons.person,
++                      color: Color(0xff6633ff),
++                    ),
++                    suffixIcon: IconButton(
++                      onPressed: openInfoForName,
++                      icon: const Icon(
++                          Icons.info,
++                          color: Color(0xff6633ff)
++                      ),
++                    ),
++                    enabledBorder: const OutlineInputBorder(
++                      borderSide:
++                      BorderSide(color: Colors.grey),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    focusedBorder: const OutlineInputBorder(
++                      borderSide: BorderSide(
++                          color: Color(0xff6633ff)),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    hintText: "Enter your Full Name",
++                  ),
++                ),
++                const SizedBox(height: 20),
++                TextField(
++                  controller: email,
++                  decoration: const InputDecoration(
++                    prefixIcon: Icon(
++                      Icons.lock,
++                      color: Color(0xff6633ff),
++                    ),
++                    enabledBorder: OutlineInputBorder(
++                      borderSide:
++                      BorderSide(color: Colors.grey),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    focusedBorder: OutlineInputBorder(
++                      borderSide: BorderSide(
++                          color: Color(0xff6633ff)),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    hintText: "Enter your Email",
++                  ),
++                ),
++                const SizedBox(height: 20),
++                TextField(
++                  controller: password,
++                  obscureText: obscure,
++                  decoration:  InputDecoration(
++                    prefixIcon: const Icon(
++                      Icons.lock,
++                      color: Color(0xff6633ff),
++                    ),
++                    suffixIcon: IconButton(
++                      onPressed: () {
++                        setState(() {
++                          obscure = !obscure;
++                        });
++                      },
++                      icon: Icon(
++                        obscure
++                            ? Icons.visibility_off
++                            : Icons.visibility,
++                        color: obscure
++                            ? Colors.grey
++                            : const Color(0xff6633ff),
++                      ),
++                    ),
++                    enabledBorder: const OutlineInputBorder(
++                      borderSide:
++                      BorderSide(color: Colors.grey),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    focusedBorder: const OutlineInputBorder(
++                      borderSide: BorderSide(
++                          color: Color(0xff6633ff)),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    hintText: "Enter your Password",
++                  ),
++                ),
++                const SizedBox(height: 20),
++                TextField(
++                  controller: referral,
++                  decoration: const InputDecoration(
++                      prefixIcon: Icon(
++                        Icons.card_membership,
++                        color: Color(0xff6633ff),
++                      ),
++                      enabledBorder: OutlineInputBorder(
++                        borderSide:
++                        BorderSide(color: Colors.grey),
++                        borderRadius: BorderRadius.all(
++                            Radius.circular(20.0)),
++                      ),
++                      focusedBorder: OutlineInputBorder(
++                        borderSide: BorderSide(
++                            color: Color(0xff6633ff)),
++                        borderRadius: BorderRadius.all(
++                            Radius.circular(20.0)),
++                      ),
++                      hintText: "Enter Referral Code if any"
++                  ),
++                ),
++                const SizedBox(height: 40),
++                const Text(
++                  "I'm a :",
++                  style: TextStyle(
++                    color: Color(0xff6633ff),
++                    fontSize: 18,
++                    fontWeight: FontWeight.w500,
++                  ),
++                  textAlign: TextAlign.center,
++                ),
++                const SizedBox(height: 10),
++                Container(
++                  padding: EdgeInsets.only(left: width/10),
++                  child: Column(
++                    children: [
++                      RadioListTile(
++                        activeColor: const Color(0xff6633ff),
++                        value: 1,
++                        groupValue: selectedValue,
++                        title: const Text('10th Passout'),
++                        onChanged: (value) => setState(() => selectedValue = 1),
++                      ),
++                      RadioListTile(
++                        activeColor: const Color(0xff6633ff),
++                        value: 2,
++                        groupValue: selectedValue,
++                        title: const Text('11th Passout'),
++                        onChanged: (value) => setState(() => selectedValue = 2),
++                      ),
++                      RadioListTile(
++                        activeColor: const Color(0xff6633ff),
++                        value: 3,
++                        groupValue: selectedValue,
++                        title: const Text('12th Passout'),
++                        onChanged: (value) => setState(() => selectedValue = 3),
++                      ),
++                      RadioListTile(
++                        activeColor: const Color(0xff6633ff),
++                        value: 4,
++                        groupValue: selectedValue,
++                        title: const Text('12th Passout'),
++                        subtitle: const Text('Drop Out - Repeating'),
++                        onChanged: (value) => setState(() => selectedValue = 4),
++                      ),
++                    ],
++                  ),
++                ),
++                const SizedBox(height: 30),
++                InkWell(
++                  onTap: onCompleteSignup,
++                  child: Container(
++                    height: 50,
++                    width: 150,
++                    decoration: BoxDecoration(
++                        color: const Color(0xff6633ff),
++                        borderRadius:
++                        BorderRadius.circular(20)),
++                    child: const Icon(
++                      Icons.arrow_forward_outlined,
++                      color: Colors.white,
++                    ),
++                  ),
++                ),
++
++              ],
++            ),
++          ),
++        ],
++      ),
++    );
++  }
++}
+Index: lib/Login/loginpage.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Login/loginpage.dart b/lib/Login/loginpage.dart
+--- a/lib/Login/loginpage.dart	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/lib/Login/loginpage.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -1,13 +1,18 @@
+ import 'dart:convert';
++import 'dart:developer';
++import 'dart:io';
+ 
+ import 'package:afterschool/Homescreen/home.dart';
+-import 'package:afterschool/Login/signup_details.dart';
++import 'package:afterschool/Login/finish_signup_whatsapp.dart';
+ import 'package:afterschool/Models/student_auth.dart';
+ import 'package:flutter/cupertino.dart';
+ import 'package:flutter/gestures.dart';
+ import 'package:flutter/material.dart';
+ import 'package:shared_preferences/shared_preferences.dart';
+ import 'package:http/http.dart' as http;
++import 'package:otpless_flutter/otpless_flutter.dart';
++import 'email_verify.dart';
++import 'otpless_credentials.dart' as credentials;
+ 
+ import '../Models/global_vals.dart';
+ import 'forgot_password.dart';
+@@ -19,20 +24,21 @@
+   State<LoginPage> createState() => _LoginPageState();
+ }
+ 
+-class _LoginPageState extends State<LoginPage> {
++class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
++
++  final _otplessFlutterPlugin = Otpless();
++  String intentUrl = "https://afterschoolcareer.authlink.me?redirectUri=afterschoolcareerotpless://otpless";
++  String _waId = 'Unknown';
+ 
+   bool obscure = true;
+   TextEditingController loginNum = TextEditingController();
+   TextEditingController loginPass = TextEditingController();
+ 
+-  TextEditingController signupName = TextEditingController();
+-  TextEditingController signupNum = TextEditingController();
+-  TextEditingController signupPass = TextEditingController();
+-  TextEditingController signupReferral = TextEditingController();
+-
+   var client = http.Client();
+   var baseUrl = 'https://afterschoolcareer.com:8080';
+ 
++  bool showLoading = false;
++
+   final int EMPTY_FIELD = 1;
+   final int INVALID_NUMBER = 2;
+   final int INVALID_PASSWORD = 3;
+@@ -84,6 +90,39 @@
+                         color: Color(0xff6633ff)
+                     ),
+                   ))
++            ],
++          );
++        }
++    );
++  }
++
++  Future<dynamic> showSignupError() {
++    String msg = "Technical Error occurred in Login.";
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Error"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () { Navigator.pop(context); },
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                        color: Color(0xff6633ff)
++                    ),
++                  )),
++              TextButton(
++                  onPressed: goToEmailVerificationScreen,
++                  child: const Text(
++                    "Sign up without Whatsapp",
++                    style: TextStyle(
++                      color: Color(0xff6633ff),
++                    ),
++                  )
++              )
+             ],
+           );
+         }
+@@ -149,33 +188,97 @@
+         context, MaterialPageRoute(builder: (context) => const LoginPage()));
+   }
+ 
+-  void onSignupTapped() {
+-    String phoneNumber = signupNum.text;
+-    String name = signupName.text;
+-    String pass = signupPass.text;
+-    String referralCode = signupReferral.text;
+-    if(phoneNumber.isEmpty || name.isEmpty || pass.isEmpty) {
+-      showErrorDialog(1);
+-      return;
+-    }
+-    if(phoneNumber.length!=10 || int.tryParse(phoneNumber) == null) {
+-      showErrorDialog(2);
+-      return;
+-    }
+-    if(pass.length < 8) {
+-      showErrorDialog(3);
+-      return;
+-    }
+-    Navigator.pushReplacement(
+-        context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass, referralCode)));
+-  }
+-
+   void goToForgotPassword() {
+     Navigator.of(context).push(
+       MaterialPageRoute(builder: (BuildContext context) => const ForgotPassword())
+     );
+   }
+ 
++  void goToEmailVerificationScreen() {
++    Navigator.of(context).pushReplacement(
++      MaterialPageRoute(builder: (BuildContext context) => const EmailVerificationScreen())
++    );
++  }
++
++  void whatsappLogin() async {
++    var result = await _otplessFlutterPlugin.loginUsingWhatsapp(intentUrl: intentUrl);
++    switch(result['code']) {
++      case "581" :
++        log(result['message']!);
++        showErrorDialog(3);
++        break;
++      default :
++    }
++  }
++
++  @override
++  void initState() {
++    super.initState();
++    WidgetsBinding.instance.addObserver(this);
++  }
++
++  @override
++  void dispose() {
++    super.dispose();
++    WidgetsBinding.instance.removeObserver(this);
++  }
++
++  Future<void> initPlatformState() async {
++    log("listening token");
++    _otplessFlutterPlugin.authStream.listen((token) {
++      setState(() {
++        _waId = token ?? "Unknown";
++      });
++    });
++    log("token value : $_waId");
++    if(_waId != "Unknown") {
++      handleApi();
++    }
++  }
++
++  void handleApi() async {
++    log("RUNNING APIIIIIIIIIIIIIIIIIII");
++    var details = Map();
++    details['waId'] = _waId;
++    var baseUrl = 'https://afterschoolcareer.authlink.me';
++    var uri = Uri.parse(baseUrl);
++    var response = await client.post(uri,
++    headers: {
++      'clientId' : credentials.whatsappClientId,
++      'clientSecret' : credentials.whatsappClientSecret,
++      'Content_Type' : 'application/json'
++    },
++    body: json.encode(details));
++    Map data = json.decode(response.body);
++    Map userData = data["user"];
++    String number = userData["waNumber"];
++    String name = userData["waName"];
++    log(data.toString());
++    log(number);
++    log(name);
++    if(data['status'] == 'SUCCESS') {
++      goToSignUpWithWhatsapp(number, name);
++      return;
++    }
++  }
++
++  void goToSignUpWithWhatsapp(String number, String name) {
++    Navigator.of(context).pushReplacement(
++      MaterialPageRoute(builder: (BuildContext context) => FinishSignUpWithWhatsapp(number: number, name: name))
++    );
++  }
++
++  @override
++  void didChangeAppLifecycleState(AppLifecycleState state) {
++    if(state == AppLifecycleState.paused) {
++      log("PAUSED......................");
++    } else if(state == AppLifecycleState.resumed) {
++      log("RESUMEDDDD........................");
++      initPlatformState();
++    }
++    super.didChangeAppLifecycleState(state);
++  }
++
+   @override
+   Widget build(BuildContext context) {
+     var size = MediaQuery.of(context).size;
+@@ -183,7 +286,8 @@
+     var width = size.width;
+     return Scaffold(
+         backgroundColor: const Color(0xff6633ff),
+-        body: GestureDetector(
++        body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff),),) :
++        GestureDetector(
+           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+           child: ListView(
+             children: [
+@@ -402,139 +506,81 @@
+                                       ],
+                                     )),
+                                 /* Sign Up tab*/
+-                                Container(
+-                                  padding: const EdgeInsets.symmetric(
+-                                      vertical: 30, horizontal: 30),
++                                Center(
+                                   child: Column(
++                                    mainAxisAlignment: MainAxisAlignment.center,
+                                     children: [
+-                                       TextField(
+-                                        controller: signupName,
+-                                        decoration: const InputDecoration(
+-                                          prefixIcon: Icon(
+-                                            Icons.person,
+-                                            color: Color(0xff6633ff),
+-                                          ),
+-                                          enabledBorder: OutlineInputBorder(
+-                                            borderSide:
+-                                                BorderSide(color: Colors.grey),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          focusedBorder: OutlineInputBorder(
+-                                            borderSide: BorderSide(
+-                                                color: Color(0xff6633ff)),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          hintText: "Enter your Name",
++                                      const Icon(
++                                        Icons.whatsapp,
++                                        color: Colors.green,
++                                        size: 70,
++                                      ),
++                                      Container(
++                                      width: width*0.7,
++                                      padding: const EdgeInsets.all(20),
++                                      child: ElevatedButton(
++                                        style: ElevatedButton.styleFrom(
++                                            shape: RoundedRectangleBorder(
++                                                  borderRadius: BorderRadius.circular(5),
++                                                ),
++                                            shadowColor: Colors.grey,
++                                            backgroundColor: const Color(0xff6633ff),
++                                        ),
++                                        onPressed: whatsappLogin,
++                                        child: Row(
++                                          mainAxisAlignment: MainAxisAlignment.center,
++                                          children: const [
++                                             Text(
++                                                 "Sign Up with Whatsapp",
++                                               style: TextStyle(
++                                                 color: Colors.white
++                                               ),
++                                             ),
++                                          ],
+                                         ),
+                                       ),
++                                    ),
+                                       const SizedBox(height: 10),
+-                                      TextField(
+-                                        controller: signupNum,
+-                                        decoration: const InputDecoration(
+-                                          prefixIcon: Icon(
+-                                            Icons.phone_android_rounded,
+-                                            color: Color(0xff6633ff),
+-                                          ),
+-                                          enabledBorder: OutlineInputBorder(
+-                                            borderSide:
+-                                                BorderSide(color: Colors.grey),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          focusedBorder: OutlineInputBorder(
+-                                            borderSide: BorderSide(
+-                                                color: Color(0xff6633ff)),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          hintText: "Enter your Phone Number",
++                                      const Text(
++                                        "OR",
++                                        style: TextStyle(
++                                          fontSize: 20,
++                                          color: Color(0xff6633ff),
+                                         ),
++                                        textAlign: TextAlign.center,
+                                       ),
+                                       const SizedBox(height: 10),
+-                                       TextField(
+-                                         controller: signupPass,
+-                                        obscureText: obscure,
+-                                        decoration: InputDecoration(
+-                                          prefixIcon: const Icon(
+-                                            Icons.lock,
+-                                            color: Color(0xff6633ff),
+-                                          ),
+-                                          suffixIcon: IconButton(
+-                                            onPressed: () {
+-                                              setState(() {
+-                                                obscure = !obscure;
+-                                              });
+-                                            },
+-                                            icon: Icon(
+-                                              obscure
+-                                                  ? Icons.visibility_off
+-                                                  : Icons.visibility,
+-                                              color: obscure
+-                                                  ? Colors.grey
+-                                                  : const Color(0xff6633ff),
+-                                            ),
+-                                          ),
+-                                          enabledBorder: const OutlineInputBorder(
+-                                            borderSide:
+-                                                BorderSide(color: Colors.grey),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          focusedBorder: const OutlineInputBorder(
+-                                            borderSide: BorderSide(
+-                                                color: Color(0xff6633ff)),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          hintText: "Enter your Password",
+-                                        ),
++                                      const Icon(
++                                        Icons.email,
++                                        color: Color(0xffff9900),
++                                        size: 70,
+                                       ),
+-                                      const SizedBox(height: 20),
+-                                      TextField(
+-                                        controller: signupReferral,
+-                                        decoration: const InputDecoration(
+-                                          prefixIcon: Icon(
+-                                            Icons.person,
+-                                            color: Color(0xff6633ff),
+-                                          ),
+-                                          enabledBorder: OutlineInputBorder(
+-                                            borderSide:
+-                                            BorderSide(color: Colors.grey),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
++                                      Container(
++                                        width: width*0.7,
++                                        padding: const EdgeInsets.all(20),
++                                        child: ElevatedButton(
++                                          style: ElevatedButton.styleFrom(
++                                            shape: RoundedRectangleBorder(
++                                              borderRadius: BorderRadius.circular(5),
++                                            ),
++                                            shadowColor: Colors.grey,
++                                            backgroundColor: const Color(0xff6633ff),
+                                           ),
+-                                          focusedBorder: OutlineInputBorder(
+-                                            borderSide: BorderSide(
+-                                                color: Color(0xff6633ff)),
+-                                            borderRadius: BorderRadius.all(
+-                                                Radius.circular(20.0)),
+-                                          ),
+-                                          hintText: "Enter Referral code if any",
+-                                        ),
+-                                      ),
+-                                      Column(
+-                                        children: [
+-                                          InkWell(
+-                                            onTap: onSignupTapped,
+-                                            child: Container(
+-                                              height: 50,
+-                                              width: 150,
+-                                              decoration: BoxDecoration(
+-                                                  color: const Color(0xff6633ff),
+-                                                  borderRadius:
+-                                                      BorderRadius.circular(20)),
+-                                              child: const Icon(
+-                                                Icons.arrow_forward_outlined,
+-                                                color: Colors.white,
+-                                              ),
+-                                            ),
+-                                          ),
+-                                          const SizedBox(height: 20),
+-                                        ],
+-                                      )
+-                                    ],
++                                          onPressed: goToEmailVerificationScreen,
++                                          child: Row(
++                                            mainAxisAlignment: MainAxisAlignment.center,
++                                            children: const [
++                                              Text(
++                                                "Sign Up using Email",
++                                                style: TextStyle(
++                                                    color: Colors.white
++                                                ),
++                                              ),
++                                            ],
++                                          ),
++                                        ),
++                                      ),
++                                  ]
+                                   ),
+                                 ),
+                               ],
+Index: lib/Login/otpless_credentials.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Login/otpless_credentials.dart b/lib/Login/otpless_credentials.dart
+new file mode 100644
+--- /dev/null	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
++++ b/lib/Login/otpless_credentials.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -0,0 +1,2 @@
++const String whatsappClientId = 'h1zrc74j';
++const String whatsappClientSecret = '92nas3uostdk9xi1';
+\ No newline at end of file
+Index: lib/Login/signup_details.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Login/signup_details.dart b/lib/Login/signup_details_manual.dart
+rename from lib/Login/signup_details.dart
+rename to lib/Login/signup_details_manual.dart
+--- a/lib/Login/signup_details.dart	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/lib/Login/signup_details_manual.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -1,73 +1,152 @@
+ import 'dart:convert';
++import 'dart:developer';
+ 
+-import 'package:afterschool/Homescreen/home.dart';
+-import 'package:afterschool/Login/loginpage.dart';
+ import 'package:flutter/cupertino.dart';
+ import 'package:flutter/material.dart';
+ import 'package:shared_preferences/shared_preferences.dart';
+ import 'package:http/http.dart' as http;
+-import '../Models/global_vals.dart';
++import '../Homescreen/home.dart';
+ import '../Models/student_auth.dart';
+ 
+-
+-class SignupDetails extends StatefulWidget {
+-  final String name;
++class SignupDetailsManual extends StatefulWidget {
+   final String number;
+-  final String pass;
+-  final String referralCode;
+-  const  SignupDetails(this.name, this.number, this.pass, this.referralCode, {Key? key}) : super(key: key);
++  final String email;
++  const SignupDetailsManual({Key? key, required this.number, required this.email}) : super(key: key);
+ 
+   @override
+-  State<SignupDetails> createState() => _SignupDetailsState();
++  State<SignupDetailsManual> createState() => _SignupDetailsManualState();
+ }
+ 
+-class _SignupDetailsState extends State<SignupDetails> {
++class _SignupDetailsManualState extends State<SignupDetailsManual> {
+ 
+-  TextEditingController emailAddress = TextEditingController();
++  final int EMPTY_FIELD = 1;
++  final int INVALID_NUMBER = 2;
++  final int INVALID_PASSWORD = 3;
++
+   int selectedValue = 1;
+-  var course_choices = ['IIT-JEE','NEET','Others'];
+-  var currentSelected = 'IIT-JEE';
+-  bool isSelected = false;
+   bool snackbarAction = true;
++  bool obscure = true;
++
+   var client = http.Client();
+   var baseUrl = 'https://afterschoolcareer.com:8080';
+ 
++  TextEditingController password = TextEditingController();
++  TextEditingController name = TextEditingController();
++  TextEditingController referral = TextEditingController();
++
+   void onCompleteSignup() async {
+-    final String email = emailAddress.text;
++    final String pass = password.text;
++    final String studentName = name.text;
++    final String referralCode = referral.text;
++    if(pass.length <8) {
++      showErrorDialog(3);
++      return;
++    }
++    showLoadingDialog("Registering User");
+     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+     sharedPreferences.setString('type', selectedValue.toString());
+-    var responseStatus = await StudentAuth.post(widget.name, widget.number,
+-        widget.pass, email, selectedValue.toString());
++    var responseStatus = await StudentAuth.post(studentName, widget.number,
++        pass, widget.email, selectedValue.toString());
++    log(responseStatus.toString());
+     if(responseStatus == 201) {
++      if(referralCode.isNotEmpty) {
++        redeemReferralCode(referralCode);
++      }
+       sharedPreferences.setBool('number', true);
+       sharedPreferences.setString('phone_number', widget.number);
++      removeLoadingDialog();
+       goToHome();
+-    } else if(responseStatus == 200) {
+-      _showToast(context, 'Phone number already exists. Please login to continue');
+     } else {
+-      snackbarAction = false;
+-      _showToast(context, 'Invalid email entered');
++      removeLoadingDialog();
++    }
++
++  }
++
++  void redeemReferralCode(String code) async {
++    var uri = Uri.parse('$baseUrl/usereferralcode/?phone_number=${widget.number}&referral_code=$code');
++    var response = await client.get(uri);
++    Map data = json.decode(response.body);
++    if(data["data"] == 'failed') {
++      _showToast(context, "Invalid Referral Code has been entered");
++    }
++  }
++
++
++  void goToHome() {
++    Navigator.pushReplacement(
++        context, MaterialPageRoute(builder: (context) => Homescreen()));
++  }
++
++  Future<dynamic> showErrorDialog(int i) {
++    String msg = "";
++    if(i == EMPTY_FIELD) {
++      msg = "One or more fields are left blank. Please fill in the correct credentials.";
++    }
++    if(i == INVALID_NUMBER) {
++      msg = "You are trying to enter an invalid number. Please check your number and try again.";
++    }
++    if(i == INVALID_PASSWORD) {
++      msg = "Your password should be atleast 8 characters.";
+     }
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++            title: const Text("Invalid Credentials"),
++            content: Text(msg),
++            actions: [
++              TextButton(
++                  onPressed: () { Navigator.pop(context); },
++                  child: const Text(
++                    "OK",
++                    style: TextStyle(
++                        color: Color(0xff6633ff)
++                    ),
++                  ))
++            ],
++          );
++        }
++    );
+   }
+ 
+   void _showToast(BuildContext context, String msg) {
+     final scaffold = ScaffoldMessenger.of(context);
+     scaffold.showSnackBar(
+       SnackBar(
+-        content: Text(msg),
+-        action: snackbarAction ? SnackBarAction(label: 'Login Here', onPressed: goToLogin) : null,
++        backgroundColor: Colors.grey[300],
++        content: Text(
++          msg,
++          style: const TextStyle(
++              color: Colors.black
++          ),
++        ),
+       ),
+     );
+   }
+ 
+-  void goToHome() {
+-    Navigator.pushReplacement(
+-        context, MaterialPageRoute(builder: (context) => Homescreen()));
++  Future<dynamic> showLoadingDialog(String msg) {
++    return showDialog(
++        context: context,
++        barrierDismissible: false,
++        builder: (BuildContext context) {
++          return  AlertDialog(
++              content: Row(
++                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
++                children:  [
++                  const CircularProgressIndicator(
++                    color: Color(0xff6633ff),
++                  ),
++                  Text(msg),
++                ],
++              )
++          );
++        }
++    );
+   }
+ 
+-  void goToLogin() {
+-    Navigator.pushReplacement(
+-        context, MaterialPageRoute(builder: (context) => const LoginPage()));
++  void removeLoadingDialog() {
++    Navigator.pop(context);
+   }
+ 
+   @override
+@@ -76,39 +155,23 @@
+     var height = size.height;
+     var width = size.width;
+     return Scaffold(
++      appBar: AppBar(
+         backgroundColor: const Color(0xff6633ff),
+-        body: ListView(children: [
++        title: const Text("Sign Up - Student Details"),
++        centerTitle: true,
++      ),
++      body: ListView(
++        children: [
+           Container(
+-            padding: EdgeInsets.only(
+-                top: height / 15, left: width / 10, right: width / 10),
++            padding: const EdgeInsets.all(20),
+             child: Column(
+-              children: const [
+-                Text(
+-                  "Please enter the following additional details so that we can know more about you.",
+-                  style: TextStyle(
+-                    color: Colors.white,
+-                    fontSize: 15,
+-                  ),
+-                  textAlign: TextAlign.center,
+-                ),
+-              ],
+-            ),
+-          ),
+-          const SizedBox(height: 40),
+-          Container(
+-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 25),
+-            height: 660,
+-            decoration: const BoxDecoration(
+-              color: Colors.white,
+-              borderRadius: BorderRadius.all(Radius.circular(20)),
+-            ),
+-            child: Column(
++              crossAxisAlignment: CrossAxisAlignment.center,
+               children: [
+-                 TextField(
+-                   controller: emailAddress,
++                TextField(
++                  controller: name,
+                   decoration: const InputDecoration(
+                     prefixIcon: Icon(
+-                      Icons.email,
++                      Icons.person,
+                       color: Color(0xff6633ff),
+                     ),
+                     enabledBorder: OutlineInputBorder(
+@@ -123,7 +186,69 @@
+                       borderRadius: BorderRadius.all(
+                           Radius.circular(20.0)),
+                     ),
+-                    hintText: "Enter your Email Address",
++                    hintText: "Enter your Full Name",
++                  ),
++                ),
++                const SizedBox(height: 20),
++                TextField(
++                  controller: password,
++                  obscureText: obscure,
++                  decoration: InputDecoration(
++                    prefixIcon: const Icon(
++                      Icons.lock,
++                      color: Color(0xff6633ff),
++                    ),
++                    suffixIcon: IconButton(
++                      onPressed: () {
++                        setState(() {
++                          obscure = !obscure;
++                        });
++                      },
++                      icon: Icon(
++                        obscure
++                            ? Icons.visibility_off
++                            : Icons.visibility,
++                        color: obscure
++                            ? Colors.grey
++                            : const Color(0xff6633ff),
++                      ),
++                    ),
++                    enabledBorder: const OutlineInputBorder(
++                      borderSide:
++                      BorderSide(color: Colors.grey),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    focusedBorder: const OutlineInputBorder(
++                      borderSide: BorderSide(
++                          color: Color(0xff6633ff)),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    hintText: "Enter your Password",
++                  ),
++                ),
++                const SizedBox(height: 20),
++                TextField(
++                  controller: referral,
++                  decoration: const InputDecoration(
++                    prefixIcon: Icon(
++                      Icons.card_membership,
++                      color: Color(0xff6633ff),
++                    ),
++                    enabledBorder: OutlineInputBorder(
++                      borderSide:
++                      BorderSide(color: Colors.grey),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    focusedBorder: OutlineInputBorder(
++                      borderSide: BorderSide(
++                          color: Color(0xff6633ff)),
++                      borderRadius: BorderRadius.all(
++                          Radius.circular(20.0)),
++                    ),
++                    hintText: "Enter Referral Code if any"
+                   ),
+                 ),
+                 const SizedBox(height: 40),
+@@ -173,56 +298,6 @@
+                     ],
+                   ),
+                 ),
+-                const SizedBox(height: 40),
+-                const Text(
+-                  "I'm looking for :",
+-                  style: TextStyle(
+-                    color: Color(0xff6633ff),
+-                    fontSize: 18,
+-                    fontWeight: FontWeight.w500,
+-                  ),
+-                  textAlign: TextAlign.center,
+-                ),
+-                const SizedBox(height: 20),
+-                DropdownButtonFormField<String>(
+-                  icon: const Icon(
+-                    Icons.arrow_drop_down_circle,
+-                    color: Color(0xff6633ff),
+-                  ),
+-                    dropdownColor: Colors.white,
+-                    items: course_choices.map((String choice) {
+-                      return DropdownMenuItem<String>(
+-                      value: choice,
+-                      child: Text(choice),
+-                      );
+-                    }).toList(),
+-                    value: currentSelected,
+-                    onChanged: (selectedValueNew) {
+-                      setState(() => currentSelected = selectedValueNew as String);
+-                    },
+-                  decoration: const InputDecoration(
+-                    labelText: "Select Course",
+-                    labelStyle: TextStyle(
+-                      color: Color(0xff6633ff),
+-                    ),
+-                    prefixIcon: Icon(
+-                      Icons.book,
+-                      color: Color(0xff6633ff),
+-                    ),
+-                    enabledBorder: OutlineInputBorder(
+-                      borderSide:
+-                      BorderSide(color: Colors.grey),
+-                      borderRadius: BorderRadius.all(
+-                          Radius.circular(20.0)),
+-                    ),
+-                    focusedBorder: OutlineInputBorder(
+-                      borderSide: BorderSide(
+-                          color: Color(0xff6633ff)),
+-                      borderRadius: BorderRadius.all(
+-                          Radius.circular(20.0)),
+-                    ),
+-                  ),
+-                ),
+                 const SizedBox(height: 30),
+                 InkWell(
+                   onTap: onCompleteSignup,
+@@ -242,8 +317,9 @@
+ 
+               ],
+             ),
+-          )
+-
+-        ]));
++          ),
++        ],
++      ),
++    );
+   }
+ }
+Index: lib/Screens/EditProfilePage.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Screens/EditProfilePage.dart b/lib/Screens/EditProfilePage.dart
+--- a/lib/Screens/EditProfilePage.dart	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/lib/Screens/EditProfilePage.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -1,5 +1,4 @@
+ import 'package:afterschool/Homescreen/home.dart';
+-import 'package:afterschool/Login/signup_details.dart';
+ import 'package:flutter/cupertino.dart';
+ import 'package:flutter/gestures.dart';
+ import 'package:flutter/material.dart';
+Index: lib/Screens/RedeemHistory.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Screens/RedeemHistory.dart b/lib/Screens/RedeemHistory.dart
+--- a/lib/Screens/RedeemHistory.dart	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/lib/Screens/RedeemHistory.dart	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -1,7 +1,5 @@
+ import 'dart:convert';
+-
+ import 'package:afterschool/Homescreen/home.dart';
+-import 'package:afterschool/Login/signup_details.dart';
+ import 'package:flutter/cupertino.dart';
+ import 'package:flutter/gestures.dart';
+ import 'package:flutter/material.dart';
+Index: pubspec.lock
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pubspec.lock b/pubspec.lock
+--- a/pubspec.lock	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/pubspec.lock	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -282,6 +282,13 @@
+       url: "https://pub.dartlang.org"
+     source: hosted
+     version: "1.0.4"
++  otpless_flutter:
++    dependency: "direct main"
++    description:
++      name: otpless_flutter
++      url: "https://pub.dartlang.org"
++    source: hosted
++    version: "1.0.8"
+   package_info_plus:
+     dependency: transitive
+     description:
+@@ -532,6 +539,27 @@
+       url: "https://pub.dartlang.org"
+     source: hosted
+     version: "1.3.1"
++  uni_links:
++    dependency: transitive
++    description:
++      name: uni_links
++      url: "https://pub.dartlang.org"
++    source: hosted
++    version: "0.5.1"
++  uni_links_platform_interface:
++    dependency: transitive
++    description:
++      name: uni_links_platform_interface
++      url: "https://pub.dartlang.org"
++    source: hosted
++    version: "1.0.0"
++  uni_links_web:
++    dependency: transitive
++    description:
++      name: uni_links_web
++      url: "https://pub.dartlang.org"
++    source: hosted
++    version: "0.1.0"
+   url_launcher:
+     dependency: "direct main"
+     description:
+Index: pubspec.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pubspec.yaml b/pubspec.yaml
+--- a/pubspec.yaml	(revision 43c6463c467a1b46ff6d8740f255672069c4c8bd)
++++ b/pubspec.yaml	(revision 60fcbf8a31b5f2ea6b2d4c794810dab72db7b70f)
+@@ -46,6 +46,7 @@
+   razorpay_flutter: ^1.2.7
+   fluttertoast: ^8.0.8
+   share_plus: ^4.0.4
++  otpless_flutter: ^1.0.8
+ 
+ dev_dependencies:
+   flutter_test:

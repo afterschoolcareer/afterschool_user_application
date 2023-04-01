@@ -46,6 +46,7 @@ dependencies:
   razorpay_flutter: ^1.2.7
   fluttertoast: ^8.0.8
   share_plus: ^4.0.4
+  otpless_flutter: ^1.0.8
 
 dev_dependencies:
   flutter_test:

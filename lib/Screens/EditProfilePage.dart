@@ -1,5 +1,4 @@
 import 'package:afterschool/Homescreen/home.dart';
-import 'package:afterschool/Login/signup_details.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

@@ -1,13 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:afterschool/Homescreen/home.dart';
-import 'package:afterschool/Login/signup_details.dart';
+import 'package:afterschool/Login/finish_signup_whatsapp.dart';
 import 'package:afterschool/Models/student_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:otpless_flutter/otpless_flutter.dart';
+import 'email_verify.dart';
+import 'otpless_credentials.dart' as credentials;
 
 import '../Models/global_vals.dart';
 import 'forgot_password.dart';
@@ -19,19 +24,20 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
+
+  final _otplessFlutterPlugin = Otpless();
+  String intentUrl = "https://afterschoolcareer.authlink.me?redirectUri=afterschoolcareerotpless://otpless";
+  String _waId = 'Unknown';
 
   bool obscure = true;
   TextEditingController loginNum = TextEditingController();
   TextEditingController loginPass = TextEditingController();
 
-  TextEditingController signupName = TextEditingController();
-  TextEditingController signupNum = TextEditingController();
-  TextEditingController signupPass = TextEditingController();
-  TextEditingController signupReferral = TextEditingController();
-
   var client = http.Client();
   var baseUrl = 'https://afterschoolcareer.com:8080';
+
+  bool showLoading = false;
 
   final int EMPTY_FIELD = 1;
   final int INVALID_NUMBER = 2;
@@ -84,6 +90,39 @@ class _LoginPageState extends State<LoginPage> {
                         color: Color(0xff6633ff)
                     ),
                   ))
+            ],
+          );
+        }
+    );
+  }
+
+  Future<dynamic> showSignupError() {
+    String msg = "Technical Error occurred in Login.";
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return  AlertDialog(
+            title: const Text("Error"),
+            content: Text(msg),
+            actions: [
+              TextButton(
+                  onPressed: () { Navigator.pop(context); },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(
+                        color: Color(0xff6633ff)
+                    ),
+                  )),
+              TextButton(
+                  onPressed: goToEmailVerificationScreen,
+                  child: const Text(
+                    "Sign up without Whatsapp",
+                    style: TextStyle(
+                      color: Color(0xff6633ff),
+                    ),
+                  )
+              )
             ],
           );
         }
@@ -149,31 +188,95 @@ class _LoginPageState extends State<LoginPage> {
         context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
-  void onSignupTapped() {
-    String phoneNumber = signupNum.text;
-    String name = signupName.text;
-    String pass = signupPass.text;
-    String referralCode = signupReferral.text;
-    if(phoneNumber.isEmpty || name.isEmpty || pass.isEmpty) {
-      showErrorDialog(1);
-      return;
-    }
-    if(phoneNumber.length!=10 || int.tryParse(phoneNumber) == null) {
-      showErrorDialog(2);
-      return;
-    }
-    if(pass.length < 8) {
-      showErrorDialog(3);
-      return;
-    }
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => SignupDetails(name, phoneNumber, pass, referralCode)));
-  }
-
   void goToForgotPassword() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (BuildContext context) => const ForgotPassword())
     );
+  }
+
+  void goToEmailVerificationScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (BuildContext context) => const EmailVerificationScreen())
+    );
+  }
+
+  void whatsappLogin() async {
+    var result = await _otplessFlutterPlugin.loginUsingWhatsapp(intentUrl: intentUrl);
+    switch(result['code']) {
+      case "581" :
+        log(result['message']!);
+        showErrorDialog(3);
+        break;
+      default :
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  Future<void> initPlatformState() async {
+    log("listening token");
+    _otplessFlutterPlugin.authStream.listen((token) {
+      setState(() {
+        _waId = token ?? "Unknown";
+      });
+    });
+    log("token value : $_waId");
+    if(_waId != "Unknown") {
+      handleApi();
+    }
+  }
+
+  void handleApi() async {
+    log("RUNNING APIIIIIIIIIIIIIIIIIII");
+    var details = Map();
+    details['waId'] = _waId;
+    var baseUrl = 'https://afterschoolcareer.authlink.me';
+    var uri = Uri.parse(baseUrl);
+    var response = await client.post(uri,
+    headers: {
+      'clientId' : credentials.whatsappClientId,
+      'clientSecret' : credentials.whatsappClientSecret,
+      'Content_Type' : 'application/json'
+    },
+    body: json.encode(details));
+    Map data = json.decode(response.body);
+    Map userData = data["user"];
+    String number = userData["waNumber"];
+    String name = userData["waName"];
+    log(data.toString());
+    log(number);
+    log(name);
+    if(data['status'] == 'SUCCESS') {
+      goToSignUpWithWhatsapp(number, name);
+      return;
+    }
+  }
+
+  void goToSignUpWithWhatsapp(String number, String name) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (BuildContext context) => FinishSignUpWithWhatsapp(number: number, name: name))
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.paused) {
+      log("PAUSED......................");
+    } else if(state == AppLifecycleState.resumed) {
+      log("RESUMEDDDD........................");
+      initPlatformState();
+    }
+    super.didChangeAppLifecycleState(state);
   }
 
   @override
@@ -183,7 +286,8 @@ class _LoginPageState extends State<LoginPage> {
     var width = size.width;
     return Scaffold(
         backgroundColor: const Color(0xff6633ff),
-        body: GestureDetector(
+        body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff),),) :
+        GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: ListView(
             children: [
@@ -402,139 +506,81 @@ class _LoginPageState extends State<LoginPage> {
                                       ],
                                     )),
                                 /* Sign Up tab*/
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 30, horizontal: 30),
+                                Center(
                                   child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                       TextField(
-                                        controller: signupName,
-                                        decoration: const InputDecoration(
-                                          prefixIcon: Icon(
-                                            Icons.person,
-                                            color: Color(0xff6633ff),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xff6633ff)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          hintText: "Enter your Name",
+                                      const Icon(
+                                        Icons.whatsapp,
+                                        color: Colors.green,
+                                        size: 70,
+                                      ),
+                                      Container(
+                                      width: width*0.7,
+                                      padding: const EdgeInsets.all(20),
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                ),
+                                            shadowColor: Colors.grey,
+                                            backgroundColor: const Color(0xff6633ff),
+                                        ),
+                                        onPressed: whatsappLogin,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: const [
+                                             Text(
+                                                 "Sign Up with Whatsapp",
+                                               style: TextStyle(
+                                                 color: Colors.white
+                                               ),
+                                             ),
+                                          ],
                                         ),
                                       ),
+                                    ),
                                       const SizedBox(height: 10),
-                                      TextField(
-                                        controller: signupNum,
-                                        decoration: const InputDecoration(
-                                          prefixIcon: Icon(
-                                            Icons.phone_android_rounded,
-                                            color: Color(0xff6633ff),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xff6633ff)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          hintText: "Enter your Phone Number",
+                                      const Text(
+                                        "OR",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Color(0xff6633ff),
                                         ),
+                                        textAlign: TextAlign.center,
                                       ),
                                       const SizedBox(height: 10),
-                                       TextField(
-                                         controller: signupPass,
-                                        obscureText: obscure,
-                                        decoration: InputDecoration(
-                                          prefixIcon: const Icon(
-                                            Icons.lock,
-                                            color: Color(0xff6633ff),
-                                          ),
-                                          suffixIcon: IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                obscure = !obscure;
-                                              });
-                                            },
-                                            icon: Icon(
-                                              obscure
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: obscure
-                                                  ? Colors.grey
-                                                  : const Color(0xff6633ff),
+                                      const Icon(
+                                        Icons.email,
+                                        color: Color(0xffff9900),
+                                        size: 70,
+                                      ),
+                                      Container(
+                                        width: width*0.7,
+                                        padding: const EdgeInsets.all(20),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5),
                                             ),
+                                            shadowColor: Colors.grey,
+                                            backgroundColor: const Color(0xff6633ff),
                                           ),
-                                          enabledBorder: const OutlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          focusedBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xff6633ff)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          hintText: "Enter your Password",
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      TextField(
-                                        controller: signupReferral,
-                                        decoration: const InputDecoration(
-                                          prefixIcon: Icon(
-                                            Icons.person,
-                                            color: Color(0xff6633ff),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide:
-                                            BorderSide(color: Colors.grey),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color(0xff6633ff)),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20.0)),
-                                          ),
-                                          hintText: "Enter Referral code if any",
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          InkWell(
-                                            onTap: onSignupTapped,
-                                            child: Container(
-                                              height: 50,
-                                              width: 150,
-                                              decoration: BoxDecoration(
-                                                  color: const Color(0xff6633ff),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20)),
-                                              child: const Icon(
-                                                Icons.arrow_forward_outlined,
-                                                color: Colors.white,
+                                          onPressed: goToEmailVerificationScreen,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              Text(
+                                                "Sign Up using Email",
+                                                style: TextStyle(
+                                                    color: Colors.white
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                          const SizedBox(height: 20),
-                                        ],
-                                      )
-                                    ],
+                                        ),
+                                      ),
+                                  ]
                                   ),
                                 ),
                               ],
