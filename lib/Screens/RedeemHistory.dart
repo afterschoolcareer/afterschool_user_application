@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:afterschool/Screens/online_admission_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:afterschool/Screens/CouponHistoryCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RedeemHistory extends StatefulWidget {
@@ -13,7 +14,7 @@ class RedeemHistory extends StatefulWidget {
 }
 
 class _RedeemHistoryState extends State<RedeemHistory> {
-  List<OnlineAdmissionData> populate = [];
+  List<CouponHistoryData> populate = [];
   bool showLoading = false;
   var baseUrl = 'https://afterschoolcareer.com:8080';
   var client = http.Client();
@@ -29,16 +30,15 @@ class _RedeemHistoryState extends State<RedeemHistory> {
       showLoading = true;
     });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var course = sharedPreferences.getString('course');
-    var uri = Uri.parse('$baseUrl//?course=$course');
+    var phoneNumber = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/getCouponHistory/?phone_number=$phoneNumber');
     var response = await client.get(uri);
     Map data;
     data = json.decode(response.body);
     List allData = data["data"];
     for(int i=0;i<allData.length;i++) {
       Map info = allData[i];
-      populate.add(OnlineAdmissionData(info["logo"], info["name"],
-          info["city"], info["id"]));
+      populate.add(CouponHistoryData(  info["couponType"],info["date"],));
     }
     setState(() {
       showLoading = false;
@@ -49,7 +49,7 @@ class _RedeemHistoryState extends State<RedeemHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Online Admission Support"),
+        title: const Text("Redeem History"),
         backgroundColor: const Color(0xff6633ff),
       ),
       body: showLoading? const Center(child: CircularProgressIndicator(
@@ -58,21 +58,19 @@ class _RedeemHistoryState extends State<RedeemHistory> {
       ListView.builder(
           itemCount: populate.length,
           itemBuilder: (BuildContext context, int index) {
-            return OnlineAdmissionCard(
-                logo: populate[index].logo,
-                name: populate[index].name,
-                location: populate[index].location,
-                id: populate[index].id);
+            return CouponHistoryCard(
+                couponType: populate[index].couponType,
+                date: populate[index].date,
+               );
           }
       ),
     );
   }
 }
 
-class OnlineAdmissionData {
-  final String logo;
-  final String name;
-  final String location;
-  final int id;
-  OnlineAdmissionData(this.logo, this.name, this.location, this.id);
+class CouponHistoryData {
+  final String couponType;
+  final String date;
+
+  CouponHistoryData(this.couponType, this.date);
 }

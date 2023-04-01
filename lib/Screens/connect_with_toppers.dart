@@ -131,8 +131,11 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
     showLoadingIndictor();
     var uri = Uri.parse('$baseUrl/createTopperSession/?phone_number=$phone_number&date=$date&hour=$hour&minute=$minute&AMPM=$AMPM');
     var response = await client.get(uri);
+    //Topper coupon history created
+    var uri1 = Uri.parse('$baseUrl/CreateCouponHistory/?phone_number=$phone_number&date=${date} $hour:$minute&type=Topper');
+    var response1 = await client.get(uri1);
     Map data = json.decode(response.body);
-    print(data);
+
     removeLoadingIndicator();
     if(data["data"]== "success"){
       Navigator.of(context).pop();
@@ -143,8 +146,7 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
           content: const Text('Congrats!! Your session is booked with our toppers. Your session will be scheduled within 1 day and you will be notified via email.'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop()
-              ,
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text('OK', style: TextStyle(color: Color(0xff6633ff))),
             ),
           ],
@@ -166,7 +168,7 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
       coins -= 50;
       sharedPreferences.setInt("coins",coins);
       var uri = Uri.parse('$baseUrl/use50coins/?phone_number=$phone_number');
-      client.get(uri);
+      var response = await client.get(uri);
       //create topper session
       DateTime now = new DateTime.now();
       DateTime date = new DateTime(now.year,now.month,now.day);
@@ -175,7 +177,6 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
       String minute = now.minute.toString();
       String AMPM = now.timeZoneName.toString();
       CreateTopperSession(context, phone_number, dateFormat, hour, minute, AMPM);
-
     }else{
       SessionBookedFailed(context);
     }

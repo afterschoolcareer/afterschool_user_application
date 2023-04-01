@@ -1,4 +1,5 @@
 import 'package:afterschool/Models/global_vals.dart';
+import 'package:afterschool/Screens/RedeemHistory.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,6 +53,13 @@ class ProfilePageState extends State<ProfilePage> {
     Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => const SessionsBooked()
+        )
+    );
+  }
+  void getCouponHistory()  {
+    Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) => const RedeemHistory()
         )
     );
   }
@@ -243,7 +251,7 @@ class ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height:20),
                 InkWell(
-                  onTap: () {},
+                  onTap: getCouponHistory,
                   child: Container(
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
