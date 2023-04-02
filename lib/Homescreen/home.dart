@@ -5,6 +5,7 @@ import 'package:afterschool/Homescreen/loan_screen.dart';
 import 'package:afterschool/Homescreen/main_screen.dart';
 import 'package:afterschool/Homescreen/shortlist_screen.dart';
 import 'package:afterschool/Homescreen/smart_compare_screen.dart';
+import 'package:afterschool/Homescreen/JoinCommunity.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _HomescreenState extends State<Homescreen> {
     const MainScreen(),
     const ShortlistScreen(),
     const LoanScreen(),
-    const EnrollmentScreen(),
+    const JoinCommunity(),
   ];
 
   void onItemTapped(int index) {

@@ -511,7 +511,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Icon(
-                                        Icons.whatsapp,
+                                        Icons.whatshot,
                                         color: Colors.green,
                                         size: 70,
                                       ),

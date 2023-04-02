@@ -16,6 +16,8 @@ class RedeemCoins extends StatefulWidget {
 }
 
 class _RedeemCoins extends State<RedeemCoins> {
+
+
   bool selected = false;
   int available_coins = 0;
   static var client = http.Client();
@@ -48,33 +50,15 @@ class _RedeemCoins extends State<RedeemCoins> {
     });
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var phone_number = sharedPreferences.getString('phone_number');
-    if (sharedPreferences.containsKey("coins")) {
-      var coins = sharedPreferences.getInt("coins");
-      if (coins != null) {
-        selected = false;
-        available_coins = coins;
-      } else {
-        int coins = 0;
-        var uri = Uri.parse(
-            '$baseUrl/getavailablecoins/?phone_number=$phone_number');
-        var response = await client.get(uri);
-        Map data = json.decode(response.body);
-        coins = data["data"];
-        available_coins = coins;
-        sharedPreferences.setInt('coins', coins);
-        selected = false;
-      }
-    } else {
       int coins = 0;
       var uri = Uri.parse(
           '$baseUrl/getavailablecoins/?phone_number=$phone_number');
       var response = await client.get(uri);
       Map data = json.decode(response.body);
       coins = data["data"];
+
       available_coins = coins;
       selected = false;
-      sharedPreferences.setInt('coins', coins);
-    }
     setState(() {
       showLoading = false;
     });
@@ -82,11 +66,6 @@ class _RedeemCoins extends State<RedeemCoins> {
 
   void redeemed(context){
     Navigator.of(context).pop();
-    setState(() {
-      available_coins = available_coins-50;
-      sharedPreferences?.setInt("coins", available_coins);
-    });
-
   }
   void onViewDetailsTapped_counsellor(){
     showDialog<String>(
@@ -206,8 +185,8 @@ class _RedeemCoins extends State<RedeemCoins> {
                                 size: 30,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
-                                "200",
+                              Text(
+                                "50",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 18
@@ -246,6 +225,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                             borderRadius: BorderRadius.circular(20.0),
                             image: const DecorationImage(
                               fit: BoxFit.cover,
+
                               image:AssetImage("images/careercounselling.png"), ),
                           ),
                         ),
@@ -281,7 +261,7 @@ class _RedeemCoins extends State<RedeemCoins> {
                               ),
                               const SizedBox(width: 10),
                               const Text(
-                                "500",
+                                "50",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 18

@@ -163,10 +163,14 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
     if(phone_number == null){
       phone_number = "100";
     }
-    var coins = sharedPreferences.getInt('coins');
+    var uri = Uri.parse(
+        '$baseUrl/getavailablecoins/?phone_number=$phone_number');
+    var response = await client.get(uri);
+    Map data = json.decode(response.body);
+    var coins = data["data"];
     if(coins! >= 50 ){
       coins -= 50;
-      sharedPreferences.setInt("coins",coins);
+
       var uri = Uri.parse('$baseUrl/use50coins/?phone_number=$phone_number');
       var response = await client.get(uri);
       //create topper session

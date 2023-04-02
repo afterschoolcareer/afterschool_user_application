@@ -29,10 +29,14 @@ class _CouponHistoryCardState extends State<CouponHistoryCard> {
   }
 
   void setDate() {
-    for(int i=0;i<widget.date.length;i++) {
-      if(widget.date[i] == ' ') break;
-      date+=widget.date[i];
-    }
+    String tempdate = widget.date.toString();
+
+    List<String> ldates = tempdate.split(' ');
+    int n = ldates.length;
+print(ldates);
+    date +=ldates[0];
+    date += " ";
+    date +=ldates[n-1];
   }
 
 
@@ -57,7 +61,7 @@ class _CouponHistoryCardState extends State<CouponHistoryCard> {
                 children: [
                   Text("Redeem Information"),
                   Text("Coupon Type: ${widget.couponType}"),
-                  Text("Redeemed at : ${widget.date}"),
+                  Text("Redeemed at : ${date}"),
                 ],
               )
             ],
