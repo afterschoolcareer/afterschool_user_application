@@ -1,8 +1,11 @@
 import 'dart:convert';
-
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class CoachingScreen extends StatefulWidget {
   final int id;
@@ -22,6 +25,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   String email = "";
   String center = "";
   String logo = "";
+  String prospectus = "";
   List fees = [];
   List faculty = [];
   List subjects = [];
@@ -52,10 +56,14 @@ class _CoachingScreenState extends State<CoachingScreen> {
   bool isTotalSelection = true;
   bool isTotalNumber = true;
   bool isRegistered = false;
+  bool isProspectus = true;
 
   bool showShortlisted = false;
   bool showLoading = false;
   bool isBooked = false;
+  bool isInterestShown = false;
+
+  double? downloadProgress;
 
   List<String> feeView = [
     "10th Passout - 2 Years",
@@ -69,6 +77,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   @override
   void initState() {
+    setInterestInfo();
     setBookingInfo();
     getDetails(widget.id);
     super.initState();
@@ -151,6 +160,9 @@ class _CoachingScreenState extends State<CoachingScreen> {
     }
     if(totalStudents == 0) {
       isTotalNumber = false;
+    }
+    if(prospectus.isEmpty) {
+      isProspectus = false;
     }
   }
 
@@ -240,6 +252,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
     scholarship = entries["scholarship"];
     selectionData = entries["selectionData"];
     isRegistered = entries["is_registered"];
+    prospectus = entries["prospectus"];
     setShortlisted();
     setFees();
     setFaculties();
@@ -252,6 +265,29 @@ class _CoachingScreenState extends State<CoachingScreen> {
       showLoading = false;
     });
   }
+
+  void setInterestInfo() async {
+    setState(() {
+      showLoading = true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var number = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/getAllInterestForStudent/?phone_number=$number');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    List allData = data["data"];
+    for(int i=0;i<allData.length;i++) {
+      Map info = allData[i];
+      int id = info["institute_id"];
+      if(widget.id == id) {
+        setState(() {
+          isInterestShown = true;
+        });
+      }
+    }
+  }
+
 
   void setBookingInfo() async {
     setState(() {
@@ -368,6 +404,31 @@ class _CoachingScreenState extends State<CoachingScreen> {
     });
   }
 
+  void onInterest() async {
+    Navigator.pop(context);
+    setState(() {
+      showLoading = true;
+    });
+    SharedPreferences sharedPreferences = await  SharedPreferences.getInstance();
+    var phoneNumber = sharedPreferences.getString('phone_number');
+    var course = sharedPreferences.getString('course');
+    var now = DateTime.now();
+    DateTime date = DateTime(now.year,now.month,now.day);
+    String dateFormat = date.toString();
+    var uri = Uri.parse('$baseUrl/showinterest/?phone_number=$phoneNumber&id=${widget.id}&course=$course&date=$dateFormat');
+    var response = await client.get(uri);
+    Map data = json.decode(response.body);
+    String status = data["data"];
+    setState(() {
+      if(status == "success") {
+        isInterestShown = true;
+      } else {
+        showErrorDialog();
+      }
+      showLoading = false;
+    });
+  }
+
   Future<dynamic> showErrorDialog() {
     return showDialog(
         context: context,
@@ -375,7 +436,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
         builder: (BuildContext context) {
           return  AlertDialog(
             title: const Text("Error"),
-            content: const Text("There was a technical error while resetting your passwod. Please try again after some time."),
+            content: const Text("There was a technical error. Please try again after some time."),
             actions: [
               TextButton(
                   onPressed: () { Navigator.pop(context); },
@@ -401,7 +462,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
             content: Text("If you click on OK, we will notify ${widget.coachingName} of your interest. They may contact you for further details but it is not guaranteed."),
             actions: [
               TextButton(
-                  onPressed: () { Navigator.pop(context); },
+                  onPressed:  onInterest,
                   child: const Text(
                     "OK",
                     style: TextStyle(
@@ -412,6 +473,11 @@ class _CoachingScreenState extends State<CoachingScreen> {
           );
         }
     );
+  }
+
+  void downloadProspectus() {
+    var uri = Uri.parse(prospectus);
+    launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -698,7 +764,25 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                             );
                                           }
                                           ),
-                                const SizedBox(height: 50)
+                                const SizedBox(height: 30),
+                                if(isProspectus) Container(
+                                  padding: const EdgeInsets.all(8),
+                                  width: width*0.6,
+                                  child: ElevatedButton(
+                                      onPressed: downloadProspectus,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xff6633ff)
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          const Text("Download Prospects", style: TextStyle(color: Colors.white),),
+                                          downloadProgress == null ? const Icon(Icons.download, color: Colors.white,) :
+                                              const CircularProgressIndicator(color: Colors.white,)
+                                        ],
+                                      )
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -856,7 +940,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                   ),
                                 ),
                                 Visibility(
-                                  visible: !isRegistered,
+                                  visible: !isRegistered &&!isInterestShown,
                                   child: ElevatedButton(
                                       onPressed: interestDialog,
                                       style: ButtonStyle(
@@ -869,6 +953,26 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                       ),
                                       child: const Text(
                                         "SHOW INTEREST",
+                                        style:  TextStyle(
+                                            fontSize: 20
+                                        ),
+                                      )
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: !isRegistered && isInterestShown,
+                                  child: ElevatedButton(
+                                      onPressed: () {},
+                                      style: ButtonStyle(
+                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              )
+                                          ),
+                                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffff9900))
+                                      ),
+                                      child: const Text(
+                                        "INTEREST SENT TO INSTITUTE",
                                         style:  TextStyle(
                                             fontSize: 20
                                         ),

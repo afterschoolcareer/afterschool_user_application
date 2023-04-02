@@ -1,5 +1,6 @@
 import 'package:afterschool/Models/global_vals.dart';
 import 'package:afterschool/Screens/RedeemHistory.dart';
+import 'package:afterschool/Screens/interest_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,6 +68,12 @@ class ProfilePageState extends State<ProfilePage> {
   void openEnrollments() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (BuildContext context) => const EnrollmentListScreen())
+    );
+  }
+
+  void openInterests() {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) => const InterestScreen())
     );
   }
 
@@ -219,6 +226,30 @@ class ProfilePageState extends State<ProfilePage> {
                             "My Enrollments",
                           style: TextStyle(
                             fontSize: 18
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height:20),
+                InkWell(
+                  onTap: openInterests,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Icon(
+                          Icons.interests_outlined,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        SizedBox(width: 20),
+                        Text(
+                          "My Interests",
+                          style: TextStyle(
+                              fontSize: 18
                           ),
                         ),
                       ],

@@ -18,6 +18,7 @@ class _RedeemHistoryState extends State<RedeemHistory> {
   bool showLoading = false;
   var baseUrl = 'https://afterschoolcareer.com:8080';
   var client = http.Client();
+  bool emptyHistory = false;
 
   @override
   void initState() {
@@ -36,6 +37,11 @@ class _RedeemHistoryState extends State<RedeemHistory> {
     Map data;
     data = json.decode(response.body);
     List allData = data["data"];
+    if(allData.isEmpty) {
+      setState(() {
+        emptyHistory = true;
+      });
+    }
     for(int i=0;i<allData.length;i++) {
       Map info = allData[i];
       populate.add(CouponHistoryData(  info["couponType"],info["date"],));
@@ -55,7 +61,13 @@ class _RedeemHistoryState extends State<RedeemHistory> {
       body: showLoading? const Center(child: CircularProgressIndicator(
         color: Color(0xff6633ff),
       )) :
-      ListView.builder(
+      emptyHistory ? const Center(child:
+      Text(
+          "Your coins redeem history will appear here after you redeem your coins for availing some feature.",
+        textAlign: TextAlign.center,
+      ),
+      )
+      : ListView.builder(
           itemCount: populate.length,
           itemBuilder: (BuildContext context, int index) {
             return CouponHistoryCard(

@@ -31,6 +31,14 @@ class _LoanScreenState extends State<LoanScreen> {
   TextEditingController institute = TextEditingController();
   TextEditingController location = TextEditingController();
 
+  String submittedInstituteName = "";
+  String submittedInstituteLocation = "";
+  String submittedPhone = "";
+  String submittedName = "";
+  String submittedEmail = "";
+  String submittedTime = "";
+  String submittedCourse = "";
+
   /* managing appbar and drawer */
   void onProfileIconTapped() {
     Navigator.push(
@@ -42,7 +50,6 @@ class _LoanScreenState extends State<LoanScreen> {
   @override
   void initState() {
     getBookingData();
-    getSubmissionStatus();
     super.initState();
   }
 
@@ -58,23 +65,74 @@ class _LoanScreenState extends State<LoanScreen> {
     Map data = json.decode(response.body);
     List allData = data["data"];
     if(allData.isNotEmpty) {
+      getSubmissionStatus();
+    } else {
+      hasBooked = false;
+      hasSubmitted = false;
       setState(() {
-        hasBooked = true;
+        showLoading = false;
       });
     }
-    setState(() {
-      showLoading = false;
-    });
   }
 
   void getSubmissionStatus() async {
-    //here we will check if the user has already submitted a quote request
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var number = sharedPreferences.getString('phone_number');
+    var uri = Uri.parse('$baseUrl/getAllqoutesForStudent/?phone_number=$number');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    List allData = data["data"];
+    if(allData.isEmpty) {
+        hasBooked = true;
+        hasSubmitted = false;
+    }
+    else {
+      for (int i = 0; i < allData.length; i++) {
+        Map info = allData[i];
+        submittedCourse = info["course"];
+        submittedEmail = info["email"];
+        submittedInstituteLocation = info["city"];
+        submittedInstituteName = info["instituteName"];
+        submittedName = info["name"];
+        submittedPhone = info["phone_number"];
+        submittedTime = info["date"];
+      }
+      hasSubmitted = true;
+    }
+      setState(() {
+        showLoading = false;
+      });
   }
 
   void getQuote() async {
+    setState(() {
+      showLoading = true;
+    });
     String studentName = name.text;
     String studentInstitute = institute.text;
     String studentInsLocation = location.text;
+    var now = DateTime.now();
+    DateTime date = DateTime(now.year,now.month,now.day,now.hour,now.minute,now.second,now.millisecond);
+    String dateFormat = date.toString();
+    var uri = Uri.parse('$baseUrl/createqoute/?phone_number=$studentPhone&email=$studentEmail&studentName=$studentName&course=$studentCourse&city=$studentInsLocation&date=$dateFormat&instituteName=$studentInstitute');
+    var response = await client.get(uri);
+    Map data;
+    data = json.decode(response.body);
+    String status = data["data"];
+    setState(() {
+      if(status == "created") {
+        hasSubmitted = true;
+        submittedInstituteName = studentInstitute;
+        submittedInstituteLocation = studentInsLocation;
+        submittedPhone = studentPhone;
+        submittedName = studentName;
+        submittedEmail = studentEmail;
+        submittedTime = dateFormat;
+        submittedCourse = studentCourse;
+      }
+      showLoading = false;
+    });
   }
 
   void tryApi() async {
@@ -166,18 +224,123 @@ class _LoanScreenState extends State<LoanScreen> {
       drawer: const AppBarDrawer(),
       backgroundColor: Colors.white,
       body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff)),) :
-      hasSubmitted ? Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: const Text(
-            "We have received your request to get a quote for your booked Institute : <name> . We are in talks with <name> . Once processed, we will communicate the further process to you via your email or phone.",
-            style: TextStyle(
-              fontSize: 18,
+      hasSubmitted ? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: const Text(
+                "We have received your request to get the quote for the following detail. We will follow up with you on your contact details soon.",
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
-        ),
-      ) : hasBooked? ListView(
+          const SizedBox(height: 30),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xff6633ff)),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: Row(
+              children: [
+                const Text("Student Name : "),
+                Text(submittedName)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Student Phone : "),
+                Text(submittedPhone)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Student Email : "),
+                Text(submittedEmail)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Requested Course : "),
+                Text(submittedCourse)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Institute Name : "),
+                Text(submittedInstituteName)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Institute Location : "),
+                Text(submittedInstituteLocation)
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff6633ff)),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                const Text("Request date : "),
+                Text(submittedTime)
+              ],
+            ),
+          ),
+        ],
+      ): hasBooked? ListView(
         children: [
           Column(
             children: [
@@ -190,9 +353,6 @@ class _LoanScreenState extends State<LoanScreen> {
               ),
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-
-                ),
                 child: Column(
                   children: [
                     Container(
@@ -200,7 +360,6 @@ class _LoanScreenState extends State<LoanScreen> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: TextField(
                           readOnly: true,
-                          controller: name,
                           decoration: InputDecoration(
                               prefixIcon: const Icon(
                                 Icons.email,

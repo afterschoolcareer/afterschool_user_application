@@ -1,20 +1,19 @@
 import 'dart:convert';
 
-import 'package:afterschool/Screens/enrollment_list_card.dart';
-import 'package:afterschool/Screens/shortlist_card.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EnrollmentListScreen extends StatefulWidget {
-  const EnrollmentListScreen({Key? key}) : super(key: key);
+import 'enrollment_list_card.dart';
+
+class InterestScreen extends StatefulWidget {
+  const InterestScreen({Key? key}) : super(key: key);
 
   @override
-  State<EnrollmentListScreen> createState() => _EnrollmentListScreenState();
+  State<InterestScreen> createState() => _InterestScreenState();
 }
 
-class _EnrollmentListScreenState extends State<EnrollmentListScreen> {
+class _InterestScreenState extends State<InterestScreen> {
   bool showLoading = false;
   bool noData = false;
   var baseUrl = 'https://afterschoolcareer.com:8080';
@@ -35,7 +34,7 @@ class _EnrollmentListScreenState extends State<EnrollmentListScreen> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var number = sharedPreferences.getString('phone_number');
     var course = sharedPreferences.getString('course');
-    var uri = Uri.parse('$baseUrl/getAllBookings/?phone_number=$number');
+    var uri = Uri.parse('$baseUrl/getAllInterestForStudent/?phone_number=$number');
     var response = await client.get(uri);
     Map data = json.decode(response.body);
     List allData = data["data"];
@@ -66,7 +65,7 @@ class _EnrollmentListScreenState extends State<EnrollmentListScreen> {
     for(int i=0;i<allData.length;i++) {
       Map info = allData[i];
       populate.add(InstituteData(
-        info["id"],
+          info["id"],
           info["logo"],
           info["name"],
           info["location"]));
@@ -79,23 +78,23 @@ class _EnrollmentListScreenState extends State<EnrollmentListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Enrollments"),
-        backgroundColor: const Color(0xff6633ff),
-      ),
-      body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff))) :
-      noData? const Center(child: Text("Your booked admissions will appear here.")) :
-      ListView.builder(
-          itemCount: populate.length,
-          itemBuilder: (BuildContext context, int index) {
-            return EnrollmentCard(
-                name: populate[index].name,
-                location: populate[index].location,
-                id: int.parse(populate[index].id),
-                logo: populate[index].logo
-            );
-          }
-      )
+        appBar: AppBar(
+          title: const Text("My Interests"),
+          backgroundColor: const Color(0xff6633ff),
+        ),
+        body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff))) :
+        noData? const Center(child: Text("Your booked admissions will appear here.")) :
+        ListView.builder(
+            itemCount: populate.length,
+            itemBuilder: (BuildContext context, int index) {
+              return EnrollmentCard(
+                  name: populate[index].name,
+                  location: populate[index].location,
+                  id: int.parse(populate[index].id),
+                  logo: populate[index].logo
+              );
+            }
+        )
     );
   }
 }
@@ -108,3 +107,4 @@ class InstituteData {
 
   InstituteData(this.id, this.logo, this.name, this.location);
 }
+

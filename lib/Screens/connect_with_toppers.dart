@@ -174,8 +174,8 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
       var uri = Uri.parse('$baseUrl/use50coins/?phone_number=$phone_number');
       var response = await client.get(uri);
       //create topper session
-      DateTime now = new DateTime.now();
-      DateTime date = new DateTime(now.year,now.month,now.day);
+      DateTime now = DateTime.now();
+      DateTime date = DateTime(now.year,now.month,now.day);
       String dateFormat = date.toString();
       String hour = now.hour.toString();
       String minute = now.minute.toString();

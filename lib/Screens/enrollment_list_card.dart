@@ -68,11 +68,15 @@ class _EnrollmentCard extends State<EnrollmentCard> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          widget.name,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold
+                        SizedBox(
+                          width: width * 0.4,
+                          child: Text(
+                            widget.name,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         const SizedBox(height: 5),

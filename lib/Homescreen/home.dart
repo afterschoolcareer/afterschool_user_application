@@ -65,10 +65,10 @@ class _HomescreenState extends State<Homescreen> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                      FluentSystemIcons.ic_fluent_book_formula_database_regular),
+                      FluentSystemIcons.ic_fluent_people_community_regular),
                   activeIcon: Icon(
-                      FluentSystemIcons.ic_fluent_book_formula_database_filled),
-                  label: "Enrollment"
+                      FluentSystemIcons.ic_fluent_people_community_filled),
+                  label: "Community"
                 ),
         ]
       ),
