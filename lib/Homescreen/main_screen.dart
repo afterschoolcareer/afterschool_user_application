@@ -1,7 +1,6 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-
-import 'dart:ffi';
 
 import 'package:afterschool/Homescreen/drawer.dart';
 import 'package:afterschool/Homescreen/institute_card.dart';
@@ -12,17 +11,16 @@ import 'package:afterschool/Screens/connect_with_toppers.dart';
 import 'package:afterschool/Screens/fee_structure_list.dart';
 import 'package:afterschool/Screens/filter_screen.dart';
 import 'package:afterschool/Screens/online_admission.dart';
-import 'package:afterschool/Screens/selection_data_list_screen.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
+
 import '../Models/advertisement_list.dart';
-import '../Models/institute_model.dart';
 import '../profile.dart';
 
 class MainScreen extends StatefulWidget {
@@ -145,10 +143,12 @@ class _MainScreenState extends State<MainScreen> {
   TextEditingController searchBarController = TextEditingController();
   int pageIndex = 0;
   int featuresPageIndex = 0;
-  Uri phoneNumber = Uri.parse('tel:+918375957165');
+  Uri phoneNumber = Uri.parse('tel:+916299458087');
   Uri emailData = Uri.parse('mailto:contact@afterschoolcareer.com?subject=Admission Counselling');
 
   List<String> featuresImageLinks = [
+    'images/features_4.png',
+    'images/features_5.png',
     'images/features_1.png',
     'images/features_2.png',
     'images/features_3.png'
@@ -161,7 +161,7 @@ class _MainScreenState extends State<MainScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Important"),
-            content: const Text("The course that you select here will be used to filter the data of Institutes across the platform. So, please select preferred course only."),
+            content: const Text("The course that you select here will be used to process the data of Institutes as well as your preference across the platform. So, please select preferred course only."),
             actions: [
               TextButton(
                   onPressed: () { Navigator.pop(context); },
@@ -548,11 +548,7 @@ class _MainScreenState extends State<MainScreen> {
                               advertisementList[index].logo_url,
                               advertisementList[index].name,
                               advertisementList[index].location,
-                              advertisementList[index].fees,
-                              advertisementList[index].selection_rate,
-                              advertisementList[index].top_rank,
-                              advertisementList[index].in_top_100,
-                              advertisementList[index].rating),
+                             ),
                         );
                       },
                     )),
@@ -587,15 +583,15 @@ class _MainScreenState extends State<MainScreen> {
                             children:  [
                               const CityView(image_url: "images/delhi.jpg", name: "Delhi"),
                               SizedBox(width: width * 0.05),
-                              const CityView(image_url: "images/hyderabad.jpg", name: "Hyderabad"),
-                              SizedBox(width: width * 0.05),
                               const CityView(image_url: "images/kota.png", name: "Kota"),
                               SizedBox(width: width * 0.05),
-                              const CityView(image_url: "images/kolkata.jpg", name: "Kolkata"),
+                              const CityView(image_url: "images/ranchi.png", name: "Ranchi"),
                               SizedBox(width: width * 0.05),
-                              const CityView(image_url: "images/mumbai.jpg", name: "Mumbai"),
+                              const CityView(image_url: "images/bokaro.png", name: "Bokaro"),
                               SizedBox(width: width * 0.05),
-                              const CityView(image_url: "images/patna.jpeg", name: "Patna")
+                              const CityView(image_url: "images/patna.jpeg", name: "Patna"),
+                              SizedBox(width: width * 0.05),
+                              const CityView(image_url: "images/gaya.png", name: "Gaya")
                             ],
                           ),
                         ),
@@ -1063,15 +1059,6 @@ class _CityViewState extends State<CityView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CityListScreen(name: widget.name))
-    );
-  }
-
-  void showLoadingIndicator() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ))
     );
   }
 

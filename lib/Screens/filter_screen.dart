@@ -25,7 +25,7 @@ class _FilterScreenState extends State<FilterScreen> {
   bool showLoading = false;
 
   void locationList() async {
-    final List<String> locations = ["Delhi","Kota","Ranchi","Patna"];
+    final List<String> locations = ["Delhi","Kota","Ranchi","Patna","Bokaro","Gaya"];
     
     final List<String>? results = await showDialog(
         context: context,
@@ -204,6 +204,8 @@ class _LocationMultiSelectState extends State<LocationMultiSelect> {
         child: ListBody(
           children: widget.items
               .map((item) => CheckboxListTile(
+            checkColor: Colors.white,
+              activeColor: const Color(0xff6633ff),
               value: selectedItems.contains(item),
               title: Text(item),
               controlAffinity: ListTileControlAffinity.leading,
@@ -214,11 +216,20 @@ class _LocationMultiSelectState extends State<LocationMultiSelect> {
       actions: [
         TextButton(
             onPressed: cancel,
-            child: const Text("Cancel")
+            child: const Text("Cancel",
+            style: TextStyle(
+              color: Colors.black
+            ),),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xff6633ff)
+          ),
             onPressed: submit,
-            child: const Text("Select")
+            child: const Text("Select",
+            style: TextStyle(
+              color: Colors.white
+            ),)
         )
       ],
     );

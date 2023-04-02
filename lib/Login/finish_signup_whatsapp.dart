@@ -67,7 +67,7 @@ class _FinishSignUpWithWhatsappState extends State<FinishSignUpWithWhatsapp> {
         redeemReferralCode(referralCode);
       }
       sharedPreferences.setBool('number', true);
-      sharedPreferences.setString('phone_number', widget.number);
+      sharedPreferences.setString('phone_number', phoneNumber);
       removeLoadingDialog();
       goToHome();
     } else {
@@ -238,7 +238,7 @@ class _FinishSignUpWithWhatsappState extends State<FinishSignUpWithWhatsapp> {
                   controller: email,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
-                      Icons.lock,
+                      Icons.email,
                       color: Color(0xff6633ff),
                     ),
                     enabledBorder: OutlineInputBorder(

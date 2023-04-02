@@ -1,8 +1,4 @@
 import 'dart:convert';
-
-import 'package:afterschool/Homescreen/PaymentPage.dart';
-import 'package:fluentui_icons/fluentui_icons.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,9 +56,6 @@ class _SessionsBookedState extends State<SessionsBooked> {
   }
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    var width = size.width;
-    var height = size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Sessions Booked"),

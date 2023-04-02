@@ -1,22 +1,16 @@
-import 'dart:collection';
-
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Screens/coaching_screen.dart';
 
 class InstituteCard extends StatefulWidget {
   final int id;
   final String logo_url;
   final String name;
   final String location;
-  final String fees;
-  final String selection_rate;
-  final String top_rank;
-  final String in_top_100;
-  final String rating;
-  const InstituteCard(this.id, this.logo_url, this.name, this.location, this.fees,
-      this.selection_rate, this.top_rank, this.in_top_100, this.rating, {Key? key}
+  const InstituteCard(this.id, this.logo_url, this.name, this.location, {Key? key}
       ) : super(key: key);
 
   @override
@@ -54,7 +48,10 @@ class _InstituteCardState extends State<InstituteCard> {
   }
 
   void onViewDetailsTapped() {
-    print("view details tapped :${widget.name}");
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>  CoachingScreen(id: widget.id, coachingName: widget.name))
+    );
   }
 
   void onShortlistButtonTapped() async {
@@ -108,183 +105,27 @@ class _InstituteCardState extends State<InstituteCard> {
         ),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-
-                /* logo container */
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      image:  DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage(widget.logo_url))),
-                ),
-
-                /* Institute name and Location and Fees */
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: widget.location,
-                            style: const TextStyle(
-                              color: Colors.black
-                            )
-                          ),
-                          const TextSpan(
-                              text: " • ",
-                            style: TextStyle(
-                              color: Colors.black
-                            )
-                          ),
-                          TextSpan(
-                            text: widget.fees,
-                            style: const TextStyle(
-                              color: Colors.black
-                            )
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-
-                /* rating Star */
-               Row(
-                 children: [
-                   const Icon(
-                     Icons.star,
-                     color: Colors.amber,
-                   ),
-                   const SizedBox(width: 6),
-                   /* Rating Value */
-                   Text(
-                     widget.rating,
-                   )
-                 ],
-               )
-              ],
-            ),
-
-            const SizedBox(height: 20),
-            /* data metrics */
             Container(
-              padding: const EdgeInsets.only(left: 20),
-              child: Row(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xff6633ff),
-                        ),
-                        child: Text(
-                          widget.selection_rate,
-                          style: const TextStyle(
-                            color: Colors.white
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        "Selection",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Text(
-                        "Rate",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xff6633ff),
-                        ),
-                        child: Text(
-                          widget.top_rank,
-                          style: const TextStyle(
-                              color: Colors.white
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        "Top",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Text(
-                        "Rank",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(width: 18),
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xff6633ff),
-                        ),
-                        child: Text(
-                          widget.in_top_100,
-                          style: const TextStyle(
-                              color: Colors.white
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        "In Top",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Text(
-                        "100",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              height: 100,
+              child: Image.asset(widget.logo_url),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.only(left: 15,right: 15),
+              child: Text(
+                  "${widget.name}, ${widget.location}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20
+                ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.only(left: 20),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                     onTap: onViewDetailsTapped,

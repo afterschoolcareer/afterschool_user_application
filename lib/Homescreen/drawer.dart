@@ -6,12 +6,14 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Screens/connect_with_toppers.dart';
 import '../Screens/careerCounselling.dart';
 import '../Screens/RedeemCoins.dart';
 import '../Screens/Notification.dart';
 import '../Screens/ReferAndEarn.dart';
+import '../Screens/contact_us.dart';
 import '../profile.dart';
 import 'home.dart';
 import 'package:share_plus/share_plus.dart';
@@ -137,11 +139,14 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
     }
 
     if(menuName == "Contact Us") {
-
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext) => const ContactUs())
+      );
     }
 
     if(menuName == "Privacy Policy") {
-
+      Uri uri = Uri.parse('https://afterschoolcareer.com/privacy-policy.html');
+      launchUrl(uri);
     }
   }
 

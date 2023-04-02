@@ -23,20 +23,31 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Container(
-          decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("images/logo_img.png"),
-          ),
-        )
-      ),
-    ));
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 300,
+            height: 300,
+            decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("images/logo_img.png"),
+            ),
+          )
+        ),
+            const CircularProgressIndicator(
+              color: Color(0xff6633ff),
+            )
+    ]
+    ),
+      ));
   }
 
   void checkRoute() async{
     var sharedPreferences = await SharedPreferences.getInstance();
     var isLoggedIn = sharedPreferences.getBool('number');
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 1), () {
       if(isLoggedIn != null) {
         if(isLoggedIn) {
           Navigator.pushReplacement(

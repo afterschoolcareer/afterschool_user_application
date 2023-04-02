@@ -83,11 +83,15 @@ class _FeeStructureCardState extends State<FeeStructureCard> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "${widget.name}, ${widget.location}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold
+                SizedBox(
+                  width: width * 0.7,
+                  child: Text(
+                    "${widget.name}, ${widget.location}",
+                    style: const TextStyle(
+                        fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 Row(

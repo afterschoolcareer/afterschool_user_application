@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:otpless_flutter/otpless_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'email_verify.dart';
 import 'otpless_credentials.dart' as credentials;
 
@@ -279,6 +280,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
   }
 
+  void openPrivacyPolicy() {
+    Uri uri = Uri.parse('https://afterschoolcareer.com/privacy-policy.html');
+    launchUrl(uri);
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -496,10 +502,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                                 recognizer: TapGestureRecognizer()
-                                                  ..onTap = () {
-                                                    print(
-                                                        "privacy policy clicked");
-                                                  }),
+                                                  ..onTap = openPrivacyPolicy
+                                                  ),
                                           ]),
                                           textAlign: TextAlign.center,
                                         ),
