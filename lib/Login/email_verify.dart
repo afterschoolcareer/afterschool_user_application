@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'loginpage.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({Key? key}) : super(key: key);
+  const  EmailVerificationScreen({Key? key}) : super(key: key);
 
   @override
   State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();

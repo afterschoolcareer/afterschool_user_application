@@ -54,7 +54,7 @@ class _AppBarDrawerState extends State<AppBarDrawer> {
       var response = await client.get(uri);
       Map data = json.decode(response.body);
       String code = data["data"];
-      Share.share("use my afterschool coupon code $code to get 50 coins ");
+      Share.share("Use my AfterSchool referral code $code to get 50 coins.");
     }
 
     void redeemPage() {

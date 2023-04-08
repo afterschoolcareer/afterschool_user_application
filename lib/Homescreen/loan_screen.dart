@@ -153,7 +153,7 @@ class _LoanScreenState extends State<LoanScreen> {
     };
 
 
-    var uri = Uri.parse('$baseUrl/product/apply/generic');
+    var uri = Uri.parse('$baseUrlPropelld/product/apply/generic');
     var response = await client.post(uri,
     headers: {
       "client-id" : loanCredentials.clientId,
