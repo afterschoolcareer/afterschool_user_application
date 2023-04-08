@@ -121,8 +121,8 @@ class _JoinCommunityState extends State<JoinCommunity> {
               ),
             child: const Center(
                 child:Text(
-                  "Become part of our community "
-                  "We provide a community for students ,top rank achievers, subject experts and"
+                  "Become a part of our community. "
+                  "We provide a community for students, top achievers, subject experts and"
                       " teachers to connect and get advice on preparation strategy, choosing right career path or institutes.",
                   style: TextStyle(color: Colors.black,fontSize: 18),
 

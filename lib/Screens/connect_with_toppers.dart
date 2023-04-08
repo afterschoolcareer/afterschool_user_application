@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:afterschool/Homescreen/main_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,27 @@ class ConnectWithAchievers extends StatefulWidget {
 }
 
 class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
+
+  String course = "";
+  bool showLoading = false;
+
+  @override
+  void initState() {
+    getCoursePreference();
+    super.initState();
+  }
+
+  void getCoursePreference() async {
+    setState(() {
+      showLoading= true;
+    });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var c = sharedPreferences.getString('course');
+    course = c!;
+    setState(() {
+      showLoading = false;
+    });
+  }
 
   bool selected = false;
   static var client = http.Client();
@@ -227,27 +249,43 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
         ),
 
         /* main body */
-        body:ListView(
+        body: showLoading? const Center(child: CircularProgressIndicator(color: Color(0xff6633ff),),)
+            : ListView(
           children: [
+            Container(
+              margin: const EdgeInsets.all(15),
+              child: Text(
+                "Toppers for : $course",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(thickness: 2),
             Column(
-              children: const [
-                ToppersList(logoUrl: "images/profile_icon.png",
-                    name: "Shubham Vats", collegeName: "IIT Bidholi"),
-                Divider(thickness: 3),
-                ToppersList(logoUrl: "images/profile_icon.png",
+              children:  [
+                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                    name: "Surender Pal Singh", collegeName: "IIT BHU"),
+                if(course == 'IIT') const Divider(thickness: 3),
+                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
                     name: "Sujeet Vishwakarma", collegeName: "IIT BHU"),
-                Divider(thickness: 3),
-                ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'IIT') const Divider(thickness: 3),
+                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
                     name: "Ankur Kumar", collegeName: "IIT BHU"),
-                Divider(thickness: 3),
-                ToppersList(logoUrl: "images/profile_icon.png",
-                    name: "Harshit Kumar", collegeName: "IIT UMU"),
-                Divider(thickness: 3),
-                ToppersList(logoUrl: "images/profile_icon.png",
-                    name: "Akshay Kumar", collegeName: "IIT UMU"),
-                Divider(thickness: 3),
-                ToppersList(logoUrl: "images/profile_icon.png",
-                    name: "Random Topper", collegeName: "IIT Roorkee"),
+                if(course == 'IIT')  const Divider(thickness: 3),
+                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                    name: "Rupesh Kashyap", collegeName: "IIT Delhi"),
+                if(course == 'IIT') const Divider(thickness: 3),
+                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                    name: "Dr. Anup Raj", collegeName: "Madras Medical College"),
+                if(course == 'NEET')const Divider(thickness: 3),
+                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                    name: "Dr. Kunal Tiwari", collegeName: "AIIMS Patna"),
+                if(course == 'NEET')const Divider(thickness: 3),
+                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                    name: "Dr. Rajesh Kumar", collegeName: "Madras Medical College"),
               ],
             )
           ],

@@ -82,6 +82,7 @@ class _MainScreenState extends State<MainScreen> {
         currentSelected = course;
       } else {
         currentSelected = 'IIT';
+        sharedPreferences.setString('course','IIT');
       }
       showLoading = false;
     });
@@ -923,20 +924,12 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Text(
-                  currentSelected,
-                  style: const TextStyle(
-                    color: Color(0xffff9900),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500
-                  ),
-                ),
-                const SizedBox(height: 20),
 
                 /* AchieversList */
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children:  [
                       const Icon(
                         Icons.keyboard_double_arrow_left,
@@ -950,7 +943,7 @@ class _MainScreenState extends State<MainScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: const [
                               AchieversList(logoUrl: "images/profile_icon.png",
-                                  name: "Shubham Vats", collegeName: "IIT Bidholi"),
+                                  name: "Surender Pal Singh", collegeName: "IIT BHU"),
                               SizedBox(width: 15),
                               AchieversList(logoUrl: "images/profile_icon.png",
                                   name: "Sujeet Vishwakarma", collegeName: "IIT BHU"),
@@ -959,13 +952,16 @@ class _MainScreenState extends State<MainScreen> {
                                   name: "Ankur Kumar", collegeName: "IIT BHU"),
                               SizedBox(width: 15),
                               AchieversList(logoUrl: "images/profile_icon.png",
-                                  name: "Harshit Kumar", collegeName: "IIT UMU"),
+                                  name: "Rupesh Kashyap", collegeName: "IIT Delhi"),
                               SizedBox(width: 15),
                               AchieversList(logoUrl: "images/profile_icon.png",
-                                  name: "Akshay Kumar", collegeName: "IIT UMU"),
+                                  name: "Dr. Anup Raj", collegeName: "Madras Medical College"),
                               SizedBox(width: 15),
                               AchieversList(logoUrl: "images/profile_icon.png",
-                                  name: "Random Topper", collegeName: "IIT Roorkee"),
+                                  name: "Dr. Kunal Tiwari", collegeName: "AIIMS Patna"),
+                              SizedBox(width: 15),
+                              AchieversList(logoUrl: "images/profile_icon.png",
+                                  name: "Dr. Rajesh Kumar", collegeName: "Madras Medical College"),
                             ],
                           ),
                         ),
