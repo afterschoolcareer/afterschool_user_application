@@ -1,4 +1,4 @@
-package com.afterschool.booknow
+package com.afterschool.app
 
 import io.flutter.embedding.android.FlutterActivity
 

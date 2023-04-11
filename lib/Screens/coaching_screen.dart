@@ -1,11 +1,17 @@
 import 'dart:convert';
+
+import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+
+import '../Homescreen/main_screen.dart';
 
 class CoachingScreen extends StatefulWidget {
   final int id;
@@ -17,6 +23,9 @@ class CoachingScreen extends StatefulWidget {
 }
 
 class _CoachingScreenState extends State<CoachingScreen> {
+
+  int instituteImagesIndex = 0;
+
   String name = "";
   String location = "";
   String state = "";
@@ -32,6 +41,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   List topRankers = [];
   List scholarship = [];
   List selectionData = [];
+  List instituteImages = [];
 
   List<String> feeTypes = [];
   List feeValues = [];
@@ -57,6 +67,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
   bool isTotalNumber = true;
   bool isRegistered = false;
   bool isProspectus = true;
+  bool isImages = true;
 
   bool showShortlisted = false;
   bool showLoading = false;
@@ -161,8 +172,11 @@ class _CoachingScreenState extends State<CoachingScreen> {
     if(totalStudents == 0) {
       isTotalNumber = false;
     }
-    if(prospectus.isEmpty) {
+    if(prospectus.isEmpty || prospectus.toLowerCase().contains("none")) {
       isProspectus = false;
+    }
+    if(instituteImages.isEmpty) {
+      isImages = false;
     }
   }
 
@@ -253,6 +267,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
     selectionData = entries["selectionData"];
     isRegistered = entries["is_registered"];
     prospectus = entries["prospectus"];
+    instituteImages = entries["image_link"];
     setShortlisted();
     setFees();
     setFaculties();
@@ -605,6 +620,91 @@ class _CoachingScreenState extends State<CoachingScreen> {
                                       ),
                                     ],
                                   ),
+                                ),
+                                if(isImages) const SizedBox(height: 30,),
+                                if(isImages) Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        showDialog(context: context, builder: (_) =>
+                                        InsImages(url: instituteImages[instituteImagesIndex]));
+                                      } ,
+                                      child: Container(
+                                        width: width,
+                                        height: 300,
+                                        // child: PhotoViewGallery.builder(
+                                        //   scrollPhysics: const BouncingScrollPhysics(),
+                                        //   builder: (BuildContext context, int index) {
+                                        //     return PhotoViewGalleryPageOptions(
+                                        //         imageProvider: NetworkImage(
+                                        //           instituteImages[index],
+                                        //         ),
+                                        //       initialScale: PhotoViewComputedScale.contained,
+                                        //     );
+                                        //   },
+                                        //   itemCount: instituteImages.length,
+                                        //   loadingBuilder: (context, event) => Center(
+                                        //     child: Container(
+                                        //       width: 20,
+                                        //       height: 20,
+                                        //       child: CircularProgressIndicator(
+                                        //         value: event == null
+                                        //             ? 0
+                                        //             : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
+                                        //       ),
+                                        //     ),
+                                        //   ),
+                                        //   backgroundDecoration: const BoxDecoration(
+                                        //     color: Colors.white,
+                                        //   ),
+                                        //   onPageChanged: (int index) {
+                                        //     setState(() {
+                                        //       instituteImagesIndex =  index;
+                                        //     });
+                                        //   },
+                                        // ),
+                                        child: PageView.builder(
+                                          onPageChanged: (int index) {
+                                            setState(() {
+                                              instituteImagesIndex = index;
+                                            });
+                                          },
+                                          itemCount: instituteImages.length,
+                                          itemBuilder: (context, index) {
+                                            return Image.network(
+                                                instituteImages[index],
+                                              loadingBuilder: (BuildContext context, Widget child,
+                                                  ImageChunkEvent? loadingProgress) {
+                                                if (loadingProgress == null) return child;
+                                                return Center(
+                                                  child: CircularProgressIndicator(
+                                                    color: const Color(0xff6633ff),
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                        loadingProgress.expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                              errorBuilder: (context, exception, stackTrace) {
+                                                return const Text("Error Loading Image");
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        ...List.generate(
+                                            instituteImages.length,
+                                                (index) => Indicator(
+                                                isActive: instituteImagesIndex == index ? true : false))
+                                      ],
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 40),
                                 if(isFaculty) const Text(
@@ -1141,4 +1241,28 @@ class _RankerViewState extends State<RankerView> {
     );
   }
 }
+
+class InsImages extends StatelessWidget {
+  final String url;
+  const InsImages({Key? key, required this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.white.withOpacity(0),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: PhotoView(
+          backgroundDecoration: BoxDecoration(
+            color: Colors.white.withOpacity(0)
+          ),
+          imageProvider: NetworkImage(
+            url,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
