@@ -82,6 +82,7 @@ flutter:
   assets:
      - images/
      - images/handpicked/
+     - images/toppers/
      - assets/ca/
   #   - images/a_dot_ham.jpeg
 

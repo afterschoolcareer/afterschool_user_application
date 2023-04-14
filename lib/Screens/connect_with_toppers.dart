@@ -266,25 +266,25 @@ class _ConnectWithAchieversState extends State<ConnectWithAchievers> {
             const Divider(thickness: 2),
             Column(
               children:  [
-                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'IIT') const ToppersList(logoUrl: "images/toppers/surender.jpeg",
                     name: "Surender Pal Singh", collegeName: "IIT BHU"),
                 if(course == 'IIT') const Divider(thickness: 3),
-                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'IIT') const ToppersList(logoUrl: "images/toppers/sujeet.jpg",
                     name: "Sujeet Vishwakarma", collegeName: "IIT BHU"),
                 if(course == 'IIT') const Divider(thickness: 3),
-                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'IIT') const ToppersList(logoUrl: "images/toppers/ankur.jpeg",
                     name: "Ankur Kumar", collegeName: "IIT BHU"),
                 if(course == 'IIT')  const Divider(thickness: 3),
-                if(course == 'IIT') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'IIT') const ToppersList(logoUrl: "images/toppers/rupesh.jpg",
                     name: "Rupesh Kashyap", collegeName: "IIT Delhi"),
                 if(course == 'IIT') const Divider(thickness: 3),
-                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'NEET') const ToppersList(logoUrl: "images/toppers/anup.jpeg",
                     name: "Dr. Anup Raj", collegeName: "Madras Medical College"),
                 if(course == 'NEET')const Divider(thickness: 3),
-                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'NEET') const ToppersList(logoUrl: "images/toppers/kunal.jpeg",
                     name: "Dr. Kunal Tiwari", collegeName: "AIIMS Patna"),
                 if(course == 'NEET')const Divider(thickness: 3),
-                if(course == 'NEET') const ToppersList(logoUrl: "images/profile_icon.png",
+                if(course == 'NEET') const ToppersList(logoUrl: "images/toppers/rajesh.jpeg",
                     name: "Dr. Rajesh Kumar", collegeName: "Madras Medical College"),
               ],
             )
@@ -326,12 +326,21 @@ class ToppersList extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(logoUrl),
+          ClipOval(
+              child: Image.asset(
+                  logoUrl,
+                height: 100,
+                width: 100,
+              )
+          ),
+          const SizedBox(width: 20,),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(name, style: const TextStyle(fontWeight: FontWeight.bold),),
+              Text(name, style: const TextStyle(
+                  fontWeight: FontWeight.bold
+              ),),
               Text(collegeName),
             ],
           )
