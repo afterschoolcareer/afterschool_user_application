@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:afterschool/Homescreen/home.dart';
 import 'package:afterschool/Login/finish_signup_whatsapp.dart';
 import 'package:afterschool/Models/student_auth.dart';
+import 'package:afterschool/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:otpless_flutter/otpless_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'email_verify.dart';
 import 'otpless_credentials.dart' as credentials;
+import 'package:afterschool/main.dart';
 
 import '../Models/global_vals.dart';
 import 'forgot_password.dart';
@@ -224,19 +226,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  Future<void> initPlatformState() async {
-    log("listening token");
-    _otplessFlutterPlugin.authStream.listen((token) {
-      setState(() {
-        _waId = token ?? "Unknown";
-      });
-    });
-    log("token value : $_waId");
-    if(_waId != "Unknown") {
-      handleApi();
-    }
-  }
-
   void handleApi() async {
     log("RUNNING APIIIIIIIIIIIIIIIIIII");
     var details = Map();
@@ -275,7 +264,11 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
       log("PAUSED......................");
     } else if(state == AppLifecycleState.resumed) {
       log("RESUMEDDDD........................");
-      initPlatformState();
+      log("on resume token : ${MyAppState.tokenVal}");
+      if(MyAppState.tokenVal != "Unknown") {
+        _waId = MyAppState.tokenVal;
+        handleApi();
+      }
     }
     super.didChangeAppLifecycleState(state);
   }
